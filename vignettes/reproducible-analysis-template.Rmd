@@ -39,6 +39,7 @@ By the end of this vignette, you will be able to:
 library(tidyverse)    # Data manipulation and visualization
 library(broom)        # Tidy model outputs
 library(car)          # Regression diagnostics
+library(lmtest)       # Testing linear regression models
 library(knitr)        # Knitr options
 library(skimr)        # Detailed data summaries
 
@@ -280,7 +281,6 @@ shapiro_test <- shapiro.test(residuals(model_multiple))
 cat("Shapiro-Wilk test p-value:", round(shapiro_test$p.value, 4), "\n")
 
 # Homoscedasticity
-library(lmtest)
 bp_test <- bptest(model_multiple)
 cat("Breusch-Pagan test p-value:", round(bp_test$p.value, 4), "\n")
 
@@ -315,7 +315,7 @@ ggplot() +
   geom_point(data = health_data, aes(x = exercise_hours, y = resting_hr),
              alpha = 0.3) +
   geom_line(data = predictions, aes(x = exercise_hours, y = .fitted),
-            color = "blue", size = 1) +
+            color = "blue", linewidth = 1) +
   geom_ribbon(data = predictions, 
               aes(x = exercise_hours, ymin = .fitted - 1.96 * .se.fit,
                   ymax = .fitted + 1.96 * .se.fit),

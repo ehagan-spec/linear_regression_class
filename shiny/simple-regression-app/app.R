@@ -115,9 +115,25 @@ server <- function(input, output, session) {
     p
   })
   
-  # Model summary
+  # Model summary using broom for consistency
   output$modelSummary <- renderPrint({
-    summary(model())
+    # Use broom::glance for model-level statistics
+    model_fit <- model()
+    
+    cat("Model Summary (using broom for tidy output)\n")
+    cat("============================================\n\n")
+    
+    # Model-level statistics
+    stats <- glance(model_fit)
+    cat("R-squared:         ", round(stats$r.squared, 4), "\n")
+    cat("Adjusted R-squared:", round(stats$adj.r.squared, 4), "\n")
+    cat("Residual std error:", round(stats$sigma, 4), "\n")
+    cat("F-statistic:       ", round(stats$statistic, 2), "\n")
+    cat("p-value:           ", format.pval(stats$p.value, digits = 4), "\n")
+    cat("Degrees of freedom:", stats$df, "and", stats$df.residual, "\n")
+    
+    cat("\n")
+    cat("Use the Coefficients table below for detailed coefficient estimates.\n")
   })
   
   # Coefficients table
