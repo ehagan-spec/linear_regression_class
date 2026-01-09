@@ -1,10 +1,9 @@
 # Contributing to Linear Regression Class
 
-Thank you for your interest in contributing to this course repository! This guide will help you get started.
+This project is a work in progress. Any suggestions are warmly welcome. As we work through the 
+course content, please don't hesitate to report issues, request clarification, or suggestion improvements.
 
-## How Students Can Contribute
-
-We welcome contributions from students in several forms:
+## Here's How to Contribute:
 
 ### 1. Report Issues
 - Found a typo or error in course materials?
@@ -58,7 +57,7 @@ git checkout -b my-contribution
 
 Follow the [tidyverse style guide](https://style.tidyverse.org/):
 
-- Use `<-` for assignment, not `=`
+- Try to use `<-` for assignment, not `=`
 - Use `snake_case` for variable and function names
 - Include spaces around operators: `x + y` not `x+y`
 - Limit lines to 80 characters
@@ -113,107 +112,6 @@ git push origin my-contribution
 - Tested code examples in R 4.2.0
 ```
 
-## Types of Contributions
-
-### 📝 Documentation
-- Fix typos or unclear explanations
-- Improve README files
-- Add code comments
-- Update references
-
-### 💡 Examples
-- Add new datasets with documentation
-- Create additional vignettes
-- Share analysis examples
-- Contribute Shiny apps
-
-### 🐛 Bug Fixes
-- Fix errors in code examples
-- Correct statistical mistakes
-- Resolve package dependency issues
-
-### ✨ Enhancements
-- Improve visualizations
-- Add interactive elements
-- Suggest new topics
-- Enhance existing content
-
-## Quality Standards
-
-Before submitting:
-
-- [ ] Code runs without errors
-- [ ] R Markdown documents knit successfully
-- [ ] New files follow the repository structure
-- [ ] Documentation is clear and complete
-- [ ] Examples include comments
-- [ ] Data includes a data dictionary
-- [ ] Session info is included where appropriate
-
-## Content Guidelines
-
-### For Lectures
-- Focus on one main concept per lecture
-- Include learning objectives
-- Provide worked examples
-- Add practice exercises
-- Use tidyverse approach
-- Include visualizations
-
-### For Vignettes
-- Provide step-by-step explanations
-- Use real or realistic data
-- Show complete workflows
-- Explain the "why" not just the "how"
-- Include diagnostic checks
-- Discuss interpretation
-
-### For Shiny Apps
-- Keep the interface simple and intuitive
-- Include help text
-- Provide clear labels
-- Test with different inputs
-- Include a README in the app folder
-- Document learning objectives
-
-### For Data
-- Include a data dictionary
-- Document the source
-- Specify license or terms of use
-- Keep files reasonably sized
-- Use standard formats (CSV, RDS)
-- Anonymize if necessary
-
-## Review Process
-
-1. **Submission**: You submit a pull request
-2. **Review**: Instructor or TAs review your contribution
-3. **Feedback**: You may receive requests for changes
-4. **Revision**: Make requested changes if needed
-5. **Merge**: Once approved, your contribution is merged
-
-## Code of Conduct
-
-### Be Respectful
-- Treat all contributors with respect
-- Welcome newcomers
-- Be constructive in feedback
-- Assume good intentions
-
-### Be Collaborative
-- Help others learn
-- Share knowledge generously
-- Give credit where due
-- Celebrate contributions
-
-### Be Professional
-- Focus on improving course materials
-- Stay on topic
-- Avoid controversial non-course topics
-- Follow academic integrity guidelines
-
-## Questions?
-
 If you have questions about contributing:
 
 1. Check existing issues to see if it's been answered
@@ -225,7 +123,7 @@ If you have questions about contributing:
 
 Contributors will be acknowledged in:
 - The repository's contributor list
-- Course acknowledgments (if significant contributions)
+- Course acknowledgments 
 - Individual pull request credits
 
 ## License
@@ -239,6 +137,3 @@ By contributing to this repository, you agree that your contributions will be li
 - [R Packages: Git and GitHub](https://r-pkgs.org/git.html)
 - [Tidyverse Style Guide](https://style.tidyverse.org/)
 
----
-
-Thank you for helping make this course better! 🎉

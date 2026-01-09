@@ -2,149 +2,51 @@
 
 ## Purpose
 
-This document outlines the policy and best practices for using Artificial Intelligence (AI) tools in this course, including Large Language Models (LLMs) like ChatGPT, Claude, GitHub Copilot, and other AI-assisted coding tools.
+This document outlines some policies and practices for responsible AI use in research.
 
 ## Philosophy
 
-AI tools are powerful aids for learning and productivity, but they must be used thoughtfully and ethically. This course aims to help students:
-
-1. **Understand** statistical concepts deeply, not just generate code
-2. **Develop** critical thinking skills to evaluate AI-generated outputs
-3. **Learn** to use AI tools as assistants, not replacements for learning
-4. **Practice** transparency about AI usage in academic work
-
-## Permitted Uses
+AI tools can be incredibly useful when writing code. They can also be leveraged to enhance productivity, but they must also be used in a responsible, mindful and ethnical manner. 
+In code, they can steer analysis in strange directions, oftentimes AI code -- because of how the user relies on it --
+is piecemeal and hard to follow. And, in statistics, AI have yet to match the caliber, depth and nuance in human 
+generated content.
 
 AI tools **may be used** for:
 
 ### Learning and Exploration
-- Understanding error messages and debugging code
-- Exploring alternative approaches to solving problems
-- Learning new R functions or tidyverse syntax
+- AI can save a lot of time when it is used for debugging code and demystifying error messages
+- Exploring alternative approaches to solving problems, and constructing alternative data pipelines
+- Learning new R functions or tidyverse and related R syntax
 - Generating example code to understand concepts
-- Formatting and documenting code
+- Formatting and documenting code, as well as writing concise, readable code.
 
 ### Productivity
-- Autocompleting repetitive code patterns
-- Generating boilerplate code structure
-- Refactoring code for readability
-- Creating visualizations with ggplot2
-- Writing documentation and comments
+- AI tools may be used for autocompleting repetitive code patterns
+- AI tools may be used to create templates (e.g., Github or function templates) by generating boilerplate code structure
+- AI tools may be used to enahance code readability
+- AI tools may be used to assist in writing documentation and code comments
 
-### Research
-- Exploring package documentation
-- Finding relevant statistical methods
-- Understanding mathematical notation
-- Summarizing academic papers (with proper citations)
 
-## Required Practices
+1. **Understand the Code**: Please never submit code you don't understand. If you use AI in code completion, for instance, you *should* take
+time to understand every line of code. 
 
-When using AI tools in this course:
+2. **Verify Outputs**: Your calculations should be your own. Please do not use AI to entirely analyze data. 
 
-1. **Understand the Code**: Never submit code you don't understand. Take time to study AI-generated code line by line.
+3. **Cite AI Usage**: When submitting assignments, include a brief statement about how AI was used. Transparency
+is important. 
 
-2. **Verify Outputs**: AI tools can produce incorrect or nonsensical statistical analyses. Always validate results against your statistical knowledge.
+4. **Test Thoroughly**: AI generated code often includes errors, and may not operate as intended, particularly with 
+particular data structures.
 
-3. **Cite AI Usage**: When submitting assignments, include a brief statement about how AI tools were used (e.g., "Used ChatGPT to debug ggplot2 syntax errors").
-
-4. **Test Thoroughly**: AI-generated code may contain subtle bugs. Test all code with different inputs and edge cases.
-
-5. **Document Your Understanding**: In assignments, explain your code and results in your own words to demonstrate comprehension.
+5. **Document Your Understanding**: Intepretation and reporting should always be your own. Generative AI should not
+be used to summarize results or draft interpretations of results. 
 
 ## Prohibited Uses
 
-AI tools **may not be used** for:
+AI use *may not be used* for the following and will be reported.
 
-1. **Generating complete assignment solutions** without understanding
-2. **Bypassing learning objectives** by having AI do the conceptual work
-3. **Plagiarism** - passing off AI-generated work as entirely your own
-4. **Exam/quiz assistance** unless explicitly permitted
-5. **Generating fake data** or results to support incorrect conclusions
-
-## Specific Guidelines
-
-### For Homework Assignments
-- ✅ Use AI to help debug code or understand concepts
-- ✅ Adapt AI-generated examples to your specific problem
-- ❌ Submit AI-generated code without understanding it
-- ❌ Copy-paste entire solutions without modification
-
-### For Projects
-- ✅ Use AI to explore different analytical approaches
-- ✅ Generate visualization templates to customize
-- ❌ Have AI write your entire analysis narrative
-- ❌ Use AI-generated interpretations without statistical reasoning
-
-### For Exams
-- ❌ AI tools are not permitted during exams unless explicitly stated
-- ✅ You may use AI for exam preparation and practice
-
-## Critical Thinking with AI
-
-When using AI tools, ask yourself:
-
-1. **Is the code correct?** AI can confidently generate incorrect code.
-2. **Is the statistical approach appropriate?** AI may not understand your research context.
-3. **Do I understand what this code does?** If not, study it or seek alternatives.
-4. **Are there assumptions being made?** AI-generated analyses may violate statistical assumptions.
-5. **Is this helping me learn?** If AI is preventing learning, step back and work through the problem manually.
-
-## Common AI Pitfalls in Statistics
-
-Be especially careful with AI tools when:
-
-- **Choosing statistical tests**: AI may suggest inappropriate methods
-- **Interpreting p-values and coefficients**: Context matters more than AI knows
-- **Assessing assumptions**: AI-generated diagnostics may be incomplete
-- **Causal inference**: AI often confuses correlation with causation
-- **Domain knowledge**: AI lacks field-specific expertise
-
-## Examples
-
-### ✅ Good Use
-```r
-# Student writes:
-# I want to create a scatterplot with a regression line
-# Uses AI to help with ggplot2 syntax
-# Understands each component and customizes it
-
-ggplot(data, aes(x = predictor, y = response)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  labs(title = "My Analysis", x = "X Variable", y = "Y Variable")
-```
-
-### ❌ Poor Use
-```r
-# Student copy-pastes AI-generated code without understanding
-# Code uses inappropriate methods or has errors
-# Student cannot explain what the code does
-```
-
-## Academic Integrity
-
-Using AI tools inappropriately may constitute academic misconduct. When in doubt:
-
-1. **Ask the instructor** if a specific use is permitted
-2. **Err on the side of transparency** - disclose AI usage
-3. **Prioritize learning** over efficiency
-
-## Evolving Technology
-
-AI tools are rapidly evolving. This policy may be updated throughout the course. Students will be notified of any changes.
-
-## Resources
-
-- [GitHub Copilot Documentation](https://docs.github.com/en/copilot)
-- [OpenAI Usage Policies](https://openai.com/policies/usage-policies)
-- University Academic Integrity Policy (consult your institution)
-
-## Questions?
-
-If you're unsure whether a specific use of AI tools is appropriate, please ask the instructor before proceeding. It's always better to ask than to assume.
-
----
-
-**Last Updated**: January 2026
-
-This policy is designed to help students learn effectively while leveraging modern tools responsibly. The goal is not to prohibit AI use, but to ensure it enhances rather than replaces genuine learning.
+1. **Generating solutions** without understanding
+2. **Bypassing learning objectives** by having AI draft analysis and writing of your conceptual work
+3. **Plagiarism** - Please report AI use. Failing to do so may be construed as a case of plagiarism.
+4. **Exam/quiz assistance** is prohibited. In examinations, AI tools are prohibited from use.
+5. **Generating made up data or results**.

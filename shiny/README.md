@@ -1,4 +1,7 @@
 # Shiny Applications Directory
+## Author: AI, Github copilot
+
+
 
 This directory contains interactive web applications built with Shiny to help students explore and understand linear regression concepts.
 

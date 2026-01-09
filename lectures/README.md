@@ -1,210 +1,153 @@
-# Lectures Directory
+# Lecture Materials
+## Linear Regression Analysis (POL 682)
 
-This directory contains lecture materials for the Linear Regression course, following the structure and approach of Fox's *Applied Regression Analysis and Generalized Linear Models*.
+## Instructor
+
+**Christopher Weber, PhD**  
+School of Government and Public Policy  
+University of Arizona  
+chrisweber@arizona.edu
+This directory contains lecture materials for the Linear Regression course. All lectures are written in **R Markdown** (`.Rmd`) to support reproducible analysis, integration of code and narrative, and multiple output formats.
 
 ## Format
 
-All lectures are written in **R Markdown** (`.Rmd`) to support:
-- Reproducible analysis
-- Integration of code, output, and narrative
-- Multiple output formats (HTML, PDF, slides)
+- **File type**: R Markdown (`.Rmd`)
+- **Output**: HTML slides and documents
+- **Code execution**: All examples are reproducible
+- **Required packages**: Available in the `renv` lockfile
 
-## Lecture Series
+## Course Schedule & Lectures
 
-### Module 1: Foundations
-1. **01-introduction.Rmd**: Course overview, reproducibility, tidyverse introduction
-2. **02-data-visualization.Rmd**: Exploratory data analysis with ggplot2
-3. **03-statistical-foundations.Rmd**: Review of probability and inference
+### **Week 1 (1/13): Welcome and Introduction**
+- **Lecture**: The OLS Estimator
+- **Topics**: 
+  - What is linear regression?
+  - Population vs. Sample Regression Functions
+  - Deriving the OLS estimator
+  - Minimizing sum of squared residuals
+- **Reading**: Fox, Chapter 2
+- **Files**: 
 
-### Module 2: Simple Linear Regression
-4. **04-simple-regression.Rmd**: Least squares estimation, interpretation
-5. **05-inference-regression.Rmd**: Hypothesis tests, confidence intervals
-6. **06-assumptions-diagnostics.Rmd**: Residual analysis, diagnostic plots
+### **Week 2 (1/20): Introduction to Linear Regression**
+- **Lecture**: Derivation and Properties of the OLS Estimator
+- **Topics**:
+  - Normal equations
+  - Interpreting coefficients
+  - Predictions and residuals
+  - Key assumptions
+- **Reading**: Fox, Chapter 3
+- **Files**: 
 
-### Module 3: Multiple Regression
-7. **07-multiple-regression.Rmd**: Multiple predictors, partial relationships
-8. **08-categorical-predictors.Rmd**: Factors, dummy variables, contrasts
-9. **09-interactions.Rmd**: Interaction terms, effect modification
+### **Week 3 (1/27): Estimation and Properties**
+- **Lecture**: Properties of the OLS Estimator
+- **Topics**:
+  - Unbiasedness and efficiency
+  - Variance of estimators
+  - Confidence intervals
+  - Hypothesis testing
 
-### Module 4: Model Building
-10. **10-variable-selection.Rmd**: Model comparison, AIC, cross-validation
-11. **11-transformations.Rmd**: Log transforms, polynomial terms, Box-Cox
-12. **12-outliers-influence.Rmd**: Leverage, Cook's distance, robust methods
 
-### Module 5: Advanced Topics
-13. **13-collinearity.Rmd**: Multicollinearity diagnosis and remedies
-14. **14-generalized-linear-models.Rmd**: Logistic regression, Poisson regression
-15. **15-case-studies.Rmd**: Applied examples with real data
+### **Week 4 (2/3): Comments on Model Fit**
+- **Lecture**: R-squared and Model Interpretation
+- **Topics**:
+  - Total, Residual, and Regression Sum of Squares
+  - R-squared: What does it actually measure?
+  - Adjusted R-squared
+  - Common misconceptions
 
-## Running Lectures
+### **Week 5 (2/10): Statistical Inference**
+- **Lecture**: Theoretical Foundations of Inference
+- **Topics**:
+  - Sampling distributions
+  - Standard errors
+  - Confidence intervals
+  - Hypothesis testing framework
+- **Files**: `05_Inference_Foundations.Rmd`
 
-### In RStudio
-1. Open the `.Rmd` file
-2. Click "Knit" to render to HTML/PDF
-3. Or run code chunks interactively with Ctrl+Enter (Cmd+Enter on Mac)
+### **Week 6 (2/17): Inference, Continued**
+- **Lecture**: Hypothesis Testing and Inference in Regression
+- **Topics**:
+  - t-tests and p-values
+  - F-tests
+  - ANOVA and model comparison
+  - Interpretation and reporting
+- **Files**: `06_Hypothesis_Testing.Rmd`
 
-### From Command Line
-```r
-rmarkdown::render("lectures/01-introduction.Rmd")
-```
+### **Week 7 (2/24): Multiple Variables**
+- **Lecture**: Multiple Regression
+- **Topics**:
+  - Adding multiple predictors
+  - Partial effects and control variables
+  - Interpretation in multivariate models
+  - Interactions and non-linearities
+- **Files**: `07_Multiple_Regression.Rmd`
 
-### Batch Rendering
-```r
-# Render all lectures
-library(purrr)
-list.files("lectures", pattern = "\\.Rmd$", full.names = TRUE) %>%
-  walk(rmarkdown::render)
-```
-
-## Lecture Template
-
-Each lecture follows this structure:
-
-```markdown
+### **Week 8 (3/3): Midterm Exam**
+- **Format**: In-class, closed-book
 ---
-title: "Lecture Title"
-author: "Course Instructor"
-date: "`r Sys.Date()`"
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    code_folding: show
-    theme: flatly
----
 
-## Learning Objectives
-- Objective 1
-- Objective 2
+### **Week 9 (3/17): Assumptions of the Linear Model**
+- **Lecture**: Model Assumptions and Violations
+- **Topics**:
+  - Linearity, independence, homoskedasticity, normality
+  - Heteroskedasticity: detection and solutions
+  - Robust standard errors
+  - Weighted least squares
 
-## Setup
-```{r setup, message=FALSE}
-library(tidyverse)
-library(broom)
-library(car)
-```
+### **Week 10 (3/24): Collinearity**
+- **Lecture**: Multicollinearity and Model Stability
+- **Topics**:
+  - Detecting multicollinearity
+  - Variance Inflation Factor (VIF)
+  - Consequences and solutions
 
-## Introduction
-[Content]
+### **Week 11 (3/31): Influence**
+- **Lecture**: Outliers and Influential Observations
+- **Topics**:
+  - Leverage and influence
+  - Standardized and studentized residuals
+  - Cook's distance
+  - DFFITS and DFBETAS
 
-## Main Content
-[Content with code chunks]
+### **Week 12 (4/7): Panel Data**
+- **Lecture**: Fixed and Random Effects Models
+- **Topics**:
+  - Panel data structure
+  - Fixed effects estimation
+  - Random effects estimation
+  - Hausman test
 
-## Summary
-[Key takeaways]
+### **Week 13 (4/14): Panel Data, Continued**
+- **Lecture**: Time Series and Autocorrelation
+- **Topics**:
+  - Autocorrelation detection
+  - Durbin-Watson test
+  - GLS and FGLS
+  - Panel-specific issues
 
-## Practice Exercises
-[Exercises for students]
+### **Week 14 (4/21): Generalized Linear Models**
+- **Lecture**: Introduction to GLMs and Maximum Likelihood
+- **Topics**:
+  - Exponential family distributions
+  - Link functions
+  - Logistic regression
+  - Poisson regression
+  - Model fitting and interpretation
 
-## References
-[Citations]
+### **Week 15 (4/28): Simulation and Inference**
+- **Lecture**: Simulation-Based Inference and Extensions
+- **Topics**:
+  - Monte Carlo simulation
+  - Bootstrap methods
+  - Bayesian approaches to regression
+  - Uncertainty quantification
 
-## Session Info
-```{r}
-sessionInfo()
-```
-```
+## Key Resources
 
-## Best Practices
+- **Fox, John & Weisberg, Sanford** (2011). *An R Companion to Applied Regression, Second Edition*. Sage.
+- **R Project**: https://www.r-project.org
+- **RStudio**: https://www.rstudio.com
+- **GitHub**: https://github.com
+- **DataCamp**: https://www.datacamp.com
 
-1. **Load packages in setup chunk**: All `library()` calls in a setup chunk at the beginning
-2. **Set chunk options**: Use meaningful chunk labels and appropriate options (e.g., `warning=FALSE`)
-3. **Comment code**: Explain what code does, especially for complex operations
-4. **Use tidyverse**: Prefer tidyverse functions for consistency
-5. **Include visualizations**: Use ggplot2 for all graphics
-6. **Add exercises**: Include practice problems for students
-7. **Document session**: Always end with `sessionInfo()` for reproducibility
 
-## Output Formats
-
-### HTML (default)
-- Interactive
-- Easy to view in browser
-- Can include interactive elements (plotly, DT tables)
-
-### PDF
-- Professional appearance
-- Good for printing
-- Requires LaTeX installation
-
-```yaml
-output:
-  pdf_document:
-    toc: true
-    number_sections: true
-```
-
-### Slides (Slidy, ioslides, or xaringan)
-```yaml
-output:
-  ioslides_presentation:
-    widescreen: true
-```
-
-## Code Style
-
-Follow the [tidyverse style guide](https://style.tidyverse.org/):
-
-- Use `<-` for assignment, not `=`
-- Use `snake_case` for variable names
-- Use spaces around operators
-- Limit lines to 80 characters
-- Use pipes `%>%` for multi-step operations
-
-## Example Code Patterns
-
-### Loading and Exploring Data
-```r
-# Load data
-data <- read_csv("data/example.csv")
-
-# Quick exploration
-glimpse(data)
-summary(data)
-
-# Visualization
-ggplot(data, aes(x = predictor, y = response)) +
-  geom_point() +
-  theme_minimal()
-```
-
-### Fitting Models
-```r
-# Fit model
-model <- lm(response ~ predictor, data = data)
-
-# Tidy output
-tidy(model)
-glance(model)
-augment(model)
-```
-
-### Diagnostic Plots
-```r
-# Using base R
-par(mfrow = c(2, 2))
-plot(model)
-
-# Using ggplot2 (with augment)
-model_data <- augment(model)
-
-ggplot(model_data, aes(x = .fitted, y = .resid)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "Fitted Values", y = "Residuals")
-```
-
-## Resources
-
-- [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
-- [R Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
-- [RStudio Visual Markdown Editor](https://rstudio.github.io/visual-markdown-editing/)
-
-## Contributing
-
-To add a new lecture:
-1. Copy the template structure
-2. Follow naming convention: `##-topic-name.Rmd`
-3. Include session info at the end
-4. Test knitting to HTML before committing
-5. Update this README with the new lecture
