@@ -78,10 +78,21 @@ All datasets include documentation describing variables, sources, and any prepro
 
 ### Lectures
 
-The `lectures/` folder contains:
-- R Markdown files for each lecture topic
-- Rendered HTML/PDF slides
-- Supporting R scripts
+The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. See the [lecture index](lectures/lecture_slides.qmd) for a complete list with links.
+
+**Current lectures:**
+
+| Lecture | File | RPubs |
+|---------|------|-------|
+| Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](lectures/Introduction_to_Linear_Regression.qmd) | [RPubs](https://rpubs.com/crweber9874/linereg1) |
+| Derivation of OLS Estimator | [ols_estimator.qmd](lectures/ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
+| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](lectures/OLS_Derivation.qmd) | |
+| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](lectures/gauss_markov_slides.qmd) | |
+
+**Course Schedule:**
+
+- **Week 1**: Introduction to Linear Regression
+- **Weeks 2-3**: Estimation and Properties (OLS derivation, Gauss-Markov assumptions, BLUE)
 
 Topics follow the progression in Fox's Applied Regression Analysis:
 1. Simple linear regression

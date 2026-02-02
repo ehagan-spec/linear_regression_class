@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="gauss_markov_slides_files/libs/clipboard/clipboard.min.js"></script>
+<script src="gauss_markov_slides_files/libs/quarto-html/tabby.min.js"></script>
+<script src="gauss_markov_slides_files/libs/quarto-html/popper.min.js"></script>
+<script src="gauss_markov_slides_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="gauss_markov_slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="gauss_markov_slides_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="gauss_markov_slides_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.27">
+
+  <meta name="author" content="Christopher Weber, PhD">
+  <meta name="dcterms.date" content="2026-02-02">
+  <title>The Gauss-Markov Assumptions</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="gauss_markov_slides_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="gauss_markov_slides_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="gauss_markov_slides_files/libs/revealjs/dist/theme/quarto-534cd8e3a96973385dffff3f4709048d.css">
+  <link href="gauss_markov_slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="gauss_markov_slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="gauss_markov_slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="gauss_markov_slides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link href="gauss_markov_slides_files/libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+  <script src="gauss_markov_slides_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+  <script src="gauss_markov_slides_files/libs/plotly-binding-4.12.0/plotly.js"></script>
+  <script src="gauss_markov_slides_files/libs/typedarray-0.1/typedarray.min.js"></script>
+  <script src="gauss_markov_slides_files/libs/jquery-3.5.1/jquery.min.js"></script>
+  <link href="gauss_markov_slides_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+  <script src="gauss_markov_slides_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+  <link href="gauss_markov_slides_files/libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+  <script src="gauss_markov_slides_files/libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">The Gauss-Markov Assumptions</h1>
+  <p class="subtitle">POL 682: Linear Regression Analysis</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Christopher Weber, PhD 
+</div>
+<div class="quarto-title-author-email">
+<a href="mailto:chrisweber@arizona.edu">chrisweber@arizona.edu</a>
+</div>
+        <p class="quarto-title-affiliation">
+            University of Arizona
+          </p>
+        <p class="quarto-title-affiliation">
+            School of Government and Public Policy
+          </p>
+    </div>
+</div>
+
+  <p class="date">2026-02-02</p>
+</section>
+<section id="overview" class="slide level2">
+<h2>Overview</h2>
+<p>This lecture covers the <strong>Gauss-Markov assumptions</strong> that underlie the Ordinary Least Squares (OLS) estimator.</p>
+<ul>
+<li class="fragment">We’ll explore these from both <strong>conceptual</strong> and <strong>mathematical</strong> perspectives</li>
+<li class="fragment">Some assumptions are critical for <strong>estimation</strong></li>
+<li class="fragment">Others are critical for <strong>inference</strong></li>
+</ul>
+</section>
+<section id="population-vs.-sample-regression" class="slide level2">
+<h2>Population vs.&nbsp;Sample Regression</h2>
+<p><strong>Population Regression Function (PRF)</strong></p>
+<p><span class="math display">\[Y_i = \alpha + \beta X_i + \epsilon_i\]</span></p>
+<p><strong>Sample Regression Function (SRF)</strong></p>
+<p><span class="math display">\[Y_i = a + b X_i + e_i\]</span></p>
+<div class="fragment">
+<p>We rarely observe the PRF (the exception being a census). Instead, we observe the SRF and use <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> as <strong>point estimates</strong> of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>.</p>
+</div>
+</section>
+<section id="the-need-for-assumptions" class="slide level2">
+<h2>The Need for Assumptions</h2>
+<p>Because our estimates are subject to <strong>sampling error</strong>, point estimates should always accompany an indicator of uncertainty.</p>
+<ul>
+<li class="fragment">We can estimate <span class="math inline">\(Var(b)\)</span> and <span class="math inline">\(Var(a)\)</span></li>
+<li class="fragment">This allows us to calculate <strong>standard errors</strong>, <strong>t-statistics</strong>, and <strong>confidence intervals</strong></li>
+<li class="fragment">We can then use these to draw <strong>inferences</strong></li>
+</ul>
+<div class="fragment">
+<p>If we make some <em>assumptions</em> about the PRF, the OLS estimator has several <strong>desirable properties</strong>.</p>
+</div>
+</section>
+<section id="assumption-1-linearity" class="slide level2">
+<h2>Assumption 1: Linearity</h2>
+<p>The PRF is <strong>linear in parameters</strong>.</p>
+<p><span class="math display">\[Y_i = \alpha + \beta X_i + \epsilon_i\]</span></p>
+<div class="fragment">
+<p><em>This assumption is necessary for estimation and we’ll used to demonstrate unbiasedness.</em></p>
+</div>
+<aside class="notes">
+<p>Linear in parameters means we can have nonlinear transformations of X (like X^2 or log(X)), but the parameters themselves enter linearly. The model can be linear in parameters but nonlinear in variables.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="assumption-2-exogeneity" class="slide level2">
+<h2>Assumption 2: Exogeneity</h2>
+<p>The Xs are <strong>exogenous and fixed</strong>.</p>
+<ul>
+<li class="fragment">The Xs are “given” and not determined within the model</li>
+<li class="fragment">The Xs are uncorrelated with the error term</li>
+</ul>
+<p><span class="math display">\[cov(X_i, \epsilon_i) = 0\]</span></p>
+<div class="fragment">
+<p><em>This assumption is necessary for estimation and is used to demonstrate unbiasedness.</em></p>
+</div>
+</section>
+<section id="assumption-3-zero-mean-error" class="slide level2">
+<h2>Assumption 3: Zero Mean Error</h2>
+<p>Regardless of <span class="math inline">\(X_i\)</span>, the error has a <strong>zero mean</strong>: <span class="math inline">\(E(\epsilon_i) = 0\)</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+E(\epsilon_i | X_i) &amp;= 0\\
+E(\epsilon_i) &amp;= 0
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>There is no systematic effect of the error on our predicted values <span class="math inline">\(\hat{Y_i}\)</span>.</p>
+<p><em>This assumption is necessary for inference.</em></p>
+</div>
+</section>
+<section id="assumption-4-homoskedasticity" class="slide level2">
+<h2>Assumption 4: Homoskedasticity</h2>
+<p>Regardless of <span class="math inline">\(X_i\)</span>, the error has <strong>equal variance</strong>: <span class="math inline">\(var(\epsilon_i) = \sigma^2\)</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+var(\epsilon_i | X_i) &amp;= \sigma^2, \quad \forall i\\
+var(\epsilon_i) &amp;= \sigma^2, \quad \forall i
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>The variance around <span class="math inline">\(\hat{Y_i}\)</span> is the <strong>same across all levels</strong> of <span class="math inline">\(X_i\)</span>.</p>
+<p><em>This assumption is necessary for inference.</em></p>
+</div>
+</section>
+<section id="assumption-5-normality-of-error" class="slide level2">
+<h2>Assumption 5: Normality of Error</h2>
+<p><span class="math display">\[\epsilon_i \sim N(0, \sigma)\]</span></p>
+<div class="fragment">
+<p>Then, <span class="math inline">\(Y_i \sim N(\alpha + \beta X_i, \sigma)\)</span></p>
+</div>
+<div class="fragment">
+<p>This is an <strong>extension</strong> of assumptions 3 and 4. If we assume normality, the OLS estimator has minimum variance among <em>all</em> unbiased estimators.</p>
+<p><em>This assumption is necessary for inference.</em></p>
+</div>
+</section>
+<section id="assumption-6-independent-errors" class="slide level2">
+<h2>Assumption 6: Independent Errors</h2>
+<p><span class="math display">\[cov(\epsilon_i, \epsilon_j) = 0, \quad \forall i \neq j\]</span></p>
+<div class="fragment">
+<p>The <em>i</em>th error term is uncorrelated with the <em>j</em>th error term, for all <span class="math inline">\(i \neq j\)</span>.</p>
+</div>
+<div class="fragment">
+<p>This is the <strong>no autocorrelation</strong> assumption. With the exception of the relationship between <span class="math inline">\(Y\)</span>s determined by <span class="math inline">\(X\)</span>, there is no residual relationship between <span class="math inline">\(Y\)</span> variables.</p>
+<p><em>This assumption is necessary for inference.</em></p>
+</div>
+</section>
+<section id="assumptions-7-9" class="slide level2">
+<h2>Assumptions 7-9</h2>
+<p><strong>Assumption 7: Variation in <span class="math inline">\(X\)</span></strong></p>
+<ul>
+<li>Necessary for <em>estimation</em></li>
+</ul>
+<p><strong>Assumption 8: Correct Specification</strong></p>
+<ul>
+<li>Correct functional form</li>
+<li>Correctly included IVs</li>
+<li>Necessary for <em>estimation</em></li>
+</ul>
+<p><strong>Assumption 9: No Perfect Multicollinearity</strong></p>
+<ul>
+<li>Recall, the denominator is 0 if <span class="math inline">\(r_{x_1, x_2} = 1\)</span></li>
+<li>Necessary for <em>estimation</em></li>
+</ul>
+</section>
+<section id="summary-of-assumptions" class="slide level2 smaller">
+<h2>Summary of Assumptions</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Assumption</th>
+<th>Description</th>
+<th>Required For</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1. Linearity</td>
+<td>PRF linear in parameters</td>
+<td>Estimation</td>
+</tr>
+<tr class="even">
+<td>2. Exogeneity</td>
+<td><span class="math inline">\(cov(X_i, \epsilon_i) = 0\)</span></td>
+<td>Estimation</td>
+</tr>
+<tr class="odd">
+<td>3. Zero Mean</td>
+<td><span class="math inline">\(E(\epsilon_i) = 0\)</span></td>
+<td>Inference</td>
+</tr>
+<tr class="even">
+<td>4. Homoskedasticity</td>
+<td><span class="math inline">\(var(\epsilon_i) = \sigma^2\)</span></td>
+<td>Inference</td>
+</tr>
+<tr class="odd">
+<td>5. Normality</td>
+<td><span class="math inline">\(\epsilon_i \sim N(0, \sigma)\)</span></td>
+<td>Inference</td>
+</tr>
+<tr class="even">
+<td>6. Independence</td>
+<td><span class="math inline">\(cov(\epsilon_i, \epsilon_j) = 0\)</span></td>
+<td>Inference</td>
+</tr>
+<tr class="odd">
+<td>7. Variation in X</td>
+<td><span class="math inline">\(var(X) &gt; 0\)</span></td>
+<td>Estimation</td>
+</tr>
+<tr class="even">
+<td>8. Correct Specification</td>
+<td>Functional form, IVs</td>
+<td>Estimation</td>
+</tr>
+<tr class="odd">
+<td>9. No Multicollinearity</td>
+<td><span class="math inline">\(r_{x_1,x_2} \neq 1\)</span></td>
+<td>Estimation</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-gauss-markov-theorem" class="slide level2">
+<h2>The Gauss-Markov Theorem</h2>
+<p>The Gauss-Markov Theorem states:</p>
+<div class="fragment">
+<p><em>The Ordinary Least Squares (OLS) estimator is the <strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>E</strong>stimator (OLS is <strong>BLUE</strong>) with minimum variance of all unbiased linear estimators.</em></p>
+</div>
+<div class="fragment">
+<p><strong>Important:</strong> “Best” means something specific as a statistical characteristic, but does <strong>not</strong> mean ideal or advisable in all circumstances, <em>even when the GM assumptions hold</em>.</p>
+</div>
+</section>
+<section id="what-blue-means" class="slide level2">
+<h2>What BLUE Means</h2>
+<p>When the GM assumptions hold, we can <strong>demonstrate</strong>:</p>
+<ul>
+<li class="fragment"><strong>Linearity</strong>: The estimators are a linear function of <span class="math inline">\(Y_i\)</span></li>
+<li class="fragment"><strong>Unbiasedness</strong>: <span class="math inline">\(E(a) = \alpha\)</span> and <span class="math inline">\(E(b_k) = \beta_k\)</span></li>
+<li class="fragment"><strong>Minimum Variance</strong>: Of all linear unbiased estimators, the OLS estimator will have minimum <span class="math inline">\(var(a)\)</span> and <span class="math inline">\(var(b)\)</span></li>
+</ul>
+<div class="fragment">
+<p>This is important for <strong>efficiency</strong>—the estimators have minimum sampling variance and smallest error.</p>
+</div>
+</section>
+<section id="the-regression-equation-matrix-form" class="slide level2">
+<h2>The Regression Equation: Matrix Form</h2>
+<p><span class="math display">\[\begin{bmatrix}
+y_{1}= &amp; b_0+ b_1 x_{1}+ e_1\\
+y_{2}= &amp; b_0+ b_1 x_{2}+ e_2\\
+y_{3}= &amp; b_0+ b_1 x_{3}+ e_3\\
+\vdots\\
+y_{n}= &amp; b_0+ b_1 x_{n} + e_n
+\end{bmatrix}\]</span></p>
+<div class="fragment">
+<p>For each <span class="math inline">\(y_i\)</span>, it is a composite of:</p>
+<ul>
+<li><strong>Systematic component</strong>: <span class="math inline">\(b_0 + b_1 x_i\)</span></li>
+<li><strong>Unsystematic component</strong>: <span class="math inline">\(e_i\)</span> (variation in <span class="math inline">\(Y\)</span> not explained by <span class="math inline">\(X\)</span>)</li>
+</ul>
+</div>
+</section>
+<section id="deriving-the-slope-as-a-linear-estimator" class="slide level2">
+<h2>Deriving the Slope as a Linear Estimator</h2>
+<p><span class="math display">\[
+\begin{aligned}
+b &amp;= \frac{\sum (X_i - \bar{X})(Y_i - \bar{Y})}{\sum (X_i - \bar{X})^2}\\
+  &amp;= \frac{\sum (X_i - \bar{X})Y_i - \bar{Y}\sum(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}\\
+  &amp;= \frac{\sum (X_i - \bar{X})Y_i}{\sum (X_i - \bar{X})^2}
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>Notice: <span class="math inline">\(\bar{Y}\)</span> disappears because deviations from the mean always sum to zero.</p>
+</div>
+</section>
+<section id="the-slope-as-a-weighted-sum" class="slide level2">
+<h2>The Slope as a Weighted Sum</h2>
+<p><span class="math display">\[
+b = \sum k_i Y_i, \text{ where } k_i = \frac{(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}
+\]</span></p>
+<ul>
+<li class="fragment">Define <span class="math inline">\(k_i\)</span> as the parts of the slope that depend on <span class="math inline">\(X_i\)</span></li>
+<li class="fragment">Values <strong>further from</strong> <span class="math inline">\(\bar{X}\)</span> will have larger absolute values of <span class="math inline">\(k_i\)</span></li>
+<li class="fragment">Observations near the mean contribute <strong>little information</strong> to the steepness of the line</li>
+</ul>
+<div class="fragment">
+<p><strong>The OLS estimator <span class="math inline">\(b\)</span> is a linear function of <span class="math inline">\(Y_i\)</span> with weights <span class="math inline">\(k_i\)</span>.</strong></p>
+</div>
+</section>
+<section id="properties-of-k_i" class="slide level2 smaller">
+<h2>Properties of <span class="math inline">\(k_i\)</span></h2>
+<p>The weights <span class="math inline">\(k_i\)</span> have four important properties:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 29%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Statement</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1.</td>
+<td><span class="math inline">\(\sum k_i = 0\)</span></td>
+<td>Eliminates <span class="math inline">\(\alpha\)</span> when proving <span class="math inline">\(E(b) = \beta\)</span></td>
+</tr>
+<tr class="even">
+<td>2.</td>
+<td><span class="math inline">\(\sum k_i X_i = 1\)</span></td>
+<td>Ensures the coefficient on <span class="math inline">\(\beta\)</span> equals 1</td>
+</tr>
+<tr class="odd">
+<td>3.</td>
+<td><span class="math inline">\(\sum k_i^2 = \frac{1}{\sum(X_i - \bar{X})^2}\)</span></td>
+<td>Used to derive <span class="math inline">\(var(b)\)</span></td>
+</tr>
+<tr class="even">
+<td>4.</td>
+<td><span class="math inline">\(k_i\)</span> are constants</td>
+<td>Because <span class="math inline">\(X\)</span> is fixed (A2), we can factor <span class="math inline">\(k_i\)</span> out of expectations</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="property-1-sum-k_i-0" class="slide level2">
+<h2>Property 1: <span class="math inline">\(\sum k_i = 0\)</span></h2>
+<p><span class="math display">\[
+\sum k_i = \sum \frac{(X_i - \bar{X})}{\sum (X_j - \bar{X})^2} = \frac{\sum(X_i - \bar{X})}{\sum (X_j - \bar{X})^2} = \frac{0}{\sum (X_j - \bar{X})^2} = 0
+\]</span></p>
+<div class="fragment">
+<p>The numerator equals zero because deviations from the mean always sum to zero:</p>
+<p><span class="math display">\[\sum(X_i - \bar{X}) = \sum X_i - n\bar{X} = n\bar{X} - n\bar{X} = 0\]</span></p>
+</div>
+</section>
+<section id="property-2-sum-k_i-x_i-1" class="slide level2">
+<h2>Property 2: <span class="math inline">\(\sum k_i X_i = 1\)</span></h2>
+<p><span class="math display">\[
+\sum k_i X_i = \frac{\sum(X_i - \bar{X})X_i}{\sum (X_j - \bar{X})^2}
+\]</span></p>
+<div class="fragment">
+<p>Decompose <span class="math inline">\(X_i = (X_i - \bar{X}) + \bar{X}\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum(X_i - \bar{X})X_i &amp;= \sum(X_i - \bar{X})^2 + \bar{X}\underbrace{\sum(X_i - \bar{X})}_{=0}\\
+&amp;= \sum(X_i - \bar{X})^2
+\end{aligned}
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Therefore: <span class="math inline">\(\sum k_i X_i = \frac{\sum(X_i - \bar{X})^2}{\sum (X_j - \bar{X})^2} = 1\)</span></p>
+</div>
+</section>
+<section id="property-3-sum-k_i2-frac1sumx_i---barx2" class="slide level2">
+<h2>Property 3: <span class="math inline">\(\sum k_i^2 = \frac{1}{\sum(X_i - \bar{X})^2}\)</span></h2>
+<p><span class="math display">\[
+\sum k_i^2 = \sum \left[\frac{(X_i - \bar{X})}{\sum(X_j - \bar{X})^2}\right]^2 = \frac{\sum(X_i - \bar{X})^2}{\left[\sum(X_j - \bar{X})^2\right]^2} = \frac{1}{\sum(X_i - \bar{X})^2}
+\]</span></p>
+<div class="fragment">
+<p>This property is <strong>crucial</strong> for deriving the variance of <span class="math inline">\(b\)</span>.</p>
+</div>
+</section>
+<section id="simulation-verifying-k_i-properties" class="slide level2">
+<h2>Simulation: Verifying <span class="math inline">\(k_i\)</span> Properties</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-2"><a href=""></a></span>
+<span id="cb1-3"><a href=""></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-4"><a href=""></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb1-5"><a href=""></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>)  <span class="co"># means of X and Y</span></span>
+<span id="cb1-6"><a href=""></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">3</span>,    <span class="co"># variance of X = 4, covariance = 3</span></span>
+<span id="cb1-7"><a href=""></a>                  <span class="dv">3</span>, <span class="dv">9</span>),   <span class="co"># variance of Y = 9</span></span>
+<span id="cb1-8"><a href=""></a>                <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb1-9"><a href=""></a></span>
+<span id="cb1-10"><a href=""></a>data <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(n, mu, Sigma)</span>
+<span id="cb1-11"><a href=""></a>X <span class="ot">&lt;-</span> data[, <span class="dv">1</span>]</span>
+<span id="cb1-12"><a href=""></a>Y <span class="ot">&lt;-</span> data[, <span class="dv">2</span>]</span>
+<span id="cb1-13"><a href=""></a><span class="fu">head</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]      [,2]
+[1,] 5.123798 14.825352
+[2,] 2.703320  9.064260
+[3,] 6.960291 10.375307
+[4,] 3.169354 13.111677
+[5,] 6.525794 10.725355
+[6,] 4.700879  9.762086</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">lm</span>(Y <span class="sc">~</span> X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Y ~ X)
+
+Coefficients:
+(Intercept)            X  
+     5.1900       0.9368  </code></pre>
+</div>
+</div>
+</section>
+<section id="verifying-the-properties" class="slide level2">
+<h2>Verifying the Properties</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a><span class="co"># Compute k_i weights</span></span>
+<span id="cb5-2"><a href=""></a>x_dev <span class="ot">&lt;-</span> X <span class="sc">-</span> <span class="fu">mean</span>(X)</span>
+<span id="cb5-3"><a href=""></a>SS_x <span class="ot">&lt;-</span> <span class="fu">sum</span>(x_dev<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-4"><a href=""></a>k <span class="ot">&lt;-</span> x_dev <span class="sc">/</span> SS_x</span>
+<span id="cb5-5"><a href=""></a></span>
+<span id="cb5-6"><a href=""></a><span class="co"># Verify Property 1: sum(k_i) = 0</span></span>
+<span id="cb5-7"><a href=""></a><span class="fu">cat</span>(<span class="st">"Property 1: sum(k_i) ="</span>, <span class="fu">sum</span>(k), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Property 1: sum(k_i) = -1.292369e-16 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="co"># Verify Property 2: sum(k_i * X_i) = 1</span></span>
+<span id="cb7-2"><a href=""></a><span class="fu">cat</span>(<span class="st">"Property 2: sum(k_i * X_i) ="</span>, <span class="fu">sum</span>(k <span class="sc">*</span> X), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Property 2: sum(k_i * X_i) = 1 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a><span class="co"># Verify Property 3: sum(k_i^2) = 1 / sum(x_i^2)</span></span>
+<span id="cb9-2"><a href=""></a><span class="fu">cat</span>(<span class="st">"Property 3: sum(k_i^2) ="</span>, <span class="fu">sum</span>(k<span class="sc">^</span><span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Property 3: sum(k_i^2) = 0.002765756 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">cat</span>(<span class="st">"            1/sum(x_i^2) ="</span>, <span class="dv">1</span><span class="sc">/</span>SS_x, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>            1/sum(x_i^2) = 0.002765756 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a><span class="co"># Bonus: Verify that b = sum(k_i * Y_i) matches lm()</span></span>
+<span id="cb13-2"><a href=""></a>b_manual <span class="ot">&lt;-</span> <span class="fu">sum</span>(k <span class="sc">*</span> Y)</span>
+<span id="cb13-3"><a href=""></a>b_lm <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">lm</span>(Y <span class="sc">~</span> X))[<span class="dv">2</span>]</span>
+<span id="cb13-4"><a href=""></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Slope from sum(k_i * Y_i):"</span>, b_manual, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Slope from sum(k_i * Y_i): 0.9367911 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a><span class="fu">cat</span>(<span class="st">"Slope from lm():"</span>, b_lm, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Slope from lm(): 0.9367911 </code></pre>
+</div>
+</div>
+</section>
+<section id="simulation-results" class="slide level2">
+<h2>Simulation Results</h2>
+<p>The simulation confirms:</p>
+<ul>
+<li class="fragment"><span class="math inline">\(\sum k_i \approx 0\)</span> (machine precision)</li>
+<li class="fragment"><span class="math inline">\(\sum k_i X_i = 1\)</span> exactly</li>
+<li class="fragment"><span class="math inline">\(\sum k_i^2 = 1/\sum(X_i - \bar{X})^2\)</span> exactly</li>
+<li class="fragment">Computing <span class="math inline">\(b = \sum k_i Y_i\)</span> gives the same slope as <code>lm()</code></li>
+</ul>
+</section>
+<section id="creating-a-function-for-k_i-weights" class="slide level2">
+<h2>Creating a Function for <span class="math inline">\(k_i\)</span> Weights</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>compute_k_weights <span class="ot">&lt;-</span> <span class="cf">function</span>(X) {</span>
+<span id="cb17-2"><a href=""></a>  x_dev <span class="ot">&lt;-</span> X <span class="sc">-</span> <span class="fu">mean</span>(X)</span>
+<span id="cb17-3"><a href=""></a>  SS_x <span class="ot">&lt;-</span> <span class="fu">sum</span>(x_dev<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb17-4"><a href=""></a>  k <span class="ot">&lt;-</span> x_dev <span class="sc">/</span> SS_x</span>
+<span id="cb17-5"><a href=""></a>  <span class="fu">return</span>(k)</span>
+<span id="cb17-6"><a href=""></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Example Usage</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>)</span>
+<span id="cb18-2"><a href=""></a>k <span class="ot">&lt;-</span> <span class="fu">compute_k_weights</span>(X)</span>
+<span id="cb18-3"><a href=""></a></span>
+<span id="cb18-4"><a href=""></a><span class="fu">sum</span>(k)           <span class="co"># Should be ≈ 0</span></span>
+<span id="cb18-5"><a href=""></a><span class="fu">sum</span>(k <span class="sc">*</span> X)       <span class="co"># Should be 1</span></span>
+<span id="cb18-6"><a href=""></a><span class="fu">sum</span>(k<span class="sc">^</span><span class="dv">2</span>)         <span class="co"># Should be 1/sum((X - mean(X))^2)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="the-intercept-as-a-linear-estimator" class="slide level2">
+<h2>The Intercept as a Linear Estimator</h2>
+<p>Recall that <span class="math inline">\(a = \bar{Y} - b\bar{X}\)</span>. Substituting <span class="math inline">\(b = \sum k_i Y_i\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+a &amp;= \frac{1}{n}\sum Y_i - \bar{X} \sum k_i Y_i\\
+a &amp;= \sum \left(\frac{1}{n} - \bar{X} k_i\right) Y_i\\
+a &amp;= \sum c_i Y_i
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>where <span class="math inline">\(c_i = \frac{1}{n} - \bar{X} \cdot \frac{(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}\)</span></p>
+<p><strong>The OLS estimator <span class="math inline">\(a\)</span> is also a linear function of <span class="math inline">\(Y_i\)</span> with weights <span class="math inline">\(c_i\)</span>.</strong></p>
+</div>
+</section>
+<section id="why-linearity-matters" class="slide level2">
+<h2>Why Linearity Matters</h2>
+<p>These are important results because they make subsequent operations more tractable:</p>
+<ul>
+<li class="fragment">Demonstrating <strong>unbiasedness</strong></li>
+<li class="fragment">Demonstrating <strong>minimum variance</strong></li>
+<li class="fragment">We can understand these parameters to include only <span class="math inline">\(Y_i\)</span> and constants (the weights)</li>
+</ul>
+</section>
+<section id="unbiasedness" class="slide level2">
+<h2>Unbiasedness</h2>
+<p><span class="math inline">\(b\)</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\(\beta\)</span>.</p>
+<div class="fragment">
+<p><strong>In words:</strong> The expected value of <span class="math inline">\(b\)</span> equals the population parameter <span class="math inline">\(\beta\)</span>.</p>
+</div>
+<div class="fragment">
+<p><strong>More intuitive:</strong> The average value of <span class="math inline">\(b\)</span> across repeated samples equals the population parameter <span class="math inline">\(\beta\)</span>.</p>
+</div>
+</section>
+<section id="proving-unbiasedness" class="slide level2">
+<h2>Proving Unbiasedness</h2>
+<p><span class="math display">\[
+\begin{aligned}
+b &amp;= \sum k_i Y_i\\
+b &amp;= \sum k_i (\alpha+\beta X_i+\epsilon_i)\\
+b &amp;= \alpha \sum k_i + \beta \sum k_i X_i + \sum k_i \epsilon_i\\
+b &amp;= \alpha \cdot 0 + \beta \cdot 1 + \sum k_i \epsilon_i\\
+b &amp;= \beta+\sum k_i \epsilon_i\\
+E(b) &amp;= \beta
+\end{aligned}
+\]</span></p>
+</section>
+<section id="why-the-proof-works" class="slide level2">
+<h2>Why the Proof Works</h2>
+<ul>
+<li class="fragment">The intercept <span class="math inline">\(\alpha\)</span> vanishes because <span class="math inline">\(\sum k_i = 0\)</span></li>
+<li class="fragment">The coefficient on <span class="math inline">\(\beta\)</span> equals 1 because <span class="math inline">\(\sum k_i X_i = 1\)</span></li>
+<li class="fragment">These aren’t coincidences—they’re properties <strong>built into</strong> how <span class="math inline">\(k_i\)</span> is defined</li>
+<li class="fragment"><span class="math inline">\(E(\sum k_i \epsilon_i) = \sum k_i E(\epsilon_i) = 0\)</span> by Assumption 3</li>
+</ul>
+</section>
+<section id="random-variables-vs.-constants" class="slide level2 smaller">
+<h2>Random Variables vs.&nbsp;Constants</h2>
+<p><strong>Constants</strong> (fixed, known values):</p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> (true population parameters)</li>
+<li><span class="math inline">\(X_i\)</span> (treated as fixed by Assumption 2)</li>
+<li><span class="math inline">\(k_i\)</span> (derived entirely from <span class="math inline">\(X\)</span> values)</li>
+</ul>
+<p><strong>Random Variables</strong> (vary across samples):</p>
+<ul>
+<li><span class="math inline">\(\epsilon_i\)</span> (the error term)</li>
+<li><span class="math inline">\(Y_i\)</span> (because <span class="math inline">\(Y_i = \alpha + \beta X_i + \epsilon_i\)</span> contains <span class="math inline">\(\epsilon_i\)</span>)</li>
+<li><span class="math inline">\(b\)</span> and <span class="math inline">\(a\)</span> (because they’re functions of <span class="math inline">\(Y_i\)</span>)</li>
+</ul>
+<div class="fragment">
+<p><strong>Why this matters:</strong> Constants can be factored out of expectations: <span class="math inline">\(E(cX) = cE(X)\)</span></p>
+</div>
+</section>
+<section id="simulation-demonstrating-unbiasedness" class="slide level2">
+<h2>Simulation: Demonstrating Unbiasedness</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-c9652a98a452b8cee357" style="width:100%;height:864px;"></div>
+<script type="application/json" data-for="htmlwidget-c9652a98a452b8cee357">{"x":{"visdat":{"a7a3237b8647":["function () ","plotlyVisDat"]},"cur_data":"a7a3237b8647","attrs":{"a7a3237b8647":{"x":{},"nbinsx":40,"marker":{"color":"rgba(68, 114, 196, 0.7)","line":{"color":"rgba(68, 114, 196, 1)","width":1}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Sampling Distribution of Slope","xaxis":{"domain":[0,1],"automargin":true,"title":"Slope (b)"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Frequency"},"hovermode":"x unified","showlegend":true,"plot_bgcolor":"rgba(240, 240, 240, 0.5)","paper_bgcolor":"white","font":{"family":"Arial","size":12,"color":"black"},"shapes":[{"type":"line","x0":1.5,"x1":1.5,"y0":0,"y1":1,"yref":"paper","line":{"color":"red","dash":"dash","width":3}},{"type":"line","x0":1.5029477530340873,"x1":1.5029477530340873,"y0":0,"y1":1,"yref":"paper","line":{"color":"green","width":3}}],"annotations":[{"x":1.5,"y":1,"yref":"paper","text":"Population β = 1.5","showarrow":false,"xanchor":"left","yanchor":"bottom","font":{"color":"red","size":10}},{"x":1.5029477530340873,"y":0.94999999999999996,"yref":"paper","text":"Mean slope = 1.503","showarrow":false,"xanchor":"right","yanchor":"top","font":{"color":"green","size":11}}]},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1.4766142551109216,1.5207341362595161,1.4179538522469812,1.3538969199029263,1.5116717929182617,1.4772678945815456,1.3975182475158758,1.2470070404371181,1.4226744134087455,1.5232026125386071,1.5291571445946648,1.4767108939036189,1.456528949602772,1.6614426452684132,1.506239749879926,1.4814068682086112,1.5965727844223783,1.5183854017876071,1.6051564122555668,1.6179147572106451,1.4747327554899925,1.3824620482793686,1.3761547216576242,1.4468172465720048,1.4238001356906944,1.449189976422353,1.6954538587900396,1.5963341579526711,1.6510979121740934,1.5755167834554871,1.3348482739433776,1.5131872673131153,1.5862272038950993,1.6035396365086532,1.361621504463312,1.5496462967194271,1.6560230442528516,1.4824721667597482,1.4305188017983046,1.4177578813096816,1.5372428843369226,1.3697290731601923,1.5772017524225328,1.5969046770437128,1.4158760977653417,1.6347523397163923,1.5906396288607922,1.5386601768612309,1.5401879680842356,1.4878512457250004,1.4244346436434003,1.6117045924625519,1.4779263181580993,1.5801510272762365,1.504350852767443,1.3011688198963327,1.5050179635685241,1.5796708257509677,1.3894331130506508,1.5118821592935514,1.3785607067890802,1.3990999441036247,1.5663419055214365,1.3076249703402314,1.7292924630967019,1.6372067587684944,1.5582619038252932,1.459717442077362,1.6226249143157458,1.5855362872211491,1.3846538349963406,1.6216889626418578,1.3425956857569135,1.5406123652442465,1.4500553778640768,1.5750143856149732,1.4053651178045627,1.5704926898652458,1.390756057619813,1.6135693066329777,1.477561403895113,1.5214475517606076,1.4116677462501908,1.4950211097095161,1.5777228746269853,1.5669003231137599,1.5664851974457861,1.5459564448371519,1.6208152356151013,1.5605313079947432,1.525912574880318,1.6024449167976884,1.5119689565868004,1.4310198992659993,1.3219911329269649,1.5336745609269014,1.3749756806780662,1.50574268786,1.4755343088870168,1.5964260992456905,1.4382386296446743,1.510439318856877,1.4515335621566892,1.6222050370586971,1.5613760560355425,1.5319400865405968,1.5872875712247672,1.4998464922368329,1.4735230701113358,1.4820800470136062,1.6205392406981181,1.3981837507730803,1.4224062197762102,1.5754472020391981,1.5179773895598296,1.5325976844649969,1.5599891694274615,1.4900042525729458,1.46835269928642,1.3862440853100282,1.5019235644586602,1.4938213887989138,1.3893617250588577,1.6214552057979503,1.5071739617335809,1.5043935059134257,1.5276797907201152,1.2852042971642463,1.5533715154947503,1.5942645688261154,1.5337588437627332,1.3984006223525549,1.4454417645780218,1.5879891434055233,1.51373030488687,1.6514708234025812,1.3703801105746136,1.660221082819183,1.4042332668835811,1.3379832999075072,1.2949511597623546,1.4934628926566884,1.4812284541772514,1.5762466256348475,1.4408537170638185,1.5453694148723163,1.5288177473798343,1.5197382165400761,1.5177768436068457,1.4699792928552859,1.279592684031214,1.3290702358097239,1.3799578205529179,1.5177932724827492,1.6482623572031767,1.3981896329183379,1.5838744060452248,1.63050917281705,1.2701365035768166,1.2756687665559945,1.5087912772561345,1.4467301093351399,1.6028027163106036,1.5054333833230986,1.5390057607887497,1.512932636188782,1.5984296351758633,1.4432906071033649,1.735757713642474,1.5138522663680358,1.5293654270775063,1.2449609758101294,1.6533376171243888,1.3535516934391307,1.4719133872152543,1.5613529407824556,1.4520631077558821,1.2264593836119333,1.5859144889390386,1.4331931605931398,1.6950731577968219,1.5527867503972121,1.4698472001823535,1.4779959075823437,1.6864274188959907,1.510566313300004,1.4480412470137765,1.4498786942477129,1.5601405598750893,1.5573784587552839,1.5373192745399877,1.441059550349252,1.4210241460303183,1.5260462420391656,1.3841247075137717,1.4493194420783788,1.7020491422353234,1.5448369686103864,1.7208859517273873,1.6496401146476858,1.5232798252196205,1.3514093715270328,1.4228600368679865,1.3990504757955526,1.3967960726808866,1.6262910290254897,1.3773532718442461,1.4792310781170539,1.6046857859649155,1.5835883905826809,1.2934258418910303,1.645817148626745,1.5095193838497645,1.3589339419168402,1.4160765094341417,1.3738618647998813,1.4544559063842735,1.5913389295273255,1.4860002195052848,1.369991502404563,1.6039231595501593,1.4717302105948187,1.5431252089669802,1.559860191071891,1.580577308448724,1.603554004959143,1.3039027529760963,1.30912660287404,1.692484328640516,1.6075795033231601,1.5309118932724184,1.6655150591670427,1.5049896700003358,1.4792210669275079,1.4464871115464599,1.6726643660811242,1.391613191472133,1.5749221710091135,1.6030462447046776,1.3518391813202304,1.4974684343041875,1.3562810398198015,1.6189163156705815,1.3919456761688482,1.503389971842346,1.3864091874582565,1.5141355266984433,1.4779213091703856,1.6207090954631935,1.452835761379373,1.4576945050930907,1.4196243487600864,1.4165194822142926,1.562415877683389,1.4958419110464036,1.4434475576824579,1.4297529422967901,1.4864146223330927,1.6226604914798863,1.6927559325451367,1.4066187080043673,1.6188632176692566,1.5209481953084028,1.4133511040363707,1.5646745256139325,1.6334678697191645,1.5018664004167663,1.6551849982793416,1.299206397228003,1.280013790564879,1.5606196566153774,1.5367067999633395,1.588746442153286,1.3490040216173602,1.4177466367508194,1.5290791719282906,1.3475615099898057,1.4928196679733374,1.3670906576961395,1.5852048567185717,1.386301794796561,1.5723429269968789,1.5990041937047048,1.4622808944298389,1.4998890039388375,1.5301158886189228,1.5179150029002983,1.3817052262373943,1.3641256643895729,1.6812973026881401,1.4770011246715031,1.4666921916483162,1.5477521750266983,1.6257356944526031,1.4850336063128042,1.4953342975888033,1.502486205151806,1.407472421828037,1.5442771317564616,1.5236464095368294,1.6627080401653258,1.5181525605440773,1.4170218668943833,1.2906860602365278,1.6031155268788009,1.5120229869334634,1.6569010670742916,1.5825232188384781,1.5289483094555218,1.495008002047195,1.5865966080762319,1.3738337042517053,1.5813025611574285,1.4864375536915639,1.2899274306606383,1.5932538757458794,1.5603834050887029,1.5299154426598529,1.6639067849249354,1.7221781720709168,1.537387497564872,1.6175369122693593,1.5315452798803828,1.3670905272590184,1.5868805411552915,1.538382293033427,1.4247430332705464,1.5501964168232201,1.5664157959048433,1.4894623406527063,1.5130254564730488,1.5658673167068902,1.3761436529295059,1.7156063059488231,1.4462535258307947,1.4900401866040556,1.6207490134217859,1.7586548529574162,1.4019835258427773,1.4037815948996755,1.5623518862735957,1.5046422864043423,1.4217425855664034,1.6903593733984914,1.5710009551491499,1.4618078700669812,1.5181022748914148,1.4465724883134572,1.5265737317128267,1.5112124143659791,1.427177677161996,1.5197711597951866,1.2924170708759088,1.318070958428583,1.5037591217867949,1.624807927610773,1.4990066840554155,1.4820730772143389,1.5959412041983183,1.4232575254548454,1.5172257495171875,1.5269554490699755,1.5433587456075886,1.4896284787139396,1.3978901836605813,1.5515888831339262,1.6456398870532405,1.3378641239464377,1.3968449083313852,1.4172984237034225,1.4265237764304668,1.4410021177461794,1.4777296204122063,1.3288402018665824,1.5477086894762009,1.336266393492433,1.543884635658286,1.5022949491173025,1.6277766562930736,1.402457949730342,1.4884810546464322,1.5634489817062442,1.5492475569698898,1.4135925491504402,1.3720987640443947,1.4596699939691036,1.6179259077248014,1.3976508345884082,1.5768851802884587,1.537580959986188,1.5079430941554479,1.4762209031391866,1.6601077989525226,1.4614705121755289,1.5202270365703674,1.5734574434470234,1.4937215927829137,1.4813674700385639,1.4897891340836256,1.4527912680894866,1.3276737657526654,1.6999626078950532,1.6889716871348122,1.5966236761112396,1.4447995963221321,1.6091477286525655,1.3610046828065074,1.5625185551998608,1.4210012699801606,1.5715187568449358,1.353674380555927,1.667409457229972,1.2878469766722513,1.6959079812782683,1.5215107198476012,1.4783986771436446,1.5488059691209812,1.5159109410437448,1.4359865756434009,1.462590720423957,1.4827332974739071,1.5790217349331341,1.6224234508612858,1.6074917365269548,1.4812219162840954,1.453529930784009,1.5288411155775967,1.5880348181681905,1.7746146906845082,1.491305549849141,1.5862592069833592,1.3714101634942861,1.5794155267024066,1.522363390617733,1.5742115602228564,1.5869035605799753,1.528420245353135,1.4111125093663603,1.6206572706986302,1.3342158057452105,1.4709888271413774,1.5466385539683667,1.5521210909367549,1.5984056254442647,1.4826378005633258,1.4453835624326983,1.5586938032047255,1.5335294154108363,1.4279457780129152,1.3686248378184283,1.4804271875975126,1.3631620599870851,1.4266712675564892,1.302841539738488,1.4576921037800188,1.4718845693980758,1.4369474026890106,1.4262375875727502,1.490963244118729,1.4766329748702873,1.5263256340382914,1.2676251448182367,1.4977948336816442,1.4332640503085825,1.5704916940254652,1.495193328985261,1.3735868129802959,1.4249655590684487,1.5355913897689346,1.4774869219439895,1.4852435189750215,1.5026788793166554,1.5183373396188784,1.6054058692958662,1.5833328390031696,1.3410270575055137,1.4554989329583012,1.529534934768465,1.4998960427447405,1.6101100595436024,1.4448238288830535,1.3053495381623192,1.4852986557670649,1.4182901922647237,1.5906286058645509,1.6621428894404686,1.4463725083156651,1.48409984047731,1.5706160511679048,1.7224990988755666,1.4860299918393445,1.5135844872958633,1.3762286034388411,1.4550819561884201,1.3939941022419051,1.3285359378895385,1.5280897640102726,1.5581531653573244,1.5399754491196451,1.3461086265594664,1.3930422205544852,1.5892958450303969,1.5680788458045358,1.4999383903564636,1.6399334338963127,1.4395423756819092,1.6172788557438529,1.4757559393619166,1.4709012527996876,1.5066091676683067,1.5618880263023649,1.5513956441634702,1.5713393108508396,1.661988536548455,1.3826108911988697,1.4712876291499433,1.5732212042478613,1.589553331809203,1.2949450745118698,1.5398284496195895,1.5529739199497621,1.5137342479850346,1.4402341813407633,1.4378297135729252,1.6462676748187706,1.662747656741359,1.5708039049840303,1.4034851461698439,1.499710558280841,1.6910772428001997,1.5820130472350478,1.5672228859507054,1.427720212993709,1.5174885737491239,1.492526148299933,1.4522825161101336,1.5154501302161258,1.3687858603024639,1.4445375855996869,1.3695467594364938,1.5371404457221327,1.6812358088873947,1.5594615776871903,1.3885259653184907,1.4805696341899639,1.6124430884169576,1.4753434387523388,1.4220228204313106,1.3707131895138267,1.5029850977013388,1.6933331204644184,1.2960994280978853,1.5418890854740395,1.4439079831244646,1.4895921713778046,1.5801323112458974,1.4929043412928611,1.3831688443684629,1.5528514502228647,1.5249434788910097,1.6073462517615646,1.4229063221281191,1.3065507767793079,1.3754002919195878,1.4839617845503639,1.588575203773644,1.5214455332109735,1.71384137235735,1.6923880564973022,1.3636933111505998,1.458524952899718,1.6341968272304512,1.2995374265225477,1.5052037375651577,1.6695436960005672,1.6909252252437861,1.4188684985334632,1.3434910309064674,1.54647427844597,1.4232863937228197,1.5506837163364005,1.3814689944069565,1.5865517938601472,1.4590806895884543,1.5546019352453599,1.5876390824183984,1.6527588592554203,1.6124771991709475,1.4505354060545304,1.4453981026057758,1.5990319157517394,1.4651871924594408,1.653958293227167,1.5233916727152887,1.6144045106798564,1.3952197404647662,1.4727067729014469,1.5673125206523464,1.4816771382468321,1.3655753592943984,1.529494393988305,1.530323732934568,1.6195507495656796,1.6112097365088318,1.414481025275595,1.732234096522079,1.5683428990517629,1.3842362728610591,1.5273585812303923,1.3385929605908073,1.449449969625948,1.4966953588975254,1.4788316375143709,1.6462767374294198,1.6012439688972138,1.3590276982892846,1.5309167067657834,1.4469148418142164,1.5988004862992216,1.3945791384828348,1.5295116034512983,1.60234959056315,1.4869879792426417,1.2296731639759704,1.5203654248607166,1.4521358359912968,1.4681882080065074,1.6395156701558384,1.5112995871013555,1.5600236319256864,1.7014955282846773,1.4706769071447332,1.6246966486352628,1.5961856512171384,1.5038515941264865,1.3931276478508079,1.5851193999589503,1.3079923440820715,1.3587946429389179,1.6039868094833423,1.5996015355675521,1.4008567505265712,1.4593629185631065,1.4046510569143213,1.3338227860164431,1.5329932353958473,1.5636215216279932,1.408684348721708,1.4754563374310465,1.6564940908712529,1.7526857356373968,1.5428623074989165,1.4213538420100473,1.4106516981638586,1.428850861801074,1.7951906734637149,1.3456683966559067,1.5136096211500194,1.554348215692543,1.5123755337681759,1.420244311034192,1.4623273243224433,1.62620975055852,1.4472492986029504,1.4971643731523656,1.5688116231349802,1.3938914235593223,1.5102016586708897,1.5178295306798031,1.3560471307669879,1.5650860268290825,1.4425146245530365,1.4627789561169773,1.5810220116355431,1.6524843301433425,1.6711530372284402,1.5531071263735132,1.5769677236031678,1.5836241107796749,1.5547007120305709,1.5645969556951578,1.5070996695354109,1.589291588521238,1.3547402983384966,1.696772645126029,1.3679235968763706,1.4858890212231217,1.4312800208582539,1.7323597759495613,1.4919783893142944,1.6074250877023617,1.4440401199702573,1.5206845839908272,1.5877905468222508,1.5245586369921267,1.6009310870592757,1.4631755652021281,1.4768331760355251,1.3025981809766203,1.5503020735881596,1.3655531890381665,1.3163549319366632,1.5804927675715041,1.7065771241507111,1.4911882144714983,1.5715266676112447,1.397420018142949,1.5531143108134777,1.4412597672239598,1.472994629834478,1.679010067786241,1.5783514600845061,1.5108533208458039,1.3659412227135601,1.4219986725335223,1.5182553899964017,1.5981231777969296,1.5034286934737702,1.392576427491943,1.6264262389389785,1.6401691312772284,1.2014148596969743,1.6369310115071947,1.3951007847625965,1.3824421133435096,1.3662877843690227,1.6294872607039956,1.4681953675499859,1.2899272302908502,1.6062365051236578,1.484876390750687,1.5479077260847736,1.3584486885808202,1.5065541544937708,1.4119414337794483,1.4850162864447101,1.5792689431737152,1.5305850097979083,1.6330094398539372,1.6630422378803134,1.582560267995478,1.4820545975869506,1.5745536752086668,1.3855777283776878,1.6488339456011176,1.431681285796188,1.5422794512871678,1.549373301508614,1.4651983559986506,1.5761841511046271,1.4104454902250105,1.4951993915147401,1.454367071179635,1.4968528293365622,1.5546014707347389,1.7039006172617437,1.5436398013608528,1.5436478853778763,1.4444700449411227,1.4533755276277303,1.6128377891458499,1.3995753752356708,1.4755842132967427,1.5039303029154989,1.5737530695921844,1.4061950454515253,1.6079606069046333,1.5057465463472091,1.4893720004810811,1.399773604187019,1.4599762769905962,1.5930710958092422,1.3439772313763396,1.3915709230781037,1.4626095112293123,1.3980364550108921,1.5152041918927401,1.6093503402821361,1.3751004582004256,1.5072203334083998,1.3834887432808458,1.4496758819339581,1.5137522233496163,1.3876196728582137,1.3718118383015834,1.4943164086467593,1.6486665214237395,1.4729540052817693,1.6133420184013489,1.5829122296836953,1.4633727766211824,1.4978865811455357,1.4731211831353503,1.7736559179055025,1.2790187704713865,1.4589951648669177,1.2822049632438259,1.5505989991886773,1.4968918721095017,1.4171847560652244,1.3413189180284752,1.3748570922143959,1.6832014841672696,1.6027431140470607,1.4346249737375203,1.4528941319635427,1.5347491227865313,1.4639606729262586,1.5555229456535757,1.4258885205258454,1.558195118344581,1.319115605392094,1.5571822359285095,1.4028001642895864,1.4501079600841578,1.4733450192512214,1.3572579534922153,1.3023690421327179,1.6383907553614734,1.4114845080222154,1.4102223201244715,1.5217289561843939,1.4816795019118847,1.4207664517958578,1.5558663141932878,1.7075484691287293,1.3780070732521374,1.5625032829123859,1.4027462088247407,1.4556818796761823,1.5026026863452957,1.6599893808470452,1.3336714699341514,1.5086014109113635,1.5110973951839053,1.6902108829987594,1.425780000412088,1.5447485882042704,1.4434464757848562,1.5061176234568217,1.4845773138810161,1.4873689412000981,1.6067474427263513,1.5522629227599651,1.8047154840398862,1.3704460446644944,1.6027774501017638,1.3680612969451873,1.5336961922965906,1.6865090696848377,1.4600763375767358,1.5183850332201769,1.4348754347691981,1.5052561530452899,1.5170928289695929,1.5545407272733394,1.6306586735735444,1.7760247664718369,1.6128428471048399,1.4230813490973753,1.6296253387938087,1.4205251848441225,1.4075777258508206,1.5993131963379188,1.4141448636239682,1.4507078231075794,1.4307021595184806,1.5254742365585199,1.5417146100668304,1.632583417195048,1.5486288533191221,1.4407342937530818,1.5096171849531808,1.6443275838765943,1.5016663644100263,1.614110498366349,1.6626572657301728,1.4475934088209472,1.5791905579490537,1.3583672386706862,1.4395498984796191,1.4926433181730319,1.6468812042506695,1.6141852267309333,1.6484961544970995,1.5186154021505811,1.3823021550837558,1.5432072283238658,1.5129416085633836,1.3652484877002122,1.5714315619834776,1.6097823113281216,1.5347484499973369,1.542279751253794,1.5601165303732285,1.4471516300009053,1.4041580192654397,1.6715816232943872,1.4662749596124411,1.4519275316850297,1.4927649860232988,1.3139212743690019,1.6540796328934835,1.4316310931249783,1.5657880196854295,1.3350596128445615,1.3598860982072258,1.6120567986320617,1.5779911862537177,1.6526642369905367,1.3978290025835083,1.4587276747606572,1.523294545303121,1.4404764251472399,1.5687749259157155,1.491875964104832,1.6453459135848192,1.5369967727969238,1.5575217301710904,1.3608066059388235,1.4138516724375187,1.3419667500427654,1.5138178640266915,1.4944799851958375,1.7066920076643781,1.4533290406714232,1.431909265135854,1.4965725484386108,1.4482758825116167,1.2372385065780558,1.6426002550259309,1.4588744753380725,1.4886063015774782,1.5224939696332742,1.5200243994857743,1.3078332649077962,1.4610866165645391,1.5524711933181488,1.4383411520532694,1.4065790021012889,1.5317655727445298,1.5637664459028358,1.5682058071429088,1.6084982283095817,1.5398903280242686,1.4557982858338541,1.6509429559126367,1.6961365909551798,1.4352741789231465,1.5739936222463566,1.5331402103807394,1.4830253891357326,1.5490314297951016,1.4361219901445961,1.4425483223217275,1.4255890531318478,1.4398263703526422,1.4806894079184161,1.5581587577527396,1.3897577566441051,1.5610960621357919,1.4635625216975403,1.3165147977920111,1.4408449995227899,1.5881944817974758,1.4288310446066428,1.5192587809584093,1.5644489160288269,1.4133318818957168,1.5989890975354479,1.7075579493636774,1.4989896862207839,1.5934173687714357,1.4293323077302018,1.5946290648282075,1.4092837570965011,1.4223931962534062,1.4250384438757564,1.6043162431520508,1.7026123016622663,1.4063253980455512,1.5052326322724361,1.4560482720432739,1.617086724345884,1.5033553737396805,1.5180957298684181,1.6126028119341631,1.6719513523940714,1.4019232685407985,1.4729266477363874,1.6058567600103522,1.5072197597001511,1.4508843596780594,1.5475756415319899,1.595113555551861,1.5131694380920495,1.4822936795512145,1.4092452452572408,1.4225920325577694,1.5115224580277857],"nbinsx":40,"marker":{"color":"rgba(68, 114, 196, 0.7)","line":{"color":"rgba(68, 114, 196, 1)","width":1}},"type":"histogram","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="unbiasedness-confirmed" class="slide level2">
+<h2>Unbiasedness Confirmed</h2>
+<p>The simulation confirms <strong>unbiasedness</strong>:</p>
+<ul>
+<li class="fragment">Across many repeated samples, the average slope equals <span class="math inline">\(\beta\)</span></li>
+<li class="fragment">The <strong>red dashed line</strong> shows the population slope</li>
+<li class="fragment">The <strong>green line</strong> shows the sample mean</li>
+<li class="fragment">They align perfectly (within sampling variation)</li>
+</ul>
+</section>
+<section id="properties-of-the-expectation-operator" class="slide level2">
+<h2>Properties of the Expectation Operator</h2>
+<p>Used in this derivation:</p>
+<ol type="1">
+<li class="fragment"><strong>Linearity</strong>: <span class="math inline">\(E(aX + bY) = aE(X) + bE(Y)\)</span></li>
+<li class="fragment"><strong>Constants</strong>: <span class="math inline">\(E(c) = c\)</span></li>
+<li class="fragment"><strong>Scaling</strong>: <span class="math inline">\(E(cX) = cE(X)\)</span></li>
+</ol>
+<div class="fragment">
+<p>But what about the <strong>variance</strong>? We’ve shown unbiasedness, but how much does <span class="math inline">\(b\)</span> vary from sample to sample?</p>
+</div>
+</section>
+<section id="definition-of-variance" class="slide level2">
+<h2>Definition of Variance</h2>
+<p><span class="math display">\[
+var(b) = E\left[(b - E(b))^2\right]
+\]</span></p>
+<div class="fragment">
+<p>The variance measures how <strong>spread out</strong> the sampling distribution of <span class="math inline">\(b\)</span> is around its expected value.</p>
+</div>
+</section>
+<section id="deriving-varb-setup" class="slide level2">
+<h2>Deriving <span class="math inline">\(var(b)\)</span>: Setup</h2>
+<p>We established that <span class="math inline">\(b = \beta + \sum k_i \epsilon_i\)</span>. Since <span class="math inline">\(E(b) = \beta\)</span>:</p>
+<p><span class="math display">\[
+b - E(b) = b - \beta = \sum k_i \epsilon_i
+\]</span></p>
+<div class="fragment">
+<p>Therefore:</p>
+<p><span class="math display">\[
+\begin{aligned}
+var(b) &amp;= E\left[(b - \beta)^2\right]\\
+       &amp;= E\left[(\sum_i k_i \epsilon_i)^2\right]
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section id="deriving-varb-expansion" class="slide level2">
+<h2>Deriving <span class="math inline">\(var(b)\)</span>: Expansion</h2>
+<p><span class="math display">\[
+\begin{aligned}
+var(b) &amp;= E\left[(\sum_i k_i \epsilon_i)(\sum_j k_j \epsilon_j)\right]\\
+       &amp;= E\left[\sum_i \sum_j k_i k_j \epsilon_i \epsilon_j\right]
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>The inside of the expectation is a <strong>double summation</strong> over all <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. It forms a matrix of terms, each weighted by <span class="math inline">\(k_i k_j\)</span> and involving the product <span class="math inline">\(\epsilon_i \epsilon_j\)</span>.</p>
+</div>
+</section>
+<section id="applying-assumptions-about-errors" class="slide level2">
+<h2>Applying Assumptions About Errors</h2>
+<p>We now use two assumptions <strong>about the error terms</strong>:</p>
+<ul>
+<li class="fragment"><strong>Assumption 4 (Homoskedasticity)</strong>: <span class="math inline">\(var(\epsilon_i) = \sigma^2\)</span> for all <span class="math inline">\(i\)</span></li>
+<li class="fragment"><strong>Assumption 6 (Independence)</strong>: <span class="math inline">\(cov(\epsilon_i, \epsilon_j) = 0\)</span> for <span class="math inline">\(i \neq j\)</span></li>
+</ul>
+</section>
+<section id="properties-of-covariance-and-variance" class="slide level2 smaller">
+<h2>Properties of Covariance and Variance</h2>
+<p><strong>Covariance</strong> measures how two random variables move together:</p>
+<p><span class="math display">\[cov(X, Y) = E[(X - E(X))(Y - E(Y))] = E(XY) - E(X)E(Y)\]</span></p>
+<p><strong>Key rearrangement:</strong> <span class="math inline">\(E(XY) = cov(X, Y) + E(X)E(Y)\)</span></p>
+<p><strong>Variance</strong> is the covariance of a variable with itself:</p>
+<p><span class="math display">\[var(X) = cov(X, X) = E(X^2) - [E(X)]^2\]</span></p>
+<div class="fragment">
+<p><strong>Important:</strong> If <span class="math inline">\(E(X) = 0\)</span>, then <span class="math inline">\(E(X^2) = var(X)\)</span></p>
+</div>
+</section>
+<section id="applying-to-our-matrix" class="slide level2">
+<h2>Applying to Our Matrix</h2>
+<p>The expectation of the double sum consists of:</p>
+<ul>
+<li><strong>Diagonal terms</strong> (<span class="math inline">\(i = j\)</span>): variance terms</li>
+<li><strong>Off-diagonal terms</strong> (<span class="math inline">\(i \neq j\)</span>): covariance terms</li>
+</ul>
+<div class="fragment">
+<p><strong>Off-diagonal</strong> (<span class="math inline">\(i \neq j\)</span>): <span class="math display">\[E(\epsilon_i \epsilon_j) = cov(\epsilon_i, \epsilon_j) + E(\epsilon_i)E(\epsilon_j) = 0 + 0 = 0\]</span> (by A6 and A3)</p>
+</div>
+<div class="fragment">
+<p><strong>Diagonal</strong> (<span class="math inline">\(i = j\)</span>): <span class="math display">\[E(\epsilon_i^2) = var(\epsilon_i) + [E(\epsilon_i)]^2 = \sigma^2 + 0 = \sigma^2\]</span> (by A4 and A3)</p>
+</div>
+</section>
+<section id="the-variance-formula" class="slide level2">
+<h2>The Variance Formula</h2>
+<p>So only the diagonal terms (<span class="math inline">\(i = j\)</span>) remain:</p>
+<p><span class="math display">\[
+\begin{aligned}
+var(b) &amp;= E\left[\sum_i k_i^2 \epsilon_i^2\right]\\
+       &amp;= \sum_i k_i^2 E(\epsilon_i^2)\\
+       &amp;= \sum_i k_i^2 \cdot \sigma^2\\
+       &amp;= \sigma^2 \sum k_i^2
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p><span class="math display">\[var(b) = \frac{\sigma^2}{\sum(X_i - \bar{X})^2}\]</span></p>
+</div>
+</section>
+<section id="what-affects-precision" class="slide level2">
+<h2>What Affects Precision?</h2>
+<p>This formula reveals what affects the <strong>precision</strong> of slope estimates:</p>
+<ul>
+<li class="fragment"><strong>Larger <span class="math inline">\(\sigma^2\)</span></strong>: More noise in <span class="math inline">\(Y_i\)</span> → <span class="math inline">\(b\)</span> varies more from sample to sample</li>
+<li class="fragment"><strong>More variance in <span class="math inline">\(X\)</span></strong>: More spread in <span class="math inline">\(X_i\)</span> → more precise estimates of <span class="math inline">\(b\)</span></li>
+</ul>
+<div class="fragment">
+<p><em>We learn more about <span class="math inline">\(E(Y|X) = \beta\)</span> when <span class="math inline">\(X_i\)</span> varies.</em></p>
+</div>
+</section>
+<section id="minimum-variance-the-problem" class="slide level2">
+<h2>Minimum Variance: The Problem</h2>
+<p>Consider what we have:</p>
+<p><span class="math display">\[var(b) = \frac{\sigma^2}{\sum x_i^2}\]</span></p>
+<div class="fragment">
+<p>But there are <strong>two problems</strong>:</p>
+<ol type="1">
+<li>We rarely have access to <span class="math inline">\(\sigma^2\)</span></li>
+<li>We have not yet shown that <span class="math inline">\(var(b)\)</span> is the <strong>minimum</strong> variance</li>
+</ol>
+</div>
+</section>
+<section id="estimating-sigma2" class="slide level2">
+<h2>Estimating <span class="math inline">\(\sigma^2\)</span></h2>
+<p>It can be shown that <span class="math inline">\(\hat{\sigma^2}\)</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\(\sigma^2\)</span> (i.e., <span class="math inline">\(E(\hat{\sigma}^2) = \sigma^2\)</span>).</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\sigma^2} &amp;= RSS/(n-k-1)\\
+               &amp;= \sum e_i^2/(n-k-1)
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>And,</p>
+<p><span class="math display">\[
+\begin{aligned}
+var(b) &amp;= \frac{\hat{\sigma^2}}{\sum x_i^2}\\
+var(a) &amp;= \frac{\hat{\sigma^2} \sum X_i^2}{n\sum x_i^2}
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section id="proving-minimum-variance" class="slide level2">
+<h2>Proving Minimum Variance</h2>
+<p>To show minimum variance, let’s generate an <strong>alternate estimate</strong> of <span class="math inline">\(b\)</span>, call it <span class="math inline">\(b^*\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+b &amp;= \sum k_i Y_i\\
+b^* &amp;= \sum w_i Y_i
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p>If <span class="math inline">\(b^*\)</span> is unbiased, then <span class="math inline">\(\sum w_i = 0\)</span>, and <span class="math inline">\(\sum w_i X_i = 1\)</span>.</p>
+</div>
+</section>
+<section id="the-variance-of-any-unbiased-estimator" class="slide level2">
+<h2>The Variance of Any Unbiased Estimator</h2>
+<p>Even without knowing these weights, we can show:</p>
+<p><span class="math display">\[
+var(b^*) = \sigma^2 \left(\sum w_i - \frac{x_i}{\sum x_i}\right)^2 + \frac{\sigma^2}{\sum x_i^2}
+\]</span></p>
+<div class="fragment">
+<p>Consider what this means:</p>
+<ul>
+<li>The first term is <strong>always non-negative</strong> (it’s squared)</li>
+<li>Only if <span class="math inline">\(w_i = k_i\)</span> will we obtain the variance of the OLS estimator</li>
+<li>There is <strong>no alternative</strong> estimate of the variance less than this value</li>
+</ul>
+</div>
+</section>
+<section id="conclusion-ols-is-blue" class="slide level2">
+<h2>Conclusion: OLS is BLUE</h2>
+<p>Under the Gauss-Markov assumptions:</p>
+<ul>
+<li class="fragment">OLS estimators are <strong>linear</strong> functions of <span class="math inline">\(Y_i\)</span></li>
+<li class="fragment">OLS estimators are <strong>unbiased</strong>: <span class="math inline">\(E(b) = \beta\)</span></li>
+<li class="fragment">OLS estimators have <strong>minimum variance</strong> among all linear unbiased estimators</li>
+</ul>
+<div class="fragment">
+<p><strong>OLS is the Best Linear Unbiased Estimator (BLUE)</strong></p>
+</div>
+</section>
+<section id="concluding-remarks" class="slide level2">
+<h2>Concluding Remarks</h2>
+<ol type="1">
+<li class="fragment">The GM assumptions are the <strong>foundation</strong> of OLS inference</li>
+<li class="fragment">Some assumptions matter for <strong>estimation</strong>, others for <strong>inference</strong></li>
+<li class="fragment">The slope <span class="math inline">\(b\)</span> can be written as a <strong>weighted sum</strong> of <span class="math inline">\(Y_i\)</span> values</li>
+<li class="fragment">The properties of <span class="math inline">\(k_i\)</span> are <strong>designed</strong> to make <span class="math inline">\(b\)</span> unbiased</li>
+<li class="fragment">Variance depends on both <strong>error variance</strong> and <strong>X spread</strong></li>
+<li class="fragment">Under GM assumptions, no other linear unbiased estimator beats OLS</li>
+</ol>
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>POL 682 | The Gauss-Markov Assumptions</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="gauss_markov_slides_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="gauss_markov_slides_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1920,
+
+        height: 1080,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

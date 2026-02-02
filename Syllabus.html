@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Christopher Weber, PhD">
+
+<title>Introduction to Linear Regression, Estimation, and Inference</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Syllabus_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Syllabus_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Syllabus_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Syllabus_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="Syllabus_files/libs/quarto-html/popper.min.js"></script>
+<script src="Syllabus_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Syllabus_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Syllabus_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Syllabus_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Syllabus_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Syllabus_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Syllabus_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#course-objectives" id="toc-course-objectives" class="nav-link active" data-scroll-target="#course-objectives">Course Objectives</a></li>
+  <li><a href="#required-materials" id="toc-required-materials" class="nav-link" data-scroll-target="#required-materials">Required Materials</a></li>
+  <li><a href="#datacamp" id="toc-datacamp" class="nav-link" data-scroll-target="#datacamp">DataCamp</a></li>
+  <li><a href="#course-expectations" id="toc-course-expectations" class="nav-link" data-scroll-target="#course-expectations">Course Expectations</a></li>
+  <li><a href="#grading-policy" id="toc-grading-policy" class="nav-link" data-scroll-target="#grading-policy">Grading Policy</a></li>
+  <li><a href="#graded-work-descriptions" id="toc-graded-work-descriptions" class="nav-link" data-scroll-target="#graded-work-descriptions">Graded Work Descriptions</a></li>
+  <li><a href="#course-schedule" id="toc-course-schedule" class="nav-link" data-scroll-target="#course-schedule">Course Schedule</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Syllabus.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction to Linear Regression, Estimation, and Inference</h1>
+<p class="subtitle lead">POL 682 Syllabus</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Christopher Weber, PhD </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Instructor</strong></p>
+<p>Christopher Weber, PhD School of Government and Public Policy University of Arizona 333 Social Sciences Building <a href="mailto:chrisweber@arizona.edu">chrisweber@arizona.edu</a></p>
+<p>Office Hours: T 12:00PM-1:30PM (and by appointment).</p>
+<p><strong>Meeting Location</strong></p>
+<p>Tuesdays 2:00PM - 4:30PM</p>
+<p>SS 332</p>
+<section id="course-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="course-objectives">Course Objectives</h2>
+<p>The purpose of this course is to introduce students to linear regression, inference, and estimation tools and techniques. Although many research questions are complex, regression allows researchers to test difficult hypotheses using a series of relatively straightforward techniques. While this class will review and critique <em>Ordinary Least Squares</em>, linear regression is integral to the vast majority of advanced statistical methods explored in POL 683.</p>
+<p>The topics covered are not exhaustive. This course establishes the steps involved in deriving the ordinary least squares (OLS) estimator, applying linear regression to inference, and reviewing the assumptions necessary for the classical linear regression model.</p>
+<p>The first portion focuses on derivation, assumptions, data manipulation, and inference. The classical linear model is the Best Linear Unbiased Estimator only under specific assumptions. The second half examines how these assumptions are violated and possible solutions, including heteroskedasticity, autocorrelation, collinearity, model specification, measurement error, outliers, and endogeneity.</p>
+<p>In the final weeks, we introduce non-linear models, including regression with categorical dependent variables, endogeneity, clustering, and measurement error. Throughout, we use an <em>open science</em> framework with R for statistical computing and git/github for collaboration and reproducibility.</p>
+<p><strong>Learning Outcomes:</strong></p>
+<ol type="1">
+<li><p>Demonstrate an understanding of core statistical concepts pertaining to linear regression, estimation, and inference.</p></li>
+<li><p>Critically evaluate statistical research in political science, and communicate statistical concepts effectively.</p></li>
+<li><p>Develop skills in R programming, git, and GitHub for data analysis, collaboration, and scientific reproducibility.</p></li>
+<li><p>Apply linear regression methods to analyze political science data and interpret results.</p></li>
+</ol>
+<p><strong>Three Points:</strong></p>
+<ol type="1">
+<li><p>It is best to learn statistics by practicing statistics. In this class, you will complete homework assignments, exams, and a final paper applying these methods. Please budget adequate time for studying and completing assignments. Typically, cramming is ineffective for learning complicated mathematical concepts.</p></li>
+<li><p>This class develops your ability to evaluate and communicate statistical research, particularly linear regression, in a critical manner. With strong statistical knowledge, it becomes easier to differentiate rigorous from poor arguments.</p></li>
+<li><p>This class introduces concepts and tools commonly used in political science research to advance scientific transparency and reproducibility. You will learn R programming, <code>git</code>, and <code>GitHub</code> for data analysis and collaboration, and <code>shiny</code> for interactive applications. While the benefits to these tools are not always immediately apparent, they are invaluable for accurate, transparent, and reproducible research.</p></li>
+</ol>
+</section>
+<section id="required-materials" class="level2">
+<h2 class="anchored" data-anchor-id="required-materials">Required Materials</h2>
+<p><strong>Textbook:</strong></p>
+<p>Fox, John. 2008. <em>Applied Regression Analysis and Generalized Linear Models.</em> Thousand Oaks, California: Sage.</p>
+<p><strong>Course Notes:</strong></p>
+<p><a href="https://linereg.netlify.app/">Course Notes</a></p>
+<p><strong>Additional Readings:</strong></p>
+<p>Journal articles available through the University of Arizona Library via JSTOR and ejournals.</p>
+<p><strong>Recommended References:</strong></p>
+<ul>
+<li>Greene, William H. 2018. <em>Econometric Analysis</em>, 8th Edition. New York: Pearson.</li>
+<li>Berry, William and Stanley Feldman. 1985. <em>Multiple Regression In Practice.</em> Newbury, CA: Sage.</li>
+<li>Eliason, Scott. 1993. <em>Maximum Likelihood Estimation: Logic and Practice.</em> Thousand Oaks, CA: Sage.</li>
+<li>Fox, John and Sanford Weisberg. 2011. <em>An R Companion to Applied Regression</em> Thousand Oaks, CA: Sage.</li>
+<li>Gelman, Andrew and Jennifer Hill. 2007. <em>Data Analysis Using Regression and Multilevel/Hierarchical Models.</em> Cambridge: Cambridge University Press.</li>
+<li>Muenchen, Robert A. and Joseph Hilbe. 2010. <em>R for Stata Users.</em> London: Springer.</li>
+</ul>
+<p><strong>Statistical Software</strong></p>
+<p>There are many statistical software packages available, all of which will perform the functions explored in this class. We will be relying on <em>R</em>, a free statistical program available for Mac, Windows, and Linux. R may be downloaded from the CRAN website (<a href="http://www.r-project.org" class="uri">http://www.r-project.org</a>). The CRAN site also includes a variety of user’s manuals, which I suggest you consult early in the semester (if you are unfamiliar with the R language).</p>
+<p>We will explore a variety of R functions throughout the semester. I will assume that you know the basics, such as opening a dataset, accessing variables, and creating new variables. I will also assume that you can run and estimate simple linear regression models, manipulate/recode data, and access saved objects.</p>
+<p><strong>Open Science</strong></p>
+<p>This class strives to advance an open science framework, a shift in the basic and social sciences to make research, data, code, and publications open and accessible. In this class, we will discuss scientific techniques that promote collaboration, transparency, and reproducibility. This means we will generally rely on free tools – like R – public repositories and develop research protocols that are transparent and well documented. In practice, this means:</p>
+<ul>
+<li>We will regularly use open source software, like R.</li>
+<li>We will develop open source code, by posting code on GitHub.</li>
+<li>We will generate modular computer code.</li>
+<li>We will generate code that produces reproducible examples.</li>
+<li>We will generate clear documentation.</li>
+</ul>
+<p><strong>Collaboration</strong></p>
+<p>I tend to find that the most useful way to learn statistics is to practice statistics. I suspect this class will be far easier if you take the time (i.e., a few hours every week) to implement the procedures we discuss in class. I will make most of my code for this class available through github. We’ll spend some time on basic github operations in this course, so there is no need to set up anything in advance (simply be sure you have a github acct.)</p>
+<p><strong>GitHub</strong></p>
+<p>GitHub is a tool for version control and collaboration. You should create a github user account during the first week, in addition to acquainting yourself with the service. Please also read some of the online tutorials regarding github and how to set it up with Rstudio or R. If you use an email other than your University of Arizona email, please let me know.</p>
+</section>
+<section id="datacamp" class="level2">
+<h2 class="anchored" data-anchor-id="datacamp">DataCamp</h2>
+<p>In this class you will be asked to complete assigned DataCamp modules to supplement class material. DataCamp is free for this course via our institutional license. You will receive an invitation email—register using your UA account. More information: https://www.datacamp.com/groups/education</p>
+</section>
+<section id="course-expectations" class="level2">
+<h2 class="anchored" data-anchor-id="course-expectations">Course Expectations</h2>
+<ul>
+<li>Come to class prepared and ready to learn</li>
+<li>Arrive on time; late arrivals are disruptive</li>
+<li>Follow the University’s Class Attendance Policy: https://catalog.arizona.edu/policies/classatten</li>
+<li>See Religious Observance Policy: https://deanofstudents.arizona.edu/religiousobservanceandpractice</li>
+<li>Refrain from disruptive behavior (talking, phone use, etc.); students engaging in such behavior will be asked to leave</li>
+<li>All work must comply with the Student Code of Academic Integrity: https://deanofstudents.arizona.edu/codeofacademicintegrity</li>
+<li>Library plagiarism resources: https://library.arizona.edu/help-with-research/avoiding-plagiarism</li>
+<li>For accommodations based on disability: Contact Disability Resources at 520-621-3268</li>
+<li>Faculty own intellectual property for course materials; student notes are for personal use only</li>
+<li>FERPA privacy information: https://registrar.arizona.edu/ferpa</li>
+<li>Incomplete and withdrawal policies: https://catalog.arizona.edu/policies/grade</li>
+</ul>
+</section>
+<section id="grading-policy" class="level2">
+<h2 class="anchored" data-anchor-id="grading-policy">Grading Policy</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Grade</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>90-100%</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>80-89%</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>70-79%</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>60-69%</td>
+</tr>
+<tr class="odd">
+<td>F</td>
+<td>Below 60%</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Assignments (5 × 4%)</td>
+<td>20%</td>
+</tr>
+<tr class="even">
+<td>Midterm Paper</td>
+<td>15%</td>
+</tr>
+<tr class="odd">
+<td>Midterm Exam</td>
+<td>20%</td>
+</tr>
+<tr class="even">
+<td>Final Exam</td>
+<td>25%</td>
+</tr>
+<tr class="odd">
+<td>Final Paper</td>
+<td>20%</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="graded-work-descriptions" class="level2">
+<h2 class="anchored" data-anchor-id="graded-work-descriptions">Graded Work Descriptions</h2>
+<p><strong>Written Work (35% total)</strong></p>
+<p>Written projects comprise 35% percent of your grade. For both the midterm and the final project, you will apply the techniques from this class to an actual data. The midterm paper consists of the literature review and analytic plan for your final paper. You should complete an 8-10 page paper that reviews the research in the relevant area, and then describes your empirical strategy. Be sure to outline the data you will use, the variables you will include, and the models that you propose to estimate. It is advised to meet with me periodically throughout the semester to discuss your project.</p>
+<p>The final paper should be a complete research paper, including introduction, literature review, theory/hypotheses, data/methods, results, and conclusion. The paper should build on your midterm paper. For both projects, you are free to choose the topic, but you must be able to provide me with the data used in your report. Your code should be shared on GitHub. If you or your advisor has proprietary data which I cannot access, you should not use this. I must be able to verify that you did all the necessary calculations honestly and accurately, which requires me being able to access any data you use. Also, if you rely on your own data, you must adhere to the University of Arizona’s Institutional Review Board requirements.</p>
+<p>In your analysis, the dependent variable must be continuous (typically 7+ categories)</p>
+<p>The paper should include all the elements of a research paper. That said, my primary interest rests in your analyses. I ask that you be quite thorough when presenting the results. It is not sufficient to just run a regression and present the point estimates. Your paper should include detailed interpretation, robustness checks, and post-estimation clarification (which often come in the form of graphics). It should be a high quality paper; if you would not be comfortable presenting it at a conference, you should not feel comfortable handing it in for a grade. <em>Do not just cut and paste R output. Tables and figures should be presented in a professional manner. I will deduct points for cut-and-pasted output from R.</em></p>
+<p>Your statistical models should be theoretically informed. I do not require a full-fledged introduction/literature review, though you should spend a page or two briefly describing the relevant literature. It is essential to include the formal hypotheses you will test, which should relate to this one/two page review. I will need to verify that your empirical tests match your expectations. Please follow American Psychological Association (APA) style or American Journal of Political Science (AJPS) style. The references should appear at the end of your manuscript. Please do not place the references in footnotes.</p>
+<p>Strive for professional, journal-quality presentation.</p>
+<p><strong>Exams (45% total)</strong></p>
+<p>There will also be a midterm exam (20%) and a final exam (25%). The final will be cumulative, and will cover all material from the semester. The midterm and final should be completed in-class. You may use your notes and the course materials to complete the both exams. The exam must be completed independently.</p>
+<p><strong>Assignments (10%)</strong></p>
+<p>Complete all assigned modules by the deadline.</p>
+</section>
+<section id="course-schedule" class="level2">
+<h2 class="anchored" data-anchor-id="course-schedule">Course Schedule</h2>
+<section id="week-1-120-introduction-to-linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="week-1-120-introduction-to-linear-regression">Week 1 (1/20): Introduction to Linear Regression</h3>
+<ul>
+<li><strong>Topics</strong>: The OLS estimator</li>
+<li><strong>Reading</strong>: Fox, Chapter 2, 3 (1/2)</li>
+<li><strong>Slides</strong>: <a href="lectures/Introduction_to_Linear_Regression.qmd">Introduction_to_Linear_Regression.qmd</a> | <a href="https://rpubs.com/crweber9874/linereg1">RPubs</a></li>
+</ul>
+</section>
+<section id="week-2-127-estimation-and-properties" class="level3">
+<h3 class="anchored" data-anchor-id="week-2-127-estimation-and-properties">Week 2 (1/27): Estimation and Properties</h3>
+<ul>
+<li><strong>Topics</strong>: Properties of the OLS estimator</li>
+<li><strong>Reading</strong>: Fox, Chapter 3 (1/2), Chapter 5</li>
+<li><strong>Slides</strong>: <a href="lectures/ols_estimator.qmd">ols_estimator.qmd</a>, <a href="lectures/OLS_Derivation.qmd">OLS_Derivation.qmd</a>, <a href="lectures/gauss_markov_slides.qmd">gauss_markov_slides.qmd</a> | <a href="https://rpubs.com/crweber9874/1390443">RPubs</a></li>
+<li><strong>Assignment 1</strong>: Complete DataCamp modules, <code>Introduction to Git</code> and <code>Version Control with Git</code></li>
+</ul>
+</section>
+<section id="week-3-23-comments-on-model-fit" class="level3">
+<h3 class="anchored" data-anchor-id="week-3-23-comments-on-model-fit">Week 3 (2/3): Comments on Model Fit</h3>
+<ul>
+<li><strong>Topics</strong>: R-squared and its interpretation</li>
+<li><strong>Reading</strong>:
+<ul>
+<li>Achen, C. H. (1990). What does explained variance explain? Reply. <em>Political Analysis</em>, 2, 173–184.</li>
+<li>King, G. (1990). Stochastic variation: A comment on Lewis-Beck and Skalaban’s the R-squared. <em>Political Analysis</em>, 2, 185–200.</li>
+<li>Lewis-Beck, M. S., &amp; Skalaban, A. (1990). The R-squared: Some straight talk. <em>Political Analysis</em>, 2, 153–171.</li>
+</ul></li>
+<li><strong>Assignment 2</strong>: Create a Github repository for your class project. Include a README file describing the project and the structure of the repository. Share the repository with the instructor (git: crweber9874).</li>
+</ul>
+</section>
+<section id="week-4-210-statistical-inference" class="level3">
+<h3 class="anchored" data-anchor-id="week-4-210-statistical-inference">Week 4 (2/10): Statistical Inference</h3>
+<ul>
+<li><strong>Topics</strong>: Theoretical approaches to estimation and inference</li>
+<li><strong>Reading</strong>: Fox, Chapter 6</li>
+<li><strong>Assignment 3</strong>: Complete DataCamp modules, <code>Simple Linear Regression</code> and <code>Technical Conditions in Linear Regression</code></li>
+</ul>
+</section>
+<section id="week-5-217-inference-continued" class="level3">
+<h3 class="anchored" data-anchor-id="week-5-217-inference-continued">Week 5 (2/17): Inference, Continued</h3>
+<ul>
+<li><strong>Topics</strong>: Inference in linear regression</li>
+<li><strong>Reading</strong>: Fox, Chapter 7, 8</li>
+<li><strong>Assignment 4</strong>: Complete DataCamp module, <code>Predictions and Model Objects</code></li>
+</ul>
+</section>
+<section id="week-6-224-multiple-variables" class="level3">
+<h3 class="anchored" data-anchor-id="week-6-224-multiple-variables">Week 6 (2/24): Multiple Variables</h3>
+<ul>
+<li><strong>Topics</strong>: Inference in linear regression</li>
+<li><strong>Reading</strong>: Fox, Chapter 9 (Optional: Chapter 10)</li>
+<li><strong>Recommended DataCamp Module</strong>: <code>Introduction to Linear Algebra</code></li>
+<li><strong>Midterm Project is Due</strong></li>
+</ul>
+</section>
+<section id="week-7-33-midterm-exam" class="level3">
+<h3 class="anchored" data-anchor-id="week-7-33-midterm-exam">Week 7 (3/3): Midterm Exam</h3>
+<hr>
+</section>
+<section id="week-8-317-assumptions-of-the-linear-model" class="level3">
+<h3 class="anchored" data-anchor-id="week-8-317-assumptions-of-the-linear-model">Week 8 (3/17): Assumptions of the Linear Model</h3>
+<ul>
+<li><strong>Topics</strong>: GLM and Heteroskedasticity</li>
+<li><strong>Reading</strong>: Fox, Chapter 12</li>
+</ul>
+</section>
+<section id="week-9-324-collinearity" class="level3">
+<h3 class="anchored" data-anchor-id="week-9-324-collinearity">Week 9 (3/24): Collinearity</h3>
+<ul>
+<li><strong>Topics</strong>: Multicollinearity detection and solutions</li>
+<li><strong>Reading</strong>: Fox, Chapter 13</li>
+</ul>
+</section>
+<section id="week-10-331-influence" class="level3">
+<h3 class="anchored" data-anchor-id="week-10-331-influence">Week 10 (3/31): Influence</h3>
+<ul>
+<li><strong>Topics</strong>: Outliers and influential observations</li>
+<li><strong>Reading</strong>: Fox, Chapter 11</li>
+</ul>
+</section>
+<section id="week-11-47-panel-data" class="level3">
+<h3 class="anchored" data-anchor-id="week-11-47-panel-data">Week 11 (4/7): Panel Data</h3>
+<ul>
+<li><strong>Topics</strong>: Fixed effects, random effects, panel and time series data: Autocorrelation</li>
+<li><strong>Reading</strong>: Fox, Chapter 16 (First Half)</li>
+</ul>
+</section>
+<section id="week-12-414-panel-data-continued" class="level3">
+<h3 class="anchored" data-anchor-id="week-12-414-panel-data-continued">Week 12 (4/14): Panel Data, Continued</h3>
+<ul>
+<li><strong>Topics</strong>: Fixed effects, random effects, panel and time series data: Autocorrelation</li>
+<li><strong>Reading</strong>: Fox, Chapter 16 (Second Half)</li>
+</ul>
+</section>
+<section id="week-13-421-generalized-linear-models" class="level3">
+<h3 class="anchored" data-anchor-id="week-13-421-generalized-linear-models">Week 13 (4/21): Generalized Linear Models</h3>
+<ul>
+<li><strong>Topics</strong>: Introduction to maximum likelihood and the generalized linear model</li>
+<li><strong>Reading</strong>: Fox, Chapter 15</li>
+<li><strong>Assignment</strong>: Complete DataCamp modules, <code>GLMs, an extension of your regression toolbox</code></li>
+</ul>
+</section>
+<section id="week-14-428-simulation-and-inference" class="level3">
+<h3 class="anchored" data-anchor-id="week-14-428-simulation-and-inference">Week 14 (4/28): Simulation and Inference</h3>
+<ul>
+<li><strong>Topics</strong>: Extension to maximum likelihood and the generalized linear model</li>
+<li><strong>Reading</strong>: Fox, Chapter 15</li>
+</ul>
+</section>
+<section id="week-15-55-simulation-and-inference" class="level3">
+<h3 class="anchored" data-anchor-id="week-15-55-simulation-and-inference">Week 15 (5/5): Simulation and Inference</h3>
+<ul>
+<li><strong>Reading</strong>: Fox, Chapter 21</li>
+<li><strong>Assignment 5</strong>: Complete DataCamp modules, <code>Data wrangling</code></li>
+</ul>
+<hr>
+<p><strong>May 6, 2026</strong>: Final Paper is Due</p>
+<p><strong>May 11, 2026</strong>: Final Exam, 3:30-5:30 in SS 332</p>
+<hr>
+<p><em>This syllabus is subject to change at the instructor’s discretion with advance notice.</em></p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

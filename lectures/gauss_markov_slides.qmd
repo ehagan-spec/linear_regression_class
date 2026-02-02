@@ -1,0 +1,789 @@
+---
+title: "The Gauss-Markov Assumptions"
+subtitle: "POL 682: Linear Regression Analysis"
+author:
+  - name: "Christopher Weber, PhD"
+    affiliation: "University of Arizona"
+    email: "chrisweber@arizona.edu"
+institute: "School of Government and Public Policy"
+date: today
+format:
+  revealjs:
+    theme: default
+    transition: slide
+    background-transition: fade
+    height: 1080
+    width: 1920
+    margin: 0.1
+    footer: "POL 682 | The Gauss-Markov Assumptions"
+    slide-number: true
+    code-fold: true
+    embed-resources: false
+    html-math-method: mathjax
+resources:
+  - "*.png"
+editor: source
+knitr:
+  opts_chunk:
+    echo: true
+    warning: false
+    message: false
+
+note: |
+  Instructor slides to accompany:
+  Fox. 2009. Applied Regression Analysis
+
+  Not to be distributed, shared, or cited without permission.
+---
+
+## Overview
+
+This lecture covers the **Gauss-Markov assumptions** that underlie the Ordinary Least Squares (OLS) estimator.
+
+::: incremental
+- We'll explore these from both **conceptual** and **mathematical** perspectives
+- Some assumptions are critical for **estimation**
+- Others are critical for **inference**
+:::
+
+## Population vs. Sample Regression
+
+**Population Regression Function (PRF)**
+
+$$Y_i = \alpha + \beta X_i + \epsilon_i$$
+
+**Sample Regression Function (SRF)**
+
+$$Y_i = a + b X_i + e_i$$
+
+::: {.fragment}
+We rarely observe the PRF (the exception being a census). Instead, we observe the SRF and use $a$ and $b$ as **point estimates** of $\alpha$ and $\beta$.
+:::
+
+## The Need for Assumptions
+
+Because our estimates are subject to **sampling error**, point estimates should always accompany an indicator of uncertainty.
+
+::: incremental
+- We can estimate $Var(b)$ and $Var(a)$
+- This allows us to calculate **standard errors**, **t-statistics**, and **confidence intervals**
+- We can then use these to draw **inferences**
+:::
+
+::: {.fragment}
+If we make some *assumptions* about the PRF, the OLS estimator has several **desirable properties**.
+:::
+
+## Assumption 1: Linearity
+
+The PRF is **linear in parameters**.
+
+$$Y_i = \alpha + \beta X_i + \epsilon_i$$
+
+::: {.fragment}
+*This assumption is necessary for estimation and we'll used to demonstrate unbiasedness.*
+:::
+
+::: {.notes}
+Linear in parameters means we can have nonlinear transformations of X (like X^2 or log(X)), but the parameters themselves enter linearly. The model can be linear in parameters but nonlinear in variables.
+:::
+
+## Assumption 2: Exogeneity
+
+The Xs are **exogenous and fixed**.
+
+::: incremental
+- The Xs are "given" and not determined within the model
+- The Xs are uncorrelated with the error term
+:::
+
+$$cov(X_i, \epsilon_i) = 0$$
+
+::: {.fragment}
+*This assumption is necessary for estimation and is used to demonstrate unbiasedness.*
+:::
+
+## Assumption 3: Zero Mean Error
+
+Regardless of $X_i$, the error has a **zero mean**: $E(\epsilon_i) = 0$
+
+$$
+\begin{aligned}
+E(\epsilon_i | X_i) &= 0\\
+E(\epsilon_i) &= 0
+\end{aligned}
+$$
+
+::: {.fragment}
+There is no systematic effect of the error on our predicted values $\hat{Y_i}$.
+
+*This assumption is necessary for inference.*
+:::
+
+## Assumption 4: Homoskedasticity
+
+Regardless of $X_i$, the error has **equal variance**: $var(\epsilon_i) = \sigma^2$
+
+$$
+\begin{aligned}
+var(\epsilon_i | X_i) &= \sigma^2, \quad \forall i\\
+var(\epsilon_i) &= \sigma^2, \quad \forall i
+\end{aligned}
+$$
+
+::: {.fragment}
+The variance around $\hat{Y_i}$ is the **same across all levels** of $X_i$.
+
+*This assumption is necessary for inference.*
+:::
+
+## Assumption 5: Normality of Error
+
+$$\epsilon_i \sim N(0, \sigma)$$
+
+::: {.fragment}
+Then, $Y_i \sim N(\alpha + \beta X_i, \sigma)$
+:::
+
+::: {.fragment}
+This is an **extension** of assumptions 3 and 4. If we assume normality, the OLS estimator has minimum variance among *all* unbiased estimators.
+
+*This assumption is necessary for inference.*
+:::
+
+## Assumption 6: Independent Errors
+
+$$cov(\epsilon_i, \epsilon_j) = 0, \quad \forall i \neq j$$
+
+::: {.fragment}
+The *i*th error term is uncorrelated with the *j*th error term, for all $i \neq j$.
+:::
+
+::: {.fragment}
+This is the **no autocorrelation** assumption. With the exception of the relationship between $Y$s determined by $X$, there is no residual relationship between $Y$ variables.
+
+*This assumption is necessary for inference.*
+:::
+
+## Assumptions 7-9
+
+**Assumption 7: Variation in $X$**
+
+- Necessary for *estimation*
+
+**Assumption 8: Correct Specification**
+
+- Correct functional form
+- Correctly included IVs
+- Necessary for *estimation*
+
+**Assumption 9: No Perfect Multicollinearity**
+
+- Recall, the denominator is 0 if $r_{x_1, x_2} = 1$
+- Necessary for *estimation*
+
+## Summary of Assumptions {.smaller}
+
+| Assumption | Description | Required For |
+|------------|-------------|--------------|
+| 1. Linearity | PRF linear in parameters | Estimation |
+| 2. Exogeneity | $cov(X_i, \epsilon_i) = 0$ | Estimation |
+| 3. Zero Mean | $E(\epsilon_i) = 0$ | Inference |
+| 4. Homoskedasticity | $var(\epsilon_i) = \sigma^2$ | Inference |
+| 5. Normality | $\epsilon_i \sim N(0, \sigma)$ | Inference |
+| 6. Independence | $cov(\epsilon_i, \epsilon_j) = 0$ | Inference |
+| 7. Variation in X | $var(X) > 0$ | Estimation |
+| 8. Correct Specification | Functional form, IVs | Estimation |
+| 9. No Multicollinearity | $r_{x_1,x_2} \neq 1$ | Estimation |
+
+## The Gauss-Markov Theorem
+
+The Gauss-Markov Theorem states:
+
+::: {.fragment}
+*The Ordinary Least Squares (OLS) estimator is the **B**est **L**inear **U**nbiased **E**stimator (OLS is **BLUE**) with minimum variance of all unbiased linear estimators.*
+:::
+
+::: {.fragment}
+**Important:** "Best" means something specific as a statistical characteristic, but does **not** mean ideal or advisable in all circumstances, *even when the GM assumptions hold*.
+:::
+
+## What BLUE Means
+
+When the GM assumptions hold, we can **demonstrate**:
+
+::: incremental
+- **Linearity**: The estimators are a linear function of $Y_i$
+- **Unbiasedness**: $E(a) = \alpha$ and $E(b_k) = \beta_k$
+- **Minimum Variance**: Of all linear unbiased estimators, the OLS estimator will have minimum $var(a)$ and $var(b)$
+:::
+
+::: {.fragment}
+This is important for **efficiency**—the estimators have minimum sampling variance and smallest error.
+:::
+
+## The Regression Equation: Matrix Form
+
+$$\begin{bmatrix}
+y_{1}= & b_0+ b_1 x_{1}+ e_1\\
+y_{2}= & b_0+ b_1 x_{2}+ e_2\\
+y_{3}= & b_0+ b_1 x_{3}+ e_3\\
+\vdots\\
+y_{n}= & b_0+ b_1 x_{n} + e_n
+\end{bmatrix}$$
+
+::: {.fragment}
+For each $y_i$, it is a composite of:
+
+- **Systematic component**: $b_0 + b_1 x_i$
+- **Unsystematic component**: $e_i$ (variation in $Y$ not explained by $X$)
+:::
+
+## Deriving the Slope as a Linear Estimator
+
+$$
+\begin{aligned}
+b &= \frac{\sum (X_i - \bar{X})(Y_i - \bar{Y})}{\sum (X_i - \bar{X})^2}\\
+  &= \frac{\sum (X_i - \bar{X})Y_i - \bar{Y}\sum(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}\\
+  &= \frac{\sum (X_i - \bar{X})Y_i}{\sum (X_i - \bar{X})^2}
+\end{aligned}
+$$
+
+::: {.fragment}
+Notice: $\bar{Y}$ disappears because deviations from the mean always sum to zero.
+:::
+
+## The Slope as a Weighted Sum
+
+$$
+b = \sum k_i Y_i, \text{ where } k_i = \frac{(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}
+$$
+
+::: incremental
+- Define $k_i$ as the parts of the slope that depend on $X_i$
+- Values **further from** $\bar{X}$ will have larger absolute values of $k_i$
+- Observations near the mean contribute **little information** to the steepness of the line
+:::
+
+::: {.fragment}
+**The OLS estimator $b$ is a linear function of $Y_i$ with weights $k_i$.**
+:::
+
+## Properties of $k_i$ {.smaller}
+
+The weights $k_i$ have four important properties:
+
+| Property | Statement | Why it matters |
+|----------|-----------|----------------|
+| 1. | $\sum k_i = 0$ | Eliminates $\alpha$ when proving $E(b) = \beta$|
+| 2. | $\sum k_i X_i = 1$ | Ensures the coefficient on $\beta$ equals 1 |
+| 3. | $\sum k_i^2 = \frac{1}{\sum(X_i - \bar{X})^2}$ | Used to derive $var(b)$ |
+| 4. | $k_i$ are constants | Because $X$ is fixed (A2), we can factor $k_i$ out of expectations |
+
+## Property 1: $\sum k_i = 0$
+
+$$
+\sum k_i = \sum \frac{(X_i - \bar{X})}{\sum (X_j - \bar{X})^2} = \frac{\sum(X_i - \bar{X})}{\sum (X_j - \bar{X})^2} = \frac{0}{\sum (X_j - \bar{X})^2} = 0
+$$
+
+::: {.fragment}
+The numerator equals zero because deviations from the mean always sum to zero:
+
+$$\sum(X_i - \bar{X}) = \sum X_i - n\bar{X} = n\bar{X} - n\bar{X} = 0$$
+:::
+
+## Property 2: $\sum k_i X_i = 1$
+
+$$
+\sum k_i X_i = \frac{\sum(X_i - \bar{X})X_i}{\sum (X_j - \bar{X})^2}
+$$
+
+::: {.fragment}
+Decompose $X_i = (X_i - \bar{X}) + \bar{X}$:
+
+$$
+\begin{aligned}
+\sum(X_i - \bar{X})X_i &= \sum(X_i - \bar{X})^2 + \bar{X}\underbrace{\sum(X_i - \bar{X})}_{=0}\\
+&= \sum(X_i - \bar{X})^2
+\end{aligned}
+$$
+:::
+
+::: {.fragment}
+Therefore: $\sum k_i X_i = \frac{\sum(X_i - \bar{X})^2}{\sum (X_j - \bar{X})^2} = 1$
+:::
+
+## Property 3: $\sum k_i^2 = \frac{1}{\sum(X_i - \bar{X})^2}$
+
+$$
+\sum k_i^2 = \sum \left[\frac{(X_i - \bar{X})}{\sum(X_j - \bar{X})^2}\right]^2 = \frac{\sum(X_i - \bar{X})^2}{\left[\sum(X_j - \bar{X})^2\right]^2} = \frac{1}{\sum(X_i - \bar{X})^2}
+$$
+
+::: {.fragment}
+This property is **crucial** for deriving the variance of $b$.
+:::
+
+## Simulation: Verifying $k_i$ Properties
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+set.seed(42)
+
+library(MASS)
+n <- 100
+mu <- c(5, 10)  # means of X and Y
+Sigma <- matrix(c(4, 3,    # variance of X = 4, covariance = 3
+                  3, 9),   # variance of Y = 9
+                nrow = 2)
+
+data <- mvrnorm(n, mu, Sigma)
+X <- data[, 1]
+Y <- data[, 2]
+head(data)
+lm(Y ~ X)
+```
+
+## Verifying the Properties
+
+```{r}
+# Compute k_i weights
+x_dev <- X - mean(X)
+SS_x <- sum(x_dev^2)
+k <- x_dev / SS_x
+
+# Verify Property 1: sum(k_i) = 0
+cat("Property 1: sum(k_i) =", sum(k), "\n")
+
+# Verify Property 2: sum(k_i * X_i) = 1
+cat("Property 2: sum(k_i * X_i) =", sum(k * X), "\n")
+
+# Verify Property 3: sum(k_i^2) = 1 / sum(x_i^2)
+cat("Property 3: sum(k_i^2) =", sum(k^2), "\n")
+cat("            1/sum(x_i^2) =", 1/SS_x, "\n")
+
+# Bonus: Verify that b = sum(k_i * Y_i) matches lm()
+b_manual <- sum(k * Y)
+b_lm <- coef(lm(Y ~ X))[2]
+cat("\nSlope from sum(k_i * Y_i):", b_manual, "\n")
+cat("Slope from lm():", b_lm, "\n")
+```
+
+## Simulation Results
+
+The simulation confirms:
+
+::: incremental
+- $\sum k_i \approx 0$ (machine precision)
+- $\sum k_i X_i = 1$ exactly
+- $\sum k_i^2 = 1/\sum(X_i - \bar{X})^2$ exactly
+- Computing $b = \sum k_i Y_i$ gives the same slope as `lm()`
+:::
+
+## Creating a Function for $k_i$ Weights
+
+```r
+compute_k_weights <- function(X) {
+  x_dev <- X - mean(X)
+  SS_x <- sum(x_dev^2)
+  k <- x_dev / SS_x
+  return(k)
+}
+```
+
+**Example Usage**
+```r
+X <- c(2, 4, 6, 8, 10)
+k <- compute_k_weights(X)
+
+sum(k)           # Should be ≈ 0
+sum(k * X)       # Should be 1
+sum(k^2)         # Should be 1/sum((X - mean(X))^2)
+```
+
+## The Intercept as a Linear Estimator
+
+Recall that $a = \bar{Y} - b\bar{X}$. Substituting $b = \sum k_i Y_i$:
+
+$$
+\begin{aligned}
+a &= \frac{1}{n}\sum Y_i - \bar{X} \sum k_i Y_i\\
+a &= \sum \left(\frac{1}{n} - \bar{X} k_i\right) Y_i\\
+a &= \sum c_i Y_i
+\end{aligned}
+$$
+
+::: {.fragment}
+where $c_i = \frac{1}{n} - \bar{X} \cdot \frac{(X_i - \bar{X})}{\sum (X_i - \bar{X})^2}$
+
+**The OLS estimator $a$ is also a linear function of $Y_i$ with weights $c_i$.**
+:::
+
+## Why Linearity Matters
+
+These are important results because they make subsequent operations more tractable:
+
+::: incremental
+- Demonstrating **unbiasedness**
+- Demonstrating **minimum variance**
+- We can understand these parameters to include only $Y_i$ and constants (the weights)
+:::
+
+## Unbiasedness
+
+$b$ is an **unbiased** estimator of $\beta$.
+
+::: {.fragment}
+**In words:** The expected value of $b$ equals the population parameter $\beta$.
+:::
+
+::: {.fragment}
+**More intuitive:** The average value of $b$ across repeated samples equals the population parameter $\beta$.
+:::
+
+## Proving Unbiasedness
+
+$$
+\begin{aligned}
+b &= \sum k_i Y_i\\
+b &= \sum k_i (\alpha+\beta X_i+\epsilon_i)\\
+b &= \alpha \sum k_i + \beta \sum k_i X_i + \sum k_i \epsilon_i\\
+b &= \alpha \cdot 0 + \beta \cdot 1 + \sum k_i \epsilon_i\\
+b &= \beta+\sum k_i \epsilon_i\\
+E(b) &= \beta
+\end{aligned}
+$$
+
+## Why the Proof Works
+
+::: incremental
+- The intercept $\alpha$ vanishes because $\sum k_i = 0$
+- The coefficient on $\beta$ equals 1 because $\sum k_i X_i = 1$
+- These aren't coincidences—they're properties **built into** how $k_i$ is defined
+- $E(\sum k_i \epsilon_i) = \sum k_i E(\epsilon_i) = 0$ by Assumption 3
+:::
+
+## Random Variables vs. Constants {.smaller}
+
+**Constants** (fixed, known values):
+
+- $\alpha$ and $\beta$ (true population parameters)
+- $X_i$ (treated as fixed by Assumption 2)
+- $k_i$ (derived entirely from $X$ values)
+
+**Random Variables** (vary across samples):
+
+- $\epsilon_i$ (the error term)
+- $Y_i$ (because $Y_i = \alpha + \beta X_i + \epsilon_i$ contains $\epsilon_i$)
+- $b$ and $a$ (because they're functions of $Y_i$)
+
+::: {.fragment}
+**Why this matters:** Constants can be factored out of expectations: $E(cX) = cE(X)$
+:::
+
+## Simulation: Demonstrating Unbiasedness
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+#| fig-width: 18
+#| fig-height: 9
+#| out-width: "100%"
+
+library(MASS)
+library(plotly)
+library(tidyverse)
+
+set.seed(123)
+
+# Population parameters
+alpha_true <- 2
+beta_true <- 1.5
+sigma_true <- 2
+n <- 50
+X <- rnorm(n, mean = 10, sd = 3)
+
+# Draw repeated samples and compute slopes
+slopes <- tibble(sample_id = 1:1000) %>%
+  mutate(
+    slope = map_dbl(sample_id, function(id) {
+      epsilon <- rnorm(n, mean = 0, sd = sigma_true)
+      Y <- alpha_true + beta_true * X + epsilon
+      model <- lm(Y ~ X)
+      coef(model)[2]
+    })
+  )
+
+# Calculate summary statistics
+mean_slope <- mean(slopes$slope)
+
+# Create histogram with Plotly
+fig <- plot_ly(slopes, x = ~slope, type = "histogram",
+               nbinsx = 40,
+               marker = list(color = "rgba(68, 114, 196, 0.7)",
+                            line = list(color = "rgba(68, 114, 196, 1)", width = 1))) %>%
+  layout(title = "Sampling Distribution of Slope",
+         xaxis = list(title = "Slope (b)"),
+         yaxis = list(title = "Frequency"),
+         hovermode = "x unified",
+         showlegend = TRUE,
+         plot_bgcolor = "rgba(240, 240, 240, 0.5)",
+         paper_bgcolor = "white",
+         font = list(family = "Arial", size = 12, color = "black"),
+         shapes = list(
+           # Red dashed line for population parameter
+           list(type = "line",
+                x0 = beta_true, x1 = beta_true,
+                y0 = 0, y1 = 1,
+                yref = "paper",
+                line = list(color = "red", dash = "dash", width = 3)),
+           # Green solid line for mean slope
+           list(type = "line",
+                x0 = mean_slope, x1 = mean_slope,
+                y0 = 0, y1 = 1,
+                yref = "paper",
+                line = list(color = "green", width = 3))
+         ),
+         annotations = list(
+           # Population parameter label
+           list(x = beta_true, y = 1, yref = "paper",
+                text = paste("Population β =", round(beta_true, 3)),
+                showarrow = FALSE, xanchor = "left", yanchor = "bottom",
+                font = list(color = "red", size = 10)),
+           # Mean slope label
+           list(x = mean_slope, y = 0.95, yref = "paper",
+                text = paste("Mean slope =", round(mean_slope, 3)),
+                showarrow = FALSE, xanchor = "right", yanchor = "top",
+                font = list(color = "green", size = 11))
+         ))
+
+fig
+```
+
+## Unbiasedness Confirmed
+
+The simulation confirms **unbiasedness**:
+
+::: incremental
+- Across many repeated samples, the average slope equals $\beta$
+- The **red dashed line** shows the population slope
+- The **green line** shows the sample mean
+- They align perfectly (within sampling variation)
+:::
+
+## Properties of the Expectation Operator
+
+Used in this derivation:
+
+::: incremental
+1. **Linearity**: $E(aX + bY) = aE(X) + bE(Y)$
+2. **Constants**: $E(c) = c$
+3. **Scaling**: $E(cX) = cE(X)$
+:::
+
+::: {.fragment}
+But what about the **variance**? We've shown unbiasedness, but how much does $b$ vary from sample to sample?
+:::
+
+## Definition of Variance
+
+$$
+var(b) = E\left[(b - E(b))^2\right]
+$$
+
+::: {.fragment}
+The variance measures how **spread out** the sampling distribution of $b$ is around its expected value.
+:::
+
+## Deriving $var(b)$: Setup
+
+We established that $b = \beta + \sum k_i \epsilon_i$. Since $E(b) = \beta$:
+
+$$
+b - E(b) = b - \beta = \sum k_i \epsilon_i
+$$
+
+::: {.fragment}
+Therefore:
+
+$$
+\begin{aligned}
+var(b) &= E\left[(b - \beta)^2\right]\\
+       &= E\left[(\sum_i k_i \epsilon_i)^2\right]
+\end{aligned}
+$$
+:::
+
+## Deriving $var(b)$: Expansion
+
+$$
+\begin{aligned}
+var(b) &= E\left[(\sum_i k_i \epsilon_i)(\sum_j k_j \epsilon_j)\right]\\
+       &= E\left[\sum_i \sum_j k_i k_j \epsilon_i \epsilon_j\right]
+\end{aligned}
+$$
+
+::: {.fragment}
+The inside of the expectation is a **double summation** over all $i$ and $j$. It forms a matrix of terms, each weighted by $k_i k_j$ and involving the product $\epsilon_i \epsilon_j$.
+:::
+
+## Applying Assumptions About Errors
+
+We now use two assumptions **about the error terms**:
+
+::: incremental
+- **Assumption 4 (Homoskedasticity)**: $var(\epsilon_i) = \sigma^2$ for all $i$
+- **Assumption 6 (Independence)**: $cov(\epsilon_i, \epsilon_j) = 0$ for $i \neq j$
+:::
+
+## Properties of Covariance and Variance {.smaller}
+
+**Covariance** measures how two random variables move together:
+
+$$cov(X, Y) = E[(X - E(X))(Y - E(Y))] = E(XY) - E(X)E(Y)$$
+
+**Key rearrangement:** $E(XY) = cov(X, Y) + E(X)E(Y)$
+
+**Variance** is the covariance of a variable with itself:
+
+$$var(X) = cov(X, X) = E(X^2) - [E(X)]^2$$
+
+::: {.fragment}
+**Important:** If $E(X) = 0$, then $E(X^2) = var(X)$
+:::
+
+## Applying to Our Matrix
+
+The expectation of the double sum consists of:
+
+- **Diagonal terms** ($i = j$): variance terms
+- **Off-diagonal terms** ($i \neq j$): covariance terms
+
+::: {.fragment}
+**Off-diagonal** ($i \neq j$):
+$$E(\epsilon_i \epsilon_j) = cov(\epsilon_i, \epsilon_j) + E(\epsilon_i)E(\epsilon_j) = 0 + 0 = 0$$
+(by A6 and A3)
+:::
+
+::: {.fragment}
+**Diagonal** ($i = j$):
+$$E(\epsilon_i^2) = var(\epsilon_i) + [E(\epsilon_i)]^2 = \sigma^2 + 0 = \sigma^2$$
+(by A4 and A3)
+:::
+
+## The Variance Formula
+
+So only the diagonal terms ($i = j$) remain:
+
+$$
+\begin{aligned}
+var(b) &= E\left[\sum_i k_i^2 \epsilon_i^2\right]\\
+       &= \sum_i k_i^2 E(\epsilon_i^2)\\
+       &= \sum_i k_i^2 \cdot \sigma^2\\
+       &= \sigma^2 \sum k_i^2
+\end{aligned}
+$$
+
+::: {.fragment}
+$$var(b) = \frac{\sigma^2}{\sum(X_i - \bar{X})^2}$$
+:::
+
+## What Affects Precision?
+
+This formula reveals what affects the **precision** of slope estimates:
+
+::: incremental
+- **Larger $\sigma^2$**: More noise in $Y_i$ → $b$ varies more from sample to sample
+- **More variance in $X$**: More spread in $X_i$ → more precise estimates of $b$
+:::
+
+::: {.fragment}
+*We learn more about $E(Y|X) = \beta$ when $X_i$ varies.*
+:::
+
+## Minimum Variance: The Problem
+
+Consider what we have:
+
+$$var(b) = \frac{\sigma^2}{\sum x_i^2}$$
+
+::: {.fragment}
+But there are **two problems**:
+
+1. We rarely have access to $\sigma^2$
+2. We have not yet shown that $var(b)$ is the **minimum** variance
+:::
+
+## Estimating $\sigma^2$
+
+It can be shown that $\hat{\sigma^2}$ is an **unbiased** estimator of $\sigma^2$ (i.e., $E(\hat{\sigma}^2) = \sigma^2$).
+
+$$
+\begin{aligned}
+\hat{\sigma^2} &= RSS/(n-k-1)\\
+               &= \sum e_i^2/(n-k-1)
+\end{aligned}
+$$
+
+::: {.fragment}
+And,
+
+$$
+\begin{aligned}
+var(b) &= \frac{\hat{\sigma^2}}{\sum x_i^2}\\
+var(a) &= \frac{\hat{\sigma^2} \sum X_i^2}{n\sum x_i^2}
+\end{aligned}
+$$
+:::
+
+## Proving Minimum Variance
+
+To show minimum variance, let's generate an **alternate estimate** of $b$, call it $b^*$.
+
+$$
+\begin{aligned}
+b &= \sum k_i Y_i\\
+b^* &= \sum w_i Y_i
+\end{aligned}
+$$
+
+::: {.fragment}
+If $b^*$ is unbiased, then $\sum w_i = 0$, and $\sum w_i X_i = 1$.
+:::
+
+## The Variance of Any Unbiased Estimator
+
+Even without knowing these weights, we can show:
+
+$$
+var(b^*) = \sigma^2 \left(\sum w_i - \frac{x_i}{\sum x_i}\right)^2 + \frac{\sigma^2}{\sum x_i^2}
+$$
+
+::: {.fragment}
+Consider what this means:
+
+- The first term is **always non-negative** (it's squared)
+- Only if $w_i = k_i$ will we obtain the variance of the OLS estimator
+- There is **no alternative** estimate of the variance less than this value
+:::
+
+## Conclusion: OLS is BLUE
+
+Under the Gauss-Markov assumptions:
+
+::: incremental
+- OLS estimators are **linear** functions of $Y_i$
+- OLS estimators are **unbiased**: $E(b) = \beta$
+- OLS estimators have **minimum variance** among all linear unbiased estimators
+:::
+
+::: {.fragment}
+**OLS is the Best Linear Unbiased Estimator (BLUE)**
+:::
+
+## Concluding Remarks
+
+::: incremental
+1. The GM assumptions are the **foundation** of OLS inference
+2. Some assumptions matter for **estimation**, others for **inference**
+3. The slope $b$ can be written as a **weighted sum** of $Y_i$ values
+4. The properties of $k_i$ are **designed** to make $b$ unbiased
+5. Variance depends on both **error variance** and **X spread**
+6. Under GM assumptions, no other linear unbiased estimator beats OLS
+:::
