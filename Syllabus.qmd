@@ -173,7 +173,10 @@ Complete all assigned modules by the deadline.
 
 - **Topics**: Properties of the OLS estimator
 - **Reading**: Fox, Chapter 3 (1/2), Chapter 5
-- **Slides**: [ols_estimator.qmd](lectures/ols_estimator.qmd), [OLS_Derivation.qmd](lectures/OLS_Derivation.qmd), [gauss_markov_slides.qmd](lectures/gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443)
+- **Slides**:
+  - [ols_estimator.qmd](lectures/ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443)
+  - [OLS_Derivation.qmd](lectures/OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453)
+  - [gauss_markov_slides.qmd](lectures/gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions)
 - **Assignment 1**: Complete DataCamp modules, `Introduction to Git` and `Version Control with Git`
 
 ### Week 3 (2/3): Comments on Model Fit

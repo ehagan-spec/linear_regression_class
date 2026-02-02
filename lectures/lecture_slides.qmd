@@ -18,8 +18,8 @@ This page provides links to all lecture materials for POL 682. Schedule follows 
 |---------|------|-------|
 | Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](Introduction_to_Linear_Regression.qmd) | [RPubs](https://rpubs.com/crweber9874/linereg1) |
 | Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
-| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | |
-| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | |
+| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
+| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
 
 ## Course Schedule
 

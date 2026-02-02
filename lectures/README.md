@@ -10,13 +10,12 @@ This directory contains lecture materials for POL 682. All lectures are written 
 
 ## Quick Links
 
-| Lecture | File |
-|---------|------|
-| Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](Introduction_to_Linear_Regression.qmd) |
-| Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) |
-| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) |
-| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) |
-
+| Lecture | File | RPubs |
+|---------|------|-------|
+| Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](Introduction_to_Linear_Regression.qmd) | [RPubs](https://rpubs.com/crweber9874/linereg1) |
+| Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
+| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
+| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
 
 **Full index**: [lecture_slides.qmd](lecture_slides.qmd)
 
