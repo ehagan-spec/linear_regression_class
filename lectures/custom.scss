@@ -1,0 +1,41 @@
+/*-- scss:defaults --*/
+
+// Colors
+$body-bg: #fff;
+$body-color: #222;
+$link-color: #2c7fb8;
+
+// Fonts
+$font-family-sans-serif: "Source Sans Pro", Helvetica, sans-serif;
+$presentation-heading-font: "Source Sans Pro", Helvetica, sans-serif;
+
+/*-- scss:rules --*/
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-weight: 600;
+}
+
+.reveal .slide-background-content {
+  background-size: cover;
+}
+
+// Tables
+.reveal table {
+  font-size: 0.85em;
+}
+
+.reveal table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+// Code blocks
+.reveal pre code {
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+// Math
+.reveal .math {
+  font-size: 0.95em;
+}

@@ -1,0 +1,586 @@
+---
+title: "The Linear Regression Estimator, Multiple Regression, and Matrix Algebra"
+subtitle: "Three Parts"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    smaller: false
+    scrollable: true
+    math: mathjax
+    transition: fade
+    width: 1200
+    height: 750
+---
+
+# Part I: Estimation in R {background-color="white" style="color: black;"}
+
+Workflow
+
+## The Data Generating Process (DGP)
+
+The **DGP** is the *underlying* process that produces the sample data we observe — the PRF that generates the data.
+
+Its the mechanism -- *we assume* -- generated the observed data + sampling error.
+
+. . .
+
+We can **simulate** data from a known DGP to understand how sampling, estimation, and inference work together.
+
+Using a `function` in `R`
+
+```r
+simulate_regression_data <- function(
+  n = 500, beta_0 = 0, beta_1 = 0.2,
+  x_mean = 0, x_sd = 1, error_sd = 1
+) {
+  X <- rnorm(n, mean = x_mean, sd = x_sd)
+  errors <- rnorm(n, mean = 0, sd = error_sd)
+  Y <- beta_0 + beta_1 * X + errors
+  data.frame(x = X, y = Y, true_y = beta_0 + beta_1 * X, error = errors)
+}
+```
+
+## PRF vs. SRF: Visualizing the DGP
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5.5
+library(ggplot2)
+set.seed(123)
+simulate_regression_data <- function(
+  n = 500, beta_0 = 0, beta_1 = 0.2,
+  x_mean = 0, x_sd = 1, error_sd = 1
+) {
+  X <- rnorm(n, mean = x_mean, sd = x_sd)
+  errors <- rnorm(n, mean = 0, sd = error_sd)
+  Y <- beta_0 + beta_1 * X + errors
+  data.frame(x = X, y = Y, true_y = beta_0 + beta_1 * X, error = errors)
+}
+sim_dat <- simulate_regression_data(n = 500, beta_1 = 0.75, x_sd = 1, error_sd = 1)
+fit <- lm(y ~ x, data = sim_dat)
+sim_dat$fitted_y <- fitted(fit)
+r_squared <- summary(fit)$r.squared
+
+ggplot(sim_dat, aes(x = x, y = y)) +
+  geom_segment(aes(xend = x, yend = fitted_y),
+               alpha = 0.2, color = "gray50", linewidth = 0.3) +
+  geom_point(alpha = 0.5, size = 2) +
+  geom_line(aes(y = true_y), color = "#d62728", linewidth = 1.2) +
+  geom_line(aes(y = fitted_y), color = "#2c7fb8", linewidth = 1.2, linetype = "dashed") +
+  annotate("text", x = min(sim_dat$x) + 1, y = max(sim_dat$y) - 1,
+           label = paste0("R² = ", round(r_squared, 3)),
+           size = 5, hjust = 0) +
+  labs(title = "PRF vs. SRF: Understanding the Data Generating Process",
+       subtitle = "Red = PRF (true line) | Blue dashed = SRF (estimated) | Gray = residuals",
+       x = "X", y = "Y") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "gray40"))
+```
+
+## Key elements of the plot:
+- **PRF** (red solid): $Y_i = \alpha + \beta X_i + \epsilon_i$ — the true line we never see
+- **SRF** (blue dashed): $Y_i = a + bX_i + e_i$ — our estimate from the sample
+- **Residuals** (gray): $e_i = Y_i - \hat{Y}_i$
+
+. . .
+
+The SRF approximates the PRF. How well depends on:
+
+- Sample size $n$
+- Error variance $\sigma^2_\epsilon$
+- Variance of $X$
+
+## Estimation with `lm()`
+
+```{r}
+#| echo: true
+fit <- lm(y ~ x, data = sim_dat)
+summary(fit)
+```
+
+. . .
+
+**Key elements of the output:**
+
+| Element | Meaning |
+|---------|---------|
+| Coefficients | Estimated $a$, $b$ with SEs, t-values, p-values |
+| Residual SE | Average distance of observations from the regression line |
+| $R^2$ | Proportion of variance in $Y$ explained by $X$ |
+| F-statistic | Tests whether the model beats the null ($\bar{Y}$) |
+
+## Generating Predictions
+
+```{r}
+# Single
+predict(fit, newdata = data.frame(x = 1))
+# Multiple values
+predict(fit, newdata = data.frame(x = seq(0.25, 0.35, by = 0.05)))
+# all fitted values...
+predict(fit) |> head()
+```
+
+Predictions are just $\hat{Y}_i = a + bX_i$ evaluated at chosen $X$ values.
+
+# Part II: Model Fit {background-color="white" style="color: black;"}
+
+## Model Fit: $R^2$, Correlation, & ANOVA
+
+The correlation $r$ equals the standardized slope in bivariate regression:
+
+**Regression Estimates**
+```{r}
+# scale standardizes the variables (mean=0, sd=1)
+lm(scale(y) ~ scale(x), data = sim_dat) |> summary()
+cor(sim_dat$x, sim_dat$y) |> print()
+```
+**$b_{x} \approx 0.557$**
+
+
+## Correlation Estimates
+
+```{r}
+cor(sim_dat$x, sim_dat$y) 
+```
+**$r_{xy} \approx 0.557$**
+
+. . .
+
+**Key relationships:**
+
+- $R^2 = r^2$ in bivariate regression
+- $r = \sqrt{R^2} \times \text{sign}(\beta)$
+- The correlation **is** the standardized regression coefficient
+
+## Decomposing the Variance (ANOVA)
+
+$$TSS = RegSS + RSS$$
+
+$$\sum(Y_i - \bar{Y})^2 = \sum(\hat{Y}_i - \bar{Y})^2 + \sum(Y_i - \hat{Y}_i)^2$$
+
+. . .
+
+| Component | Formula | Meaning |
+|-----------|---------|---------|
+| **TSS** | $\sum(Y_i - \bar{Y})^2$ | Total variation in $Y$ |
+| **RegSS** | $\sum(\hat{Y}_i - \bar{Y})^2$ | Variation explained by the model |
+| **RSS** | $\sum(Y_i - \hat{Y}_i)^2$ | Unexplained (residual) variation |
+
+## $R^2$: The Coefficient of Determination
+
+$$R^2 = \frac{RegSS}{TSS} = 1 - \frac{RSS}{TSS}$$
+
+- $R^2 = 0$: model explains nothing; $E(Y|X) = \bar{Y}$
+- $R^2 = 1$: deterministic relationship; all points on the line
+
+. . .
+
+**Proportional reduction in error** — how much better is our model than just predicting $\bar{Y}$?
+
+## The F-statistic
+
+$$F = \frac{RegSS / df_{reg}}{RSS / df_{res}} = \frac{MSS_{reg}}{MSS_{res}}$$
+
+Where $df_{reg} = k$ and $df_{res} = n - k - 1$.
+
+. . .
+
+**Hypotheses:**
+
+- $H_0$: $\beta = 0$ (model no better than null)
+- $H_a$: $\beta \neq 0$ (model explains variance)
+
+The F-statistic is a **ratio of two variances** — it follows the F-distribution under $H_0$.
+
+## What Happens When You Vary Parameters?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Increase error ($\sigma_\epsilon$):**
+
+- Points scatter more around PRF
+- $R^2$ drops
+- Sampling distribution of $b$ widens
+- But $b$ remains **unbiased**
+
+**Increase $\sigma_X$:**
+
+- More spread in $X$ → more leverage
+- $R^2$ increases
+- $var(b)$ decreases — more **efficient**
+
+:::
+
+::: {.column width="50%"}
+
+**Increase $n$:**
+
+- SRF → PRF
+- Standard errors shrink $\propto 1/\sqrt{n}$
+- $R^2$ stabilizes
+
+**Set $\beta = 0$:**
+
+- SRF still estimates *some* slope (sampling error)
+- Monte Carlo distribution centers on zero
+- This is the **null hypothesis** in action
+
+:::
+
+::::
+
+## Characteristics of the OLS Estimator
+
+<iframe src="https://azvoterproject.shinyapps.io/western24ft/" width="100%" height="800px" style="border: none;" allowfullscreen></iframe>
+
+# Part III: Matrix Algebra {background-color="white" style="color: black;"}
+
+Vectors, Matrices, and the OLS Estimator
+
+## Why Matrix Algebra?
+
+- Quantitative social science aims to quantify relationships between **multiple variables**
+- Data is *tabular*: rows = observations, columns = variables
+- We need tools to solve systems of equations efficiently
+
+$$\begin{bmatrix}
+y_{1}= & b_0+ b_1 x_{1}+b_2 x_{2}\\
+y_{2}= & b_0+ b_1 x_{1}+b_2 x_{2}\\
+\vdots\\
+y_{n}= & b_0+ b_1 x_{1}+b_2 x_{2}
+\end{bmatrix}$$
+
+- $n$ equations, fewer unknowns — **linear algebra** gives us the solution
+
+## Data as a Matrix
+
+Each row is an observation; each column is a variable.
+
+$$\begin{bmatrix}
+Vote & PID & Ideology \\\hline
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+\vdots & \vdots & \vdots\\
+a_{n1} & a_{n2} & a_{n3}
+\end{bmatrix}$$
+
+- This is an $n \times 3$ matrix
+- First subscript = row, second = column
+- Notation: $\mathbf{A}_{n \times 3}$
+
+## Vectors: The Building Blocks
+
+- **Scalar**: a single number (magnitude only)
+- **Vector**: multiple elements — encodes **magnitude** and **direction**
+
+A vector $\mathbf{a} \in \mathbb{R}^k$ has $k$ elements.
+
+. . .
+
+**Euclidean Distance** between $\mathbf{a}=[x_1,y_1]$ and $\mathbf{b}=[x_2,y_2]$:
+
+$$\text{Distance}(\mathbf{a},\mathbf{b}) = \sqrt{(x_1-x_2)^2+(y_1-y_2)^2}$$
+
+This is just the Pythagorean theorem!
+
+## The Norm of a Vector
+
+The **norm** measures the length (magnitude) of a vector from the origin:
+
+$$\|\mathbf{a}\| = \sqrt{x_1^2 + y_1^2}$$
+
+- Dividing a vector by its norm gives a **unit vector** (length = 1)
+- Useful for standardization
+
+. . .
+
+**In higher dimensions** ($\mathbb{R}^3$):
+
+$$\|\mathbf{a}\| = \sqrt{x_1^2 + y_1^2 + z_1^2}$$
+
+## Vector Addition & Subtraction
+
+Element-wise operations on **conformable** vectors (same length):
+
+$$\mathbf{a} + \mathbf{b} = [3+1,\; 2+1,\; 1+1] = [4, 3, 2]$$
+
+$$\mathbf{a} - \mathbf{b} = [3-1,\; 2-1,\; 1-1] = [2, 1, 0]$$
+
+. . .
+
+**Properties:**
+
+| Property | Statement |
+|----------|-----------|
+| Commutative | $\mathbf{a}+\mathbf{b}=\mathbf{b}+\mathbf{a}$ |
+| Associative | $(\mathbf{a}+\mathbf{b})+\mathbf{c}=\mathbf{a}+(\mathbf{b}+\mathbf{c})$ |
+| Distributive | $c(\mathbf{a}+\mathbf{b})=c\mathbf{a}+c\mathbf{b}$ |
+| Zero | $\mathbf{a}+0=\mathbf{a}$ |
+
+## Vector Multiplication
+
+- **Inner (dot) product** → produces a *scalar* (measures similarity / covariance)
+- **Cross product** → produces a *vector* (orthogonal to both inputs)
+- **Outer product** → produces a *matrix*
+
+## The Inner (Dot) Product
+
+Multiply corresponding elements and sum:
+
+$$\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i$$
+
+For $\mathbf{a}=[3,2,1]$ and $\mathbf{b}=[1,1,1]$: $\;\; 3(1)+2(1)+1(1) = 6$
+
+. . .
+
+**The inner product is a measure of covariance:**
+
+$$\text{cov}(x,y) = \frac{\text{inner product}(x-\bar{x},\; y-\bar{y})}{n-1}$$
+
+$$r_{x,y} = \frac{\text{inner product}(x-\bar{x},\; y-\bar{y})}{\|x-\bar{x}\|\;\|y-\bar{y}\|}$$
+
+
+## Inner Product Rules
+
+| Property | Statement |
+|----------|-----------|
+| Commutative | $\mathbf{a} \cdot \mathbf{b} = \mathbf{b} \cdot \mathbf{a}$ |
+| Associative | $d(\mathbf{a} \cdot \mathbf{b}) = (d\mathbf{a}) \cdot \mathbf{b}$ |
+| Distributive | $\mathbf{c} \cdot (\mathbf{a}+\mathbf{b}) = \mathbf{c}\cdot\mathbf{a} + \mathbf{c}\cdot\mathbf{b}$ |
+| Zero | $\mathbf{a} \cdot 0 = 0$ |
+
+## The Cross Product
+
+For $\mathbf{a}=[3,2,1]$ and $\mathbf{b}=[1,4,7]$:
+
+1. Stack the vectors
+2. Calculate $2 \times 2$ determinants
+
+$$\mathbf{a} \times \mathbf{b} = [2(7)-4(1),\;\; 1(1)-3(7),\;\; 3(4)-2(1)] = [10, -20, 10]$$
+
+- Result is **orthogonal** to both original vectors
+- Useful for determinants and matrix inversion
+
+## The Outer Product
+
+Transpose one vector, then multiply:
+
+$$\begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix} \begin{bmatrix} 1 & 4 & 7 \end{bmatrix} = \begin{bmatrix} 3 & 12 & 21 \\ 2 & 8 & 14 \\ 1 & 4 & 7 \end{bmatrix}$$
+
+- Input: two vectors of length $k$
+- Output: a $k \times k$ matrix
+
+## Matrices
+
+A matrix combines row or column vectors. Notation: **bold uppercase** ($\mathbf{A}$).
+
+$$\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots\\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{bmatrix}$$
+
+## Matrix Types
+
+| Type | Definition |
+|------|-----------|
+| **Square** | Equal rows and columns |
+| **Symmetric** | Same entries above and below the diagonal; $\mathbf{A} = \mathbf{A}^T$ |
+| **Identity** ($\mathbf{I}$) | 1s on diagonal, 0s off; $\mathbf{AI} = \mathbf{A}$ |
+| **Idempotent** | $\mathbf{A}^2 = \mathbf{A}$ |
+| **Trace** | Sum of diagonal elements: $\text{tr}(\mathbf{I}) = n$ |
+
+## Matrix Addition & Subtraction
+
+Matrices must be **conformable** (same dimensions). Add/subtract element-wise:
+
+$$\begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} + \begin{bmatrix} b_{11} & b_{12} \\ b_{21} & b_{22} \end{bmatrix} = \begin{bmatrix} a_{11}+b_{11} & a_{12}+b_{12} \\ a_{21}+b_{21} & a_{22}+b_{22} \end{bmatrix}$$
+
+. . .
+
+**Properties:** Commutative, Associative, Distributive, Zero
+
+## Matrix Multiplication {.smaller}
+
+**Order matters!** $\mathbf{AB} \neq \mathbf{BA}$ in general.
+
+Multiply $i$-th row by $j$-th column:
+
+$$\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} \begin{bmatrix} 3 & 5 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} 1(3)+3(2) & 1(5)+3(4) \\ 2(3)+4(2) & 2(5)+4(4) \end{bmatrix} = \begin{bmatrix} 9 & 17 \\ 14 & 26 \end{bmatrix}$$
+
+. . .
+
+**Conformability rule:** columns of first = rows of second
+
+$$\mathbf{A}_{m \times n} \times \mathbf{B}_{n \times p} = \mathbf{C}_{m \times p}$$
+
+Inner dimensions must match; result has outer dimensions.
+
+
+## The Transpose
+
+$\mathbf{A}^T$ swaps rows and columns. If $\mathbf{A}$ is $m \times n$, then $\mathbf{A}^T$ is $n \times m$.
+
+$$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}^T = \begin{bmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{bmatrix}$$
+
+. . .
+
+**Key properties:**
+
+| Property | Statement |
+|----------|-----------|
+| Double transpose | $(\mathbf{A}^T)^T = \mathbf{A}$ |
+| Sum | $(\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T + \mathbf{B}^T$ |
+| Product (**reversal**) | $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$ |
+
+## Why the Transpose Matters
+
+**Transposing a product reverses the order:**
+
+$$(\mathbf{ABC})^T = \mathbf{C}^T\mathbf{B}^T\mathbf{A}^T$$
+
+. . .
+
+**Critical result:** For any matrix $\mathbf{A}$, the product $\mathbf{A}^T\mathbf{A}$ is always:
+
+- **Square** ($n \times n$ if $\mathbf{A}$ is $m \times n$)
+- **Symmetric**
+
+This is exactly what $\mathbf{X}^T\mathbf{X}$ produces in the normal equations.
+
+## The Determinant
+
+The **determinant** is a **scalar** value computed from a square matrix. It's necessary for *matrix inversion* (later).
+
+**For a $2 \times 2$ matrix:**
+
+$$\det(\mathbf{A}) = \det\begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc$$
+
+. . .
+
+- If $\det(\mathbf{A}) \neq 0$: the matrix is **nonsingular** (invertible)
+- If $\det(\mathbf{A}) = 0$: the matrix is **singular** (no inverse exists — columns are linearly dependent)
+
+. . .
+
+**Example:**
+
+$$\det\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix} = 4(6) - 7(2) = 10 \neq 0 \;\; ✓$$
+
+$$\det\begin{bmatrix} 2 & 4 \\ 1 & 2 \end{bmatrix} = 2(2) - 4(1) = 0 \;\; \text{(singular — row 1 = 2 × row 2)}$$
+
+. . .
+
+**For OLS:** $\det(\mathbf{X}^T\mathbf{X}) = 0$ means perfect multicollinearity — the columns of $\mathbf{X}$ are linearly dependent, and we cannot solve for $\mathbf{b}$.
+
+## Matrix Inversion
+
+For scalars: $a \cdot a^{-1} = 1$
+
+For matrices: $\mathbf{A}\mathbf{A}^{-1} = \mathbf{A}^{-1}\mathbf{A} = \mathbf{I}$
+
+. . .
+
+**Requirements:**
+
+- Only **square** matrices can have inverses
+- Must be **nonsingular**: $\det(\mathbf{A}) \neq 0$
+
+## The $2 \times 2$ Inverse
+
+$$\mathbf{A} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \quad \Longrightarrow \quad \mathbf{A}^{-1} = \frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
+
+. . .
+
+**Example:**
+
+$$\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix}^{-1} = \frac{1}{10}\begin{bmatrix} 6 & -7 \\ -2 & 4 \end{bmatrix} = \begin{bmatrix} 0.6 & -0.7 \\ -0.2 & 0.4 \end{bmatrix}$$
+
+$$\mathbf{A}\mathbf{A}^{-1} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = \mathbf{I} \;\; ✓$$
+
+## Properties of the Inverse
+
+| Property | Statement |
+|----------|-----------|
+| Product (**reversal**) | $(\mathbf{AB})^{-1} = \mathbf{B}^{-1}\mathbf{A}^{-1}$ |
+| Transpose | $(\mathbf{A}^T)^{-1} = (\mathbf{A}^{-1})^T$ |
+| Double inverse | $(\mathbf{A}^{-1})^{-1} = \mathbf{A}$ |
+| Identity | $\mathbf{I}^{-1} = \mathbf{I}$ |
+
+Like the transpose, **inverting a product reverses the order**.
+
+## Linear Regression in Matrix Form
+
+$$\mathbf{y} = \mathbf{X}\mathbf{b} + \mathbf{e}$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+$$\mathbf{y} = \begin{bmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{bmatrix} \quad \mathbf{b} = \begin{bmatrix} b_0 \\ b_1 \\ \vdots \\ b_k \end{bmatrix}$$
+
+:::
+
+::: {.column width="50%"}
+
+$$\mathbf{X} = \begin{bmatrix} 1 & X_{11} & \cdots & X_{1k} \\ 1 & X_{21} & \cdots & X_{2k} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & X_{n1} & \cdots & X_{nk} \end{bmatrix}$$
+
+:::
+
+::::
+
+## Deriving the OLS Estimator
+
+**Goal:** Minimize the sum of squared errors:
+
+$$\min_{\mathbf{b}}\; \mathbf{e}^T\mathbf{e} = (\mathbf{y} - \mathbf{Xb})^T(\mathbf{y} - \mathbf{Xb})$$
+
+. . .
+
+**Expand:**
+
+$$\mathbf{e}^T\mathbf{e} = \mathbf{y}^T\mathbf{y} - 2\mathbf{b}^T\mathbf{X}^T\mathbf{y} + \mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$$
+
+(using the fact that $\mathbf{b}^T\mathbf{X}^T\mathbf{y}$ and $\mathbf{y}^T\mathbf{X}\mathbf{b}$ are equal scalars)
+
+## The Normal Equations
+
+**Take the derivative and set to zero:**
+
+$$\frac{\partial\; \mathbf{e}^T\mathbf{e}}{\partial\; \mathbf{b}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{b} = 0$$
+
+. . .
+
+**The normal equations:**
+
+$$\mathbf{X}^T\mathbf{X}\mathbf{b} = \mathbf{X}^T\mathbf{y}$$
+
+. . .
+
+**Multiply both sides by $(\mathbf{X}^T\mathbf{X})^{-1}$:**
+
+$$\boxed{\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}}$$
+
+This requires $\mathbf{X}^T\mathbf{X}$ to be invertible — fails under **perfect multicollinearity**.
+
+## Summary
+
+1. **Vectors** encode magnitude and direction; the **inner product** measures covariance
+2. **Matrices** combine vectors; operations require **conformability**
+3. **Transpose** swaps rows/columns; transposing a product **reverses order**
+4. **Inversion** is the matrix analog of division; requires a nonsingular matrix
+5. The OLS estimator in matrix form: $\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$
+
+. . .
+
+**References:**
+
+- Gill, Jeff. 2006. *Essential Mathematics for Political and Social Research*. Cambridge.
+- Moore, Will and David Siegel. 2013. *A Mathematics Course for Political and Social Research*. Princeton.

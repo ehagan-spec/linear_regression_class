@@ -192,6 +192,7 @@ Complete all assigned modules by the deadline.
 
 - **Topics**: Theoretical approaches to estimation and inference
 - **Reading**: Fox, Chapter 6
+- **Slides**: [linear_regression_matrix_algebra.qmd](lectures/linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/intro_matrices)
 - **Assignment 3**: Complete DataCamp modules, `Simple Linear Regression` and `Technical Conditions in Linear Regression`
 
 ### Week 5 (2/17): Inference, Continued
