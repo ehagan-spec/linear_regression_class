@@ -95,7 +95,8 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 | OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](lectures/OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
 | Gauss-Markov Assumptions | [gauss_markov_slides.qmd](lectures/gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
 | Linear Regression and Matrix Algebra | [linear_regression_matrix_algebra.qmd](lectures/linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/intro_matrices) |
-| Multiple Regression | [multiple_regression.qmd](lectures/multiple_regression.qmd) | |
+| Multiple Regression | [multiple_regression.qmd](lectures/multiple_regression.qmd) | [RPubs](https://rpubs.com/crweber9874/Matrices_and_Fit)
+|
 
 **Course Schedule:**
 

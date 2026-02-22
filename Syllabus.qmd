@@ -199,6 +199,7 @@ Complete all assigned modules by the deadline.
 
 - **Topics**: Inference in linear regression
 - **Reading**: Fox, Chapter 7, 8
+- **Slides**: [linear_regression_matrix_algebra.qmd](lectures/linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/intro_matrices)
 - **Assignment 4**: Complete DataCamp module, `Predictions and Model Objects`
 
 ### Week 6 (2/24): Multiple Variables
@@ -207,6 +208,7 @@ Complete all assigned modules by the deadline.
 - **Reading**: Fox, Chapter 9 (Optional: Chapter 10)
 - **Recommended DataCamp Module**: `Introduction to Linear Algebra`
 - **Midterm Project is Due**
+- **Slides**: [multiple_regression.qmd](lectures/multiple_regression.qmd) | [RPubs](https://rpubs.com/crweber9874/Matrices_and_Fit)
 
 ### Week 7 (3/3): Midterm Exam
 
