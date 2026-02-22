@@ -20,7 +20,8 @@ This page provides links to all lecture materials for POL 682. Schedule follows 
 | Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
 | OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
 | Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
-| Linear Regression, Vectors, Matrices | [linear_regression_matrix_algebra.qmd](linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/matrix) |
+| Linear Regression and Matrix Algebra | [linear_regression_matrix_algebra.qmd](linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/matrix) |
+| Multiple Regression | [multiple_regression.qmd](multiple_regression.qmd) | |
 
 
 ## Course Schedule
@@ -34,9 +35,13 @@ This page provides links to all lecture materials for POL 682. Schedule follows 
 - **Topics**: Properties of the OLS estimator
 - **Files**: [ols_estimator.qmd](ols_estimator.qmd), [OLS_Derivation.qmd](OLS_Derivation.qmd), [gauss_markov_slides.qmd](gauss_markov_slides.qmd)
 
-### Weeks 4: Fit and Matrices
-- **Topics**: Model Fit, Predictions, Characteristics, and Multiple Regression
+### Week 4: Matrix Algebra
+- **Topics**: Vectors, Matrices, and the OLS Estimator in Matrix Form
 - **Files**: [linear_regression_matrix_algebra.qmd](linear_regression_matrix_algebra.qmd)
+
+### Week 5: Multiple Regression
+- **Topics**: Multiple Predictors, Dummy Variables, and Model Fit
+- **Files**: [multiple_regression.qmd](multiple_regression.qmd)
 
 ## External Resources
 

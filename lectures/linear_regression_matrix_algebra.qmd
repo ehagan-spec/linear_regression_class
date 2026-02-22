@@ -1,12 +1,12 @@
 ---
-title: "The Linear Regression Estimator, Multiple Regression, and Matrix Algebra"
-subtitle: "Three Parts"
+title: "The Linear Regression Estimator and Matrix Algebra"
+subtitle: "Estimation, Model Fit, and Matrix Algebra"
 format:
   revealjs:
     theme: [default, custom.scss]
     slide-number: true
     chalkboard: true
-    smaller: false
+    smaller: true
     scrollable: true
     math: katex
     transition: fade
@@ -265,141 +265,7 @@ The F-statistic is a **ratio of two variances** — it follows the F-distributio
 <iframe src="https://azvoterproject.shinyapps.io/western24ft/" width="100%" height="800px" style="border: none;" allowfullscreen></iframe>
 
 
-## Multiple variables
-
-The OLS estimator is a point estimator. We predict a single point $\hat{y}_i$, given a predictor $x_i$. Let's consider the SRF with *multiple predictors*:
-
-$$
-Y_i - \underbrace{(a + b_1 X_1 + b_2 X_2)}_{\hat{Y}_{i}} = e_i
-$$
-
-We'll still find a line that minimizes $\sum e^2$
-
-
-- We can just use a little algebra to rewrite these equations. Let's simplify things by writing each term in "deviation" form.
-
- * $y_i=Y_i-\bar{Y}$
- * $x_{1i}=X_{1i}-\bar{X_1}$
- * $x_{2i}=X_{2i}-\bar{X_2}$
-
-## Multiple variables
-
-Setting $\frac{\partial SSR}  {\partial b_1}$ to 0
-
-\begin{eqnarray*}
-0&=& -2 \sum (Y_i-a-b_1X_{1i}-b_2 X_{2i}) (X_{1i})     \nonumber \\
-b_1&=&  \frac{\sum x_{1i} y_i-b_2\sum x_{1i} x_{2i}}{\sum x_{1i}^2} \nonumber \\
-\end{eqnarray*}
-
- Setting $\frac{\partial SSR}  {\partial b_2}$ to 0
-\begin{eqnarray*}
-0&=& -2 \sum (Y_i-a-b_1X_{1i}-b_2 X_{2i}) (X_{2i})     \nonumber \\
-b_2&=&  \frac{\sum x_{2i} y_i-b_1\sum x_{1i} x_{2i}}{\sum x_{2i}^2} \nonumber \\
-\end{eqnarray*}
-
-## Multiple variables
-
-Then,
-
-\begin{eqnarray*}
-b_1&=&  \frac{\sum y_i x_{1i} \sum x_{2i}^2 - \sum x_{1i} x_{2i} \sum x_{2i} y_i  }{\sum x_{1i}^2 \sum x_{2i}^2 -(\sum x_{1i} x_{2i})^2} \nonumber \\
-b_2&=&  \frac{\sum y_i x_{2i} \sum x_{1i}^2 - \sum x_{1i} x_{2i} \sum x_{1i} y_i }{\sum x_{1i}^2 \sum x_{2i}^2 -(\sum x_{1i} x_{2i})^2}
-\nonumber \\
-\end{eqnarray*}
-
-## Multiple variables
-
-```{r}
-#| echo: false
-#| output: false
-library(plotly)
-set.seed(42)
-
-n <- 500
-x1 <- rnorm(n, 3, 2)
-x2 <- rnorm(n, 1, 2)
-y <- 1 + 0.75 * x1 - 0.50 * x2 + rnorm(n, 0, 1.5)
-
-dat <- data.frame(x1, x2, y)
-fit <- lm(y ~ x1 + x2, data = dat)
-dat$yhat <- fitted(fit)
-```
-
-$\hat{Y} = a + b_1 X_1 + b_2 X_2$
-
-- $a$ = `r round(coef(fit)[1], 3)`
-- $b_1$ = `r round(coef(fit)[2], 3)`
-- $b_2$ = `r round(coef(fit)[3], 3)`
-
-$R^2$ = `r round(summary(fit)$r.squared, 3)`
-
-## Multiple Regression: Fitted Plane & Residuals
-
-```{r}
-#| echo: false
-#| fig-width: 10
-#| fig-height: 7
-# Build plane surface
-grd_x1 <- seq(min(x1), max(x1), length.out = 25)
-grd_x2 <- seq(min(x2), max(x2), length.out = 25)
-grd <- expand.grid(x1 = grd_x1, x2 = grd_x2)
-grd$y <- predict(fit, newdata = grd)
-z_mat <- matrix(grd$y, nrow = 25, ncol = 25)
-
-# Residual segments: vertical lines from each point to the plane
-seg <- do.call(rbind, lapply(1:n, function(i) {
-  data.frame(
-    sx1 = c(dat$x1[i], dat$x1[i], NA),
-    sx2 = c(dat$x2[i], dat$x2[i], NA),
-    sz  = c(dat$y[i],  dat$yhat[i], NA)
-  )
-}))
-
-p <- plot_ly()
-p <- add_surface(p, x = grd_x2, y = grd_x1, z = z_mat,
-                 colorscale = list(c(0, "#2c7fb8"), c(1, "blue")),
-                 opacity = 0.35, showscale = FALSE, name = "Regression Plane")
-p <- add_markers(p, x = dat$x2, y = dat$x1, z = dat$y,
-                 marker = list(size = 3, color = "black", opacity = 0.6),
-                 name = "Observations")
-p <- add_trace(p, x = seg$sx2, y = seg$sx1, z = seg$sz,
-               type = "scatter3d", mode = "lines",
-               line = list(color = "#d62728", width = 2),
-               opacity = 0.4, name = "Residuals")
-p <- layout(p,
-  scene = list(
-    xaxis = list(title = "X2"),
-    yaxis = list(title = "X1"),
-    zaxis = list(title = "Y"),
-    camera = list(eye = list(x = 1.8, y = -1.5, z = 0.8))
-  ),
-  margin = list(l = 0, r = 0, b = 0, t = 0),
-  title = ""
-)
-
-# Auto-rotate the 3D plot
-p <- htmlwidgets::onRender(p, "
-  function(el, x) {
-    var angle = 0;
-    var radius = 2.2;
-    var zHeight = 0.8;
-    function rotate() {
-      angle += 0.002;
-      var eye = {
-        x: radius * Math.cos(angle),
-        y: radius * Math.sin(angle),
-        z: zHeight
-      };
-      Plotly.relayout(el.id, {'scene.camera.eye': eye});
-      requestAnimationFrame(rotate);
-    }
-    rotate();
-  }
-")
-p
-```
-
-# Part III: Matrix Algebra {background-color="white" style="color: black;"}
+# Part II: Matrix Algebra {background-color="white" style="color: black;"}
 
 Vectors, Matrices, and the OLS Estimator
 
@@ -604,8 +470,7 @@ $$\begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} + \begin{bmat
 
 **Properties:** Commutative, Associative, Distributive, Zero
 
-## Matrix Multiplication {.smaller}
-
+## Matrix Multiplication
 **Order matters!** $\mathbf{AB} \neq \mathbf{BA}$ in general.
 
 Multiply $i$-th row by $j$-th column:
@@ -760,33 +625,111 @@ $$\mathbf{X} = \begin{bmatrix} 1 & X_{11} & \cdots & X_{1k} \\ 1 & X_{21} & \cdo
 
 ## Deriving the OLS Estimator
 
-**Same Objective:** Minimize the sum of squared errors:
+**Same Objective:** Minimize the sum of squared errors. In scalar form, we minimized $\sum e_i^2$. In matrix form:
 
 $$\min_{\mathbf{b}}\; \mathbf{e}^T\mathbf{e} = (\mathbf{y} - \mathbf{Xb})^T(\mathbf{y} - \mathbf{Xb})$$
 
 . . .
 
-**Expand:**
+**Expand** using the distributive property of the transpose, $(\mathbf{A} - \mathbf{B})^T = \mathbf{A}^T - \mathbf{B}^T$:
+
+$$\mathbf{e}^T\mathbf{e} = (\mathbf{y}^T - \mathbf{b}^T\mathbf{X}^T)(\mathbf{y} - \mathbf{Xb})$$
+
+. . .
+
+Multiply out the terms:
+
+$$= \mathbf{y}^T\mathbf{y} - \mathbf{y}^T\mathbf{Xb} - \mathbf{b}^T\mathbf{X}^T\mathbf{y} + \mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$$
+
+. . .
+
+The middle two terms are both scalars (a $1 \times 1$ result), and a scalar equals its own transpose: $\mathbf{y}^T\mathbf{Xb} = (\mathbf{b}^T\mathbf{X}^T\mathbf{y})^T = \mathbf{b}^T\mathbf{X}^T\mathbf{y}$. So they combine:
 
 $$\mathbf{e}^T\mathbf{e} = \mathbf{y}^T\mathbf{y} - 2\mathbf{b}^T\mathbf{X}^T\mathbf{y} + \mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$$
 
-(using the fact that $\mathbf{b}^T\mathbf{X}^T\mathbf{y}$ and $\mathbf{y}^T\mathbf{X}\mathbf{b}$ are equal scalars)
+## Taking the Derivative: What Does It Mean?
 
-## The Normal Equations
+In scalar calculus, $\frac{d}{db} f(b)$ gives a single number. In matrix calculus, $\frac{\partial f}{\partial \mathbf{b}}$ gives a **vector of partial derivatives** — one for each element of $\mathbf{b}$.
 
-**Take the derivative and set to zero:**
+. . .
+
+If $\mathbf{b} = [b_0, b_1, \ldots, b_k]^T$, then:
+
+$$\frac{\partial f}{\partial \mathbf{b}} = \begin{bmatrix} \frac{\partial f}{\partial b_0} \\ \frac{\partial f}{\partial b_1} \\ \vdots \\ \frac{\partial f}{\partial b_k} \end{bmatrix}$$
+
+This vector of partial derivatives is the **gradient** — it points in the direction of steepest ascent. Setting it to $\mathbf{0}$ means *every* partial derivative equals zero simultaneously.
+
+## The Jacobian
+
+The **Jacobian** generalizes the derivative to vector-valued functions. If a function maps $k$ inputs to $m$ outputs, the Jacobian is the $m \times k$ matrix of all partial derivatives:
+
+$$\mathbf{J} = \begin{bmatrix} \frac{\partial f_1}{\partial b_0} & \frac{\partial f_1}{\partial b_1} & \cdots & \frac{\partial f_1}{\partial b_k} \\ \frac{\partial f_2}{\partial b_0} & \frac{\partial f_2}{\partial b_1} & \cdots & \frac{\partial f_2}{\partial b_k} \\ \vdots & \vdots & \ddots & \vdots \\ \frac{\partial f_m}{\partial b_0} & \frac{\partial f_m}{\partial b_1} & \cdots & \frac{\partial f_m}{\partial b_k} \end{bmatrix}$$
+
+. . .
+
+**For OLS**, our function $f(\mathbf{b}) = \mathbf{e}^T\mathbf{e}$ is scalar-valued ($m = 1$), so the Jacobian is a single row — which is just the transpose of the gradient:
+
+$$\mathbf{J} = \left[\frac{\partial f}{\partial b_0}, \;\frac{\partial f}{\partial b_1}, \;\ldots,\; \frac{\partial f}{\partial b_k}\right]$$
+
+. . .
+
+**Why does this matter?** In the bivariate case, we took two separate derivatives ($\frac{\partial SSR}{\partial a}$ and $\frac{\partial SSR}{\partial b}$) and solved two equations. The gradient/Jacobian does the same thing — but for **all $k+1$ coefficients at once**, packaged as a single matrix operation. This is why matrix notation is powerful: one equation replaces $k+1$ equations.
+
+## Matrix Derivative Rules
+
+We need three rules — each mirrors scalar calculus:
+
+. . .
+
+| Scalar Rule | Matrix Rule |
+|-------------|-------------|
+| $\frac{d}{db}(c) = 0$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{y}^T\mathbf{y}) = \mathbf{0}$ |
+| $\frac{d}{db}(\mathbf{c}^T b) = \mathbf{c}$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{c}^T\mathbf{b}) = \mathbf{c}$ |
+| $\frac{d}{db}(b^2 a) = 2ab$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{b}^T\mathbf{A}\mathbf{b}) = 2\mathbf{A}\mathbf{b}$ (if $\mathbf{A}$ is symmetric) |
+
+. . .
+
+The third rule requires $\mathbf{A}$ to be symmetric. Since $\mathbf{X}^T\mathbf{X}$ is always symmetric (recall: $(\mathbf{X}^T\mathbf{X})^T = \mathbf{X}^T\mathbf{X}$), the rule applies.
+
+## Applying the Rules
+
+Our function is: $\;\mathbf{e}^T\mathbf{e} = \underbrace{\mathbf{y}^T\mathbf{y}}_{\text{constant}} - \underbrace{2\mathbf{b}^T\mathbf{X}^T\mathbf{y}}_{\text{linear in } \mathbf{b}} + \underbrace{\mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}}_{\text{quadratic in } \mathbf{b}}$
+
+. . .
+
+**Term by term:**
+
+| Term | Rule Applied | Derivative w.r.t. $\mathbf{b}$ |
+|------|-------------|-------------------------------|
+| $\mathbf{y}^T\mathbf{y}$ | Constant → 0 | $\mathbf{0}$ |
+| $-2\mathbf{b}^T\mathbf{X}^T\mathbf{y}$ | Linear: $\frac{\partial}{\partial \mathbf{b}}(\mathbf{c}^T\mathbf{b}) = \mathbf{c}$, where $\mathbf{c} = \mathbf{X}^T\mathbf{y}$ | $-2\mathbf{X}^T\mathbf{y}$ |
+| $\mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$ | Quadratic: $\frac{\partial}{\partial \mathbf{b}}(\mathbf{b}^T\mathbf{A}\mathbf{b}) = 2\mathbf{A}\mathbf{b}$, where $\mathbf{A} = \mathbf{X}^T\mathbf{X}$ | $2\mathbf{X}^T\mathbf{X}\mathbf{b}$ |
+
+. . .
+
+**Combining:** $\;\frac{\partial\; \mathbf{e}^T\mathbf{e}}{\partial\; \mathbf{b}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{b}$
+
+## Setting the Derivative to Zero
+
+Combining the terms:
 
 $$\frac{\partial\; \mathbf{e}^T\mathbf{e}}{\partial\; \mathbf{b}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{b} = 0$$
 
 . . .
 
-**The normal equations:**
+Rearrange (move $-2\mathbf{X}^T\mathbf{y}$ to the right, divide by 2):
 
 $$\mathbf{X}^T\mathbf{X}\mathbf{b} = \mathbf{X}^T\mathbf{y}$$
 
+These are the **normal equations** — the matrix version of the first-order conditions.
+
 . . .
 
-**Multiply both sides by $(\mathbf{X}^T\mathbf{X})^{-1}$:**
+**Solve for $\mathbf{b}$** by multiplying both sides on the left by $(\mathbf{X}^T\mathbf{X})^{-1}$:
+
+$$(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$$
+
+Since $(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X} = \mathbf{I}$ and $\mathbf{Ib} = \mathbf{b}$:
 
 $$\boxed{\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}}$$
 
@@ -802,44 +745,6 @@ coef(lm(y ~ x))     # verify with lm()
 ```
 
 
-## An Example: Electoral Contestation
-
-```{r, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
-library(dplyr)
-library(tidyr)
-
-download.file("https://raw.githubusercontent.com/crweber9874/advancedRegression/main/data/wss20.rda",
-              destfile = "wss20.rda")
-## Load into session
-load("wss20.rda")
-
-wss20 = wss20 |>
-  pivot_wider(
-    names_from = contestation,
-    values_from = contestation_value
-  ) |>
-  mutate(
-    electoral_contestation = 
-      rowMeans(pick(criticize_election, attend_march, court, recount, burn_flag), na.rm = TRUE),
-    republican = ifelse(party_identification3 == 1, 1, 0),
-    democrat = ifelse(party_identification3 == 3, 1, 0),
-    independent = ifelse(party_identification3 == 2, 1, 0)
-  )
-
-```
-
-```{r, echo = TRUE, message = FALSE, warning = FALSE}
-## Solution with LM
-lm(electoral_contestation ~ college, data = wss20) |>
- coef()
-
-# Solution with matrix algebra
-X = cbind(1, wss20$college)
-y = wss20$electoral_contestation
-
-b = solve(t(X) %*% X) %*% t(X) %*% y
-b
-```
 ## Summary
 
 1. **Vectors** encode magnitude and direction; the **inner product** measures covariance
@@ -850,7 +755,7 @@ b
 
 . . .
 
-**References:**
+## References
 
 - Gill, Jeff. 2006. *Essential Mathematics for Political and Social Research*. Cambridge.
 - Moore, Will and David Siegel. 2013. *A Mathematics Course for Political and Social Research*. Princeton.

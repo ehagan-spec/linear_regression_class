@@ -94,11 +94,15 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 | Derivation of OLS Estimator | [ols_estimator.qmd](lectures/ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
 | OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](lectures/OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
 | Gauss-Markov Assumptions | [gauss_markov_slides.qmd](lectures/gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
+| Linear Regression and Matrix Algebra | [linear_regression_matrix_algebra.qmd](lectures/linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/intro_matrices) |
+| Multiple Regression | [multiple_regression.qmd](lectures/multiple_regression.qmd) | |
 
 **Course Schedule:**
 
 - **Week 1**: Introduction to Linear Regression
 - **Weeks 2-3**: Estimation and Properties (OLS derivation, Gauss-Markov assumptions, BLUE)
+- **Week 4**: Matrix Algebra
+- **Week 5**: Multiple Regression, Dummy Variables, and Model Fit
 
 Topics follow the progression in Fox's Applied Regression Analysis:
 1. Simple linear regression

@@ -1,0 +1,945 @@
+---
+title: "Multiple Regression"
+subtitle: "Multiple Predictors, Dummy Variables, and Model Fit"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    smaller: true
+    scrollable: true
+    math: katex
+    transition: fade
+    width: 1200
+    height: 750
+---
+
+## Multiple variables
+
+The OLS estimator is a point estimator. We predict a single point $\hat{y}_i$, given a predictor $x_i$. Let's consider the SRF with *multiple predictors*:
+
+$$
+Y_i - \underbrace{(a + b_1 X_1 + b_2 X_2)}_{\hat{Y}_{i}} = e_i
+$$
+
+We'll still find a line that minimizes $\sum e^2$
+
+
+- We can just use a little algebra to rewrite these equations. Let's simplify things by writing each term in "deviation" form.
+
+ * $y_i=Y_i-\bar{Y}$
+ * $x_{1i}=X_{1i}-\bar{X_1}$
+ * $x_{2i}=X_{2i}-\bar{X_2}$
+
+## Multiple variables
+
+Setting $\frac{\partial SSR}  {\partial b_1}$ to 0
+
+\begin{eqnarray*}
+0&=& -2 \sum (Y_i-a-b_1X_{1i}-b_2 X_{2i}) (X_{1i})     \nonumber \\
+b_1&=&  \frac{\sum x_{1i} y_i-b_2\sum x_{1i} x_{2i}}{\sum x_{1i}^2} \nonumber \\
+\end{eqnarray*}
+
+ Setting $\frac{\partial SSR}  {\partial b_2}$ to 0
+\begin{eqnarray*}
+0&=& -2 \sum (Y_i-a-b_1X_{1i}-b_2 X_{2i}) (X_{2i})     \nonumber \\
+b_2&=&  \frac{\sum x_{2i} y_i-b_1\sum x_{1i} x_{2i}}{\sum x_{2i}^2} \nonumber \\
+\end{eqnarray*}
+
+## Multiple variables
+
+Then,
+
+\begin{eqnarray*}
+b_1&=&  \frac{\sum y_i x_{1i} \sum x_{2i}^2 - \sum x_{1i} x_{2i} \sum x_{2i} y_i  }{\sum x_{1i}^2 \sum x_{2i}^2 -(\sum x_{1i} x_{2i})^2} \nonumber \\
+b_2&=&  \frac{\sum y_i x_{2i} \sum x_{1i}^2 - \sum x_{1i} x_{2i} \sum x_{1i} y_i }{\sum x_{1i}^2 \sum x_{2i}^2 -(\sum x_{1i} x_{2i})^2}
+\nonumber \\
+\end{eqnarray*}
+
+## Multiple variables
+
+```{r}
+#| echo: false
+#| output: false
+library(plotly)
+set.seed(42)
+
+n <- 500
+x1 <- rnorm(n, 3, 2)
+x2 <- rnorm(n, 1, 2)
+y <- 1 + 0.75 * x1 - 0.50 * x2 + rnorm(n, 0, 1.5)
+
+dat <- data.frame(x1, x2, y)
+fit <- lm(y ~ x1 + x2, data = dat)
+dat$yhat <- fitted(fit)
+```
+
+$\hat{Y} = a + b_1 X_1 + b_2 X_2$
+
+- $a$ = `r round(coef(fit)[1], 3)`
+- $b_1$ = `r round(coef(fit)[2], 3)`
+- $b_2$ = `r round(coef(fit)[3], 3)`
+
+$R^2$ = `r round(summary(fit)$r.squared, 3)`
+
+## Multiple Regression: Fitted Plane & Residuals
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 7
+# Build plane surface
+grd_x1 <- seq(min(x1), max(x1), length.out = 25)
+grd_x2 <- seq(min(x2), max(x2), length.out = 25)
+grd <- expand.grid(x1 = grd_x1, x2 = grd_x2)
+grd$y <- predict(fit, newdata = grd)
+z_mat <- matrix(grd$y, nrow = 25, ncol = 25)
+
+# Residual segments: vertical lines from each point to the plane
+seg <- do.call(rbind, lapply(1:n, function(i) {
+  data.frame(
+    sx1 = c(dat$x1[i], dat$x1[i], NA),
+    sx2 = c(dat$x2[i], dat$x2[i], NA),
+    sz  = c(dat$y[i],  dat$yhat[i], NA)
+  )
+}))
+
+p <- plot_ly()
+p <- add_surface(p, x = grd_x2, y = grd_x1, z = z_mat,
+                 colorscale = list(c(0, "#2c7fb8"), c(1, "blue")),
+                 opacity = 0.35, showscale = FALSE, name = "Regression Plane")
+p <- add_markers(p, x = dat$x2, y = dat$x1, z = dat$y,
+                 marker = list(size = 3, color = "black", opacity = 0.6),
+                 name = "Observations")
+p <- add_trace(p, x = seg$sx2, y = seg$sx1, z = seg$sz,
+               type = "scatter3d", mode = "lines",
+               line = list(color = "#d62728", width = 2),
+               opacity = 0.4, name = "Residuals")
+p <- layout(p,
+  scene = list(
+    xaxis = list(title = "X2"),
+    yaxis = list(title = "X1"),
+    zaxis = list(title = "Y"),
+    camera = list(eye = list(x = 1.8, y = -1.5, z = 0.8))
+  ),
+  margin = list(l = 0, r = 0, b = 0, t = 0),
+  title = ""
+)
+
+# Auto-rotate the 3D plot
+p <- htmlwidgets::onRender(p, "
+  function(el, x) {
+    var angle = 0;
+    var radius = 2.2;
+    var zHeight = 0.8;
+    function rotate() {
+      angle += 0.002;
+      var eye = {
+        x: radius * Math.cos(angle),
+        y: radius * Math.sin(angle),
+        z: zHeight
+      };
+      Plotly.relayout(el.id, {'scene.camera.eye': eye});
+      requestAnimationFrame(rotate);
+    }
+    rotate();
+  }
+")
+p
+```
+
+# Matrix Algebra {background-color="white" style="color: black;"}
+
+Vectors, Matrices, and the OLS Estimator
+
+## Why Matrix Algebra?
+- Writing the SRF in matrix form makes it easier to solve
+- Quantitative social science aims to quantify relationships between **multiple variables**
+- Data is *tabular*: rows = observations, columns = variables
+- We need tools to solve systems of equations efficiently
+
+$$\begin{bmatrix}
+y_{1}= & b_0+ b_1 x_{1}+b_2 x_{2}\\
+y_{2}= & b_0+ b_1 x_{1}+b_2 x_{2}\\
+\vdots\\
+y_{n}= & b_0+ b_1 x_{1}+b_2 x_{2}
+\end{bmatrix}$$
+
+- $n$ equations, fewer unknowns — **linear algebra** gives us the solution
+
+## Data as a Matrix
+
+Each row is an observation; each column is a variable.
+
+$$\begin{bmatrix}
+Vote & PID & Ideology \\\hline
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+\vdots & \vdots & \vdots\\
+a_{n1} & a_{n2} & a_{n3}
+\end{bmatrix}$$
+
+- This is an $n \times 3$ matrix
+- First subscript = row, second = column
+- Notation: $\mathbf{A}_{n \times 3}$
+
+```{r, echo = TRUE}
+A <- matrix(c(1, 0, 3,
+              0, 1, 5,
+              1, 1, 4), nrow = 3, byrow = TRUE)
+colnames(A) <- c("Vote", "PID", "Ideology")
+A
+dim(A)
+```
+
+## Vectors: The Building Blocks
+
+- **Scalar**: a single number (magnitude only)
+- **Vector**: multiple elements — encodes **magnitude** and **direction**
+
+A vector $\mathbf{a} \in \mathbb{R}^k$ has $k$ elements.
+
+. . .
+
+**Euclidean Distance** between $\mathbf{a}=[x_1,y_1]$ and $\mathbf{b}=[x_2,y_2]$:
+
+$$\text{Distance}(\mathbf{a},\mathbf{b}) = \sqrt{(x_1-x_2)^2+(y_1-y_2)^2}$$
+
+This is just the Pythagorean theorem!
+
+```{r, echo = TRUE}
+a <- c(3, 2); b <- c(1, 1)
+sqrt(sum((a - b)^2))  # Euclidean distance
+```
+
+## The Norm of a Vector
+
+The **norm** measures the length (magnitude) of a vector from the origin:
+
+$$\|\mathbf{a}\| = \sqrt{x_1^2 + y_1^2}$$
+
+- Dividing a vector by its norm gives a **unit vector** (length = 1)
+- Useful for standardization
+
+```{r, echo = TRUE}
+a <- c(3, 2, 1)
+sqrt(sum(a^2))       # norm of a
+a / sqrt(sum(a^2))   # unit vector
+```
+
+. . .
+
+**In higher dimensions** ($\mathbb{R}^3$):
+
+$$\|\mathbf{a}\| = \sqrt{x_1^2 + y_1^2 + z_1^2}$$
+
+## Vector Addition & Subtraction
+
+Element-wise operations on **conformable** vectors (same length):
+
+$$\mathbf{a} + \mathbf{b} = [3+1,\; 2+1,\; 1+1] = [4, 3, 2]$$
+
+$$\mathbf{a} - \mathbf{b} = [3-1,\; 2-1,\; 1-1] = [2, 1, 0]$$
+
+. . .
+
+**Properties:**
+
+| Property | Statement |
+|----------|-----------|
+| Commutative | $\mathbf{a}+\mathbf{b}=\mathbf{b}+\mathbf{a}$ |
+| Associative | $(\mathbf{a}+\mathbf{b})+\mathbf{c}=\mathbf{a}+(\mathbf{b}+\mathbf{c})$ |
+| Distributive | $c(\mathbf{a}+\mathbf{b})=c\mathbf{a}+c\mathbf{b}$ |
+| Zero | $\mathbf{a}+0=\mathbf{a}$ |
+
+```{r, echo = TRUE}
+a <- c(3, 2, 1); b <- c(1, 1, 1)
+a + b    # addition
+a - b    # subtraction
+```
+
+## Vector Multiplication
+
+- **Inner (dot) product** → produces a *scalar* (measures similarity / covariance)
+- **Cross product** → produces a *vector* (orthogonal to both inputs)
+- **Outer product** → produces a *matrix*
+
+## The Inner (Dot) Product
+
+Multiply corresponding elements and sum:
+
+$$\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i$$
+
+For $\mathbf{a}=[3,2,1]$ and $\mathbf{b}=[1,1,1]$: $\;\; 3(1)+2(1)+1(1) = 6$
+
+```{r, echo = TRUE}
+a <- c(3, 2, 1); b <- c(1, 1, 1)
+sum(a * b)          # inner product
+a %*% b             # same thing with matrix notation
+```
+
+. . .
+
+**The inner product is a measure of covariance:**
+
+$$\text{cov}(x,y) = \frac{\text{inner product}(x-\bar{x},\; y-\bar{y})}{n-1}$$
+
+$$r_{x,y} = \frac{\text{inner product}(x-\bar{x},\; y-\bar{y})}{\|x-\bar{x}\|\;\|y-\bar{y}\|}$$
+
+
+## Inner Product Rules
+
+| Property | Statement |
+|----------|-----------|
+| Commutative | $\mathbf{a} \cdot \mathbf{b} = \mathbf{b} \cdot \mathbf{a}$ |
+| Associative | $d(\mathbf{a} \cdot \mathbf{b}) = (d\mathbf{a}) \cdot \mathbf{b}$ |
+| Distributive | $\mathbf{c} \cdot (\mathbf{a}+\mathbf{b}) = \mathbf{c}\cdot\mathbf{a} + \mathbf{c}\cdot\mathbf{b}$ |
+| Zero | $\mathbf{a} \cdot 0 = 0$ |
+
+## The Cross Product
+
+For $\mathbf{a}=[3,2,1]$ and $\mathbf{b}=[1,4,7]$:
+
+1. Stack the vectors
+2. Calculate $2 \times 2$ determinants
+
+$$\mathbf{a} \times \mathbf{b} = [2(7)-4(1),\;\; 1(1)-3(7),\;\; 3(4)-2(1)] = [10, -20, 10]$$
+
+- Result is **orthogonal** to both original vectors
+- Useful for determinants and matrix inversion
+
+## The Outer Product
+
+Transpose one vector, then multiply:
+
+$$\begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix} \begin{bmatrix} 1 & 4 & 7 \end{bmatrix} = \begin{bmatrix} 3 & 12 & 21 \\ 2 & 8 & 14 \\ 1 & 4 & 7 \end{bmatrix}$$
+
+- Input: two vectors of length $k$
+- Output: a $k \times k$ matrix
+
+```{r, echo = TRUE}
+a <- c(3, 2, 1); b <- c(1, 4, 7)
+a %o% b   # outer product
+```
+
+## Matrices
+
+A matrix combines row or column vectors. Notation: **bold uppercase** ($\mathbf{A}$).
+
+$$\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots\\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{bmatrix}$$
+
+## Matrix Types
+
+| Type | Definition |
+|------|-----------|
+| **Square** | Equal rows and columns |
+| **Symmetric** | Same entries above and below the diagonal; $\mathbf{A} = \mathbf{A}^T$ |
+| **Identity** ($\mathbf{I}$) | 1s on diagonal, 0s off; $\mathbf{AI} = \mathbf{A}$ |
+| **Idempotent** | $\mathbf{A}^2 = \mathbf{A}$ |
+| **Trace** | Sum of diagonal elements: $\text{tr}(\mathbf{I}) = n$ |
+
+## Matrix Addition & Subtraction
+
+Matrices must be **conformable** (same dimensions). Add/subtract element-wise:
+
+$$\begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} + \begin{bmatrix} b_{11} & b_{12} \\ b_{21} & b_{22} \end{bmatrix} = \begin{bmatrix} a_{11}+b_{11} & a_{12}+b_{12} \\ a_{21}+b_{21} & a_{22}+b_{22} \end{bmatrix}$$
+
+. . .
+
+**Properties:** Commutative, Associative, Distributive, Zero
+
+## Matrix Multiplication
+**Order matters!** $\mathbf{AB} \neq \mathbf{BA}$ in general.
+
+Multiply $i$-th row by $j$-th column:
+
+$$\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} \begin{bmatrix} 3 & 5 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} 1(3)+3(2) & 1(5)+3(4) \\ 2(3)+4(2) & 2(5)+4(4) \end{bmatrix} = \begin{bmatrix} 9 & 17 \\ 14 & 26 \end{bmatrix}$$
+
+```{r, echo = TRUE}
+A <- matrix(c(1,3,2,4), nrow=2, byrow=TRUE)
+B <- matrix(c(3,5,2,4), nrow=2, byrow=TRUE)
+A %*% B
+```
+
+. . .
+
+**Conformability rule:** columns of first = rows of second
+
+$$\mathbf{A}_{m \times n} \times \mathbf{B}_{n \times p} = \mathbf{C}_{m \times p}$$
+
+Inner dimensions must match; result has outer dimensions.
+
+
+## The Transpose
+
+$\mathbf{A}^T$ swaps rows and columns. If $\mathbf{A}$ is $m \times n$, then $\mathbf{A}^T$ is $n \times m$.
+
+$$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}^T = \begin{bmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{bmatrix}$$
+
+```{r, echo = TRUE}
+A <- matrix(c(1,2,3,4,5,6), nrow=2, byrow=TRUE)
+t(A)         # transpose
+t(A) %*% A   # A'A is always square & symmetric
+```
+
+. . .
+
+**Key properties:**
+
+| Property | Statement |
+|----------|-----------|
+| Double transpose | $(\mathbf{A}^T)^T = \mathbf{A}$ |
+| Sum | $(\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T + \mathbf{B}^T$ |
+| Product (**reversal**) | $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$ |
+
+## Why the Transpose Matters
+
+**Transposing a product reverses the order:**
+
+$$(\mathbf{ABC})^T = \mathbf{C}^T\mathbf{B}^T\mathbf{A}^T$$
+
+. . .
+
+**Critical result:** For any matrix $\mathbf{A}$, the product $\mathbf{A}^T\mathbf{A}$ is always:
+
+- **Square** ($n \times n$ if $\mathbf{A}$ is $m \times n$)
+- **Symmetric**
+
+This is exactly what $\mathbf{X}^T\mathbf{X}$ produces in the normal equations.
+
+## The Determinant
+
+The **determinant** is a **scalar** value computed from a square matrix. It's necessary for *matrix inversion* (later).
+
+**For a $2 \times 2$ matrix:**
+
+$$\det(\mathbf{A}) = \det\begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc$$
+
+. . .
+
+- If $\det(\mathbf{A}) \neq 0$: the matrix is **nonsingular** (invertible)
+- If $\det(\mathbf{A}) = 0$: the matrix is **singular** (no inverse exists — columns are linearly dependent)
+
+. . .
+
+**Example:**
+
+$$\det\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix} = 4(6) - 7(2) = 10 \neq 0 \;\; ✓$$
+
+$$\det\begin{bmatrix} 2 & 4 \\ 1 & 2 \end{bmatrix} = 2(2) - 4(1) = 0 \;\; \text{(singular — row 1 = 2 × row 2)}$$
+
+```{r, echo = TRUE}
+A <- matrix(c(4,7,2,6), nrow=2, byrow=TRUE)
+det(A)   # nonsingular
+B <- matrix(c(2,4,1,2), nrow=2, byrow=TRUE)
+det(B)   # singular — no inverse
+```
+
+. . .
+
+**For OLS:** $\det(\mathbf{X}^T\mathbf{X}) = 0$ means perfect multicollinearity — the columns of $\mathbf{X}$ are linearly dependent, and we cannot solve for $\mathbf{b}$.
+
+## Matrix Inversion
+
+For scalars: $a \cdot a^{-1} = 1$
+
+For matrices: $\mathbf{A}\mathbf{A}^{-1} = \mathbf{A}^{-1}\mathbf{A} = \mathbf{I}$
+
+. . .
+
+**Requirements:**
+
+- Only **square** matrices can have inverses
+- Must be **nonsingular**: $\det(\mathbf{A}) \neq 0$
+
+## The $2 \times 2$ Inverse
+
+$$\mathbf{A} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \quad \Longrightarrow \quad \mathbf{A}^{-1} = \frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
+
+. . .
+
+**Example:**
+
+$$\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix}^{-1} = \frac{1}{10}\begin{bmatrix} 6 & -7 \\ -2 & 4 \end{bmatrix} = \begin{bmatrix} 0.6 & -0.7 \\ -0.2 & 0.4 \end{bmatrix}$$
+
+$$\mathbf{A}\mathbf{A}^{-1} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = \mathbf{I} \;\; ✓$$
+
+```{r, echo = TRUE}
+A <- matrix(c(4,7,2,6), nrow=2, byrow=TRUE)
+solve(A)          # inverse
+A %*% solve(A)    # verify: should be identity
+```
+
+## Properties of the Inverse
+
+| Property | Statement |
+|----------|-----------|
+| Product (**reversal**) | $(\mathbf{AB})^{-1} = \mathbf{B}^{-1}\mathbf{A}^{-1}$ |
+| Transpose | $(\mathbf{A}^T)^{-1} = (\mathbf{A}^{-1})^T$ |
+| Double inverse | $(\mathbf{A}^{-1})^{-1} = \mathbf{A}$ |
+| Identity | $\mathbf{I}^{-1} = \mathbf{I}$ |
+
+Like the transpose, **inverting a product reverses the order**.
+
+## Linear Regression in Matrix Form
+
+$$\mathbf{y} = \mathbf{X}\mathbf{b} + \mathbf{e}$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+$$\mathbf{y} = \begin{bmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{bmatrix} \quad \mathbf{b} = \begin{bmatrix} b_0 \\ b_1 \\ \vdots \\ b_k \end{bmatrix}$$
+
+:::
+
+::: {.column width="50%"}
+
+$$\mathbf{X} = \begin{bmatrix} 1 & X_{11} & \cdots & X_{1k} \\ 1 & X_{21} & \cdots & X_{2k} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & X_{n1} & \cdots & X_{nk} \end{bmatrix}$$
+
+:::
+
+::::
+
+## Deriving the OLS Estimator
+
+**Same Objective:** Minimize the sum of squared errors. In scalar form, we minimized $\sum e_i^2$. In matrix form:
+
+$$\min_{\mathbf{b}}\; \mathbf{e}^T\mathbf{e} = (\mathbf{y} - \mathbf{Xb})^T(\mathbf{y} - \mathbf{Xb})$$
+
+. . .
+
+**Expand** using the distributive property of the transpose, $(\mathbf{A} - \mathbf{B})^T = \mathbf{A}^T - \mathbf{B}^T$:
+
+$$\mathbf{e}^T\mathbf{e} = (\mathbf{y}^T - \mathbf{b}^T\mathbf{X}^T)(\mathbf{y} - \mathbf{Xb})$$
+
+. . .
+
+Multiply out the terms:
+
+$$= \mathbf{y}^T\mathbf{y} - \mathbf{y}^T\mathbf{Xb} - \mathbf{b}^T\mathbf{X}^T\mathbf{y} + \mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$$
+
+. . .
+
+The middle two terms are both scalars (a $1 \times 1$ result), and a scalar equals its own transpose: $\mathbf{y}^T\mathbf{Xb} = (\mathbf{b}^T\mathbf{X}^T\mathbf{y})^T = \mathbf{b}^T\mathbf{X}^T\mathbf{y}$. So they combine:
+
+$$\mathbf{e}^T\mathbf{e} = \mathbf{y}^T\mathbf{y} - 2\mathbf{b}^T\mathbf{X}^T\mathbf{y} + \mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$$
+
+## The Derivative.
+
+In scalar calculus, $\frac{d}{db} f(b)$ gives a single number. In matrix calculus, $\frac{\partial f}{\partial \mathbf{b}}$ gives a **vector of derivatives** — corresponding to each element of $\mathbf{b}$, the intercepts and the slopes
+
+. . .
+
+For instance, if $\mathbf{b} = [b_0, b_1, \ldots, b_k]^T$, then:
+
+$$\frac{\partial f}{\partial \mathbf{b}} = \begin{bmatrix} \frac{\partial f}{\partial b_0} \\ \frac{\partial f}{\partial b_1} \\ \vdots \\ \frac{\partial f}{\partial b_k} \end{bmatrix}$$
+
+This vector of partial derivatives is called the **gradient**. Setting it to $\mathbf{0}$ means *every* partial derivative equals zero simultaneously.
+
+. . .
+
+**Why does this matter?** In the bivariate case, we took two separate derivatives ($\frac{\partial SSR}{\partial a}$ and $\frac{\partial SSR}{\partial b}$) and solved two equations. The gradient is effectively the same thing — but for **all $k+1$ coefficients simultaneously**.
+
+## Matrix Derivative Rules
+
+We need three rules — each corresponds to rules scalar calculus:
+
+. . .
+
+| Scalar Rule | Matrix Rule |
+|-------------|-------------|
+| $\frac{d}{db}(c) = 0$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{y}^T\mathbf{y}) = \mathbf{0}$ |
+| $\frac{d}{db}(\mathbf{c}^T b) = \mathbf{c}$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{c}^T\mathbf{b}) = \mathbf{c}$ |
+| $\frac{d}{db}(b^2 a) = 2ab$ | $\frac{\partial}{\partial \mathbf{b}}(\mathbf{b}^T\mathbf{A}\mathbf{b}) = 2\mathbf{A}\mathbf{b}$ (if $\mathbf{A}$ is symmetric) |
+
+. . .
+
+The third rule requires $\mathbf{A}$ to be symmetric. Since $\mathbf{X}^T\mathbf{X}$ is always symmetric (recall: $(\mathbf{X}^T\mathbf{X})^T = \mathbf{X}^T\mathbf{X}$), the rule applies.
+
+## Applying the Rules
+
+Our function is: $\;\mathbf{e}^T\mathbf{e} = \underbrace{\mathbf{y}^T\mathbf{y}}_{\text{constant}} - \underbrace{2\mathbf{b}^T\mathbf{X}^T\mathbf{y}}_{\text{linear in } \mathbf{b}} + \underbrace{\mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}}_{\text{quadratic in } \mathbf{b}}$
+
+. . .
+
+**Term by term:**
+
+| Term | Rule Applied | Derivative w.r.t. $\mathbf{b}$ |
+|------|-------------|-------------------------------|
+| $\mathbf{y}^T\mathbf{y}$ | Constant → 0 | $\mathbf{0}$ |
+| $-2\mathbf{b}^T\mathbf{X}^T\mathbf{y}$ | Linear: $\frac{\partial}{\partial \mathbf{b}}(\mathbf{c}^T\mathbf{b}) = \mathbf{c}$, where $\mathbf{c} = \mathbf{X}^T\mathbf{y}$ | $-2\mathbf{X}^T\mathbf{y}$ |
+| $\mathbf{b}^T\mathbf{X}^T\mathbf{X}\mathbf{b}$ | Quadratic: $\frac{\partial}{\partial \mathbf{b}}(\mathbf{b}^T\mathbf{A}\mathbf{b}) = 2\mathbf{A}\mathbf{b}$, where $\mathbf{A} = \mathbf{X}^T\mathbf{X}$ | $2\mathbf{X}^T\mathbf{X}\mathbf{b}$ |
+
+. . .
+
+**Combining:** $\;\frac{\partial\; \mathbf{e}^T\mathbf{e}}{\partial\; \mathbf{b}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{b}$
+
+## Setting the Derivative to Zero
+
+Combining the terms:
+
+$$\frac{\partial\; \mathbf{e}^T\mathbf{e}}{\partial\; \mathbf{b}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{b} = 0$$
+
+. . .
+
+Rearrange (move $-2\mathbf{X}^T\mathbf{y}$ to the right, divide by 2):
+
+$$\mathbf{X}^T\mathbf{X}\mathbf{b} = \mathbf{X}^T\mathbf{y}$$
+
+These are the **normal equations** — the matrix version of the first-order conditions.
+
+. . .
+
+**Solve for $\mathbf{b}$** by multiplying both sides on the left by $(\mathbf{X}^T\mathbf{X})^{-1}$:
+
+$$(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$$
+
+Since $(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X} = \mathbf{I}$ and $\mathbf{Ib} = \mathbf{b}$:
+
+$$\boxed{\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}}$$
+
+This requires $\mathbf{X}^T\mathbf{X}$ to be invertible — fails under **perfect multicollinearity**.
+
+```{r, echo = TRUE}
+x <- c(1, 2, 3, 4, 5)
+y <- c(5.1, 7.9, 11.2, 13.8, 17.1)
+X <- cbind(1, x)
+b <- solve(t(X) %*% X) %*% t(X) %*% y
+b                    # OLS
+coef(lm(y ~ x))     # verify with lm()
+```
+
+## An Example: Electoral Contestation
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+library(dplyr)
+library(tidyr)
+
+download.file("https://raw.githubusercontent.com/crweber9874/advancedRegression/main/data/wss20.rda",
+              destfile = "wss20.rda")
+## Load into session
+load("wss20.rda")
+
+wss20 = wss20 |>
+  pivot_wider(
+    names_from = contestation,
+    values_from = contestation_value
+  ) |>
+  mutate(
+    electoral_contestation =
+      rowMeans(pick(criticize_election, attend_march, court, recount, burn_flag), na.rm = TRUE),
+    vote_trump = presvote_trump_2020,
+    authoritarianism = rowMeans(cbind(auth_1, auth_2, auth_3, auth_4), na.rm = TRUE),
+    republican = ifelse(party_identification3 == 1, 1, 0),
+    democrat = ifelse(party_identification3 == 3, 1, 0),
+    independent = ifelse(party_identification3 == 2, 1, 0)
+  )
+
+
+```
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+## Solution with LM
+lm(electoral_contestation ~ authoritarianism, data = wss20) |>
+ coef()
+
+# Solution with matrix algebra
+X = cbind(1, wss20$college)
+y = wss20$electoral_contestation
+
+b = solve(t(X) %*% X) %*% t(X) %*% y
+b
+```
+
+
+## Dummy Variable Regression
+- $x$ can be qualitative or quantitative — a dummy variable encodes group membership as 0 or 1
+- With $k$ categories, include $k-1$ dummies; the omitted group is the **reference category**
+- Why omit one? All $k$ dummies sum to a column of ones — perfectly collinear with the intercept
+
+. . .
+
+Here, "Independent" is the excluded category — coefficients for "Republican" and "Democrat" are differences relative to Independents.
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+lm(electoral_contestation ~ republican + democrat + authoritarianism, data = wss20) |>
+  summary()
+```
+
+## Dummy Variable Regression: Intercept Shifts
+
+- $E(Y \mid \text{Independent}) = a + b_{\text{Auth}} \cdot X$ — the intercept alone
+- $E(Y \mid \text{Republican}) = (a + b_{\text{Rep}}) + b_{\text{Auth}} \cdot X$ — intercept shifts
+- $E(Y \mid \text{Democrat}) = (a + b_{\text{Dem}}) + b_{\text{Auth}} \cdot X$ — a different shift
+
+The slope on authoritarianism is the **same** for every group — only the intercept moves.
+
+## Dummy Variable Regression: Intercept Shifts
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+#| fig-width: 10
+#| fig-height: 6
+library(plotly)
+
+fit_dummy <- lm(electoral_contestation ~ authoritarianism + republican + democrat, data = wss20)
+b0 <- coef(fit_dummy)[1]
+b_auth <- coef(fit_dummy)[2]
+b_rep <- coef(fit_dummy)[3]
+b_dem <- coef(fit_dummy)[4]
+
+x_range <- seq(min(wss20$authoritarianism, na.rm = TRUE), max(wss20$authoritarianism, na.rm = TRUE), length.out = 100)
+
+## Assign party label for scatter points
+wss20$pid_label <- ifelse(wss20$republican == 1 & !is.na(wss20$republican), "Republican",
+                   ifelse(wss20$democrat == 1 & !is.na(wss20$democrat), "Democrat",
+                   ifelse(wss20$independent == 1 & !is.na(wss20$independent), "Independent", NA)))
+scatter_df <- wss20 |> filter(!is.na(pid_label), !is.na(authoritarianism), !is.na(electoral_contestation))
+
+plot_ly() |>
+  ## Jittered scatter points by PID
+  add_markers(data = scatter_df |> filter(pid_label == "Independent"),
+              x = ~jitter(authoritarianism, amount = 0.1),
+              y = ~jitter(electoral_contestation, amount = 0.1),
+              name = "Independent", legendgroup = "Independent",
+              marker = list(color = "rgba(128,128,128,0.25)", size = 5),
+              showlegend = FALSE) |>
+  add_markers(data = scatter_df |> filter(pid_label == "Republican"),
+              x = ~jitter(authoritarianism, amount = 0.1),
+              y = ~jitter(electoral_contestation, amount = 0.1),
+              name = "Republican", legendgroup = "Republican",
+              marker = list(color = "rgba(255,0,0,0.25)", size = 5),
+              showlegend = FALSE) |>
+  add_markers(data = scatter_df |> filter(pid_label == "Democrat"),
+              x = ~jitter(authoritarianism, amount = 0.1),
+              y = ~jitter(electoral_contestation, amount = 0.1),
+              name = "Democrat", legendgroup = "Democrat",
+              marker = list(color = "rgba(0,0,255,0.25)", size = 5),
+              showlegend = FALSE) |>
+  ## Regression lines
+  add_lines(x = x_range, y = b0 + b_auth * x_range,
+            name = paste0("Independent (intercept = ", round(b0, 2), ")"),
+            legendgroup = "Independent",
+            line = list(color = "gray", width = 3)) |>
+  add_lines(x = x_range, y = (b0 + b_rep) + b_auth * x_range,
+            name = paste0("Republican (intercept = ", round(b0 + b_rep, 2), ")"),
+            legendgroup = "Republican",
+            line = list(color = "red", width = 3)) |>
+  add_lines(x = x_range, y = (b0 + b_dem) + b_auth * x_range,
+            name = paste0("Democrat (intercept = ", round(b0 + b_dem, 2), ")"),
+            legendgroup = "Democrat",
+            line = list(color = "blue", width = 3)) |>
+  layout(
+    xaxis = list(title = "Authoritarianism"),
+    yaxis = list(title = "E(Electoral Contestation|Authoritarianism, Party ID)"),
+    legend = list(x = 0.02, y = 0.98),
+    margin = list(t = 10)
+  )
+```
+
+
+## Revisiting Model Fit: $R^2$ in Multiple Regression
+
+Recall the decomposition: $TSS = RegSS + RSS$
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+fit_pie <- lm(electoral_contestation ~ authoritarianism + republican + democrat, data = wss20)
+tss <- sum((wss20$electoral_contestation - mean(wss20$electoral_contestation, na.rm = TRUE))^2, na.rm = TRUE)
+rss <- sum(residuals(fit_pie)^2)
+regss <- tss - rss
+
+plot_ly(
+  labels = c("RegSS (Explained)", "RSS (Residual)"),
+  values = c(regss, rss),
+  type = "pie",
+  marker = list(colors = c("#2c7fb8", "#d95f02")),
+  textinfo = "label+percent",
+  textfont = list(size = 14),
+  hoverinfo = "label+value+percent"
+) |> layout(
+  title = list(text = "Total Sum of Squares Decomposition", font = list(size = 16)),
+  showlegend = FALSE,
+  margin = list(t = 40, b = 10)
+)
+```
+
+$$R^2 = 1 - \frac{RSS}{TSS} = 1 - \frac{\sum(Y_i - \hat{Y}_i)^2}{\sum(Y_i - \bar{Y})^2}$$
+
+. . .
+
+**Problem:** $R^2$ *never decreases* when you add a predictor — even a useless one. Adding noise variables inflates $R^2$.
+
+## Adjusted $R^2$
+
+The **adjusted $R^2$** penalizes for model complexity:
+
+$$\bar{R}^2 = 1 - \frac{RSS / (n - k - 1)}{TSS / (n - 1)} = 1 - (1 - R^2)\frac{n - 1}{n - k - 1}$$
+
+- $k$ = number of predictors, $n$ = sample size
+- Unlike $R^2$, adjusted $R^2$ **can decrease** if a new predictor doesn't improve the model enough to offset the lost degree of freedom
+- When $k$ is large relative to $n$, the penalty is substantial
+
+## Model Fit: Example
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+## Bivariate model
+fit1 <- lm(electoral_contestation ~ authoritarianism, data = wss20)
+## Multiple regression with dummies
+fit2 <- lm(electoral_contestation ~ authoritarianism + republican + democrat, data = wss20)
+
+data.frame(
+  Model = c("Authoritarianism only", "+ Party ID dummies"),
+  R2 = c(summary(fit1)$r.squared, summary(fit2)$r.squared),
+  Adj_R2 = c(summary(fit1)$adj.r.squared, summary(fit2)$adj.r.squared),
+  k = c(1, 3)
+) |> knitr::kable(digits = 4)
+```
+
+## The Overfitting Problem
+
+**In-sample** fit ($R^2$) measures how well the model explains *the data it was trained on*. Call this the "training set" performance.
+- Adding predictors improves in-sample fit, even if they are irrelevant. They won't help predict new data, but they will reduce residuals in the training set.
+- With enough predictors, you can fit the training data perfectly — but this is just memorizing noise, not learning signal.
+- A model with $n - 1$ predictors and $n$ observations achieves $R^2 = 1$
+
+. . .
+
+**Out-of-sample** predictions measure how well the model generalizes to *new, unseen data*. Call this the "test set" performance, or even "out-of-sample" performance.
+- An overfit model memorizes noise in the training data
+- It performs well in-sample but poorly out-of-sample
+- The gap between in-sample and out-of-sample performance is a diagnostic for overfitting.
+
+. . .
+
+**Key Point Is...:** A good model captures *signal*, not *noise*. $R^2$ alone cannot distinguish between the two.
+
+## K-Fold Cross-Validation
+
+Cross-validation estimates out-of-sample prediction error using only the available data (Hastie, Tibshirani, & Friedman, 2009, §7.10, "Cross-Validation", p. 241).
+
+**Procedure:**
+
+1. Randomly partition the data into $K$ roughly equal-sized **folds**
+2. For each fold $k = 1, \ldots, K$:
+    - **Train** the model on all data *except* fold $k$
+    - **Predict** on fold $k$ (the held-out data)
+    - Compute prediction error: $\text{MSE}_k = \frac{1}{n_k}\sum_{i \in \text{fold } k}(Y_i - \hat{Y}_i)^2$. Do this for **each fold**
+3. Average across folds: $\text{CV}_{(K)} = \frac{1}{K}\sum_{k=1}^{K} \text{MSE}_k$
+
+. . .
+
+There are not simple rules for how many folds to include. Typically, $K = 5$ or $K = 10$. When $K = n$, this is **leave-one-out** cross-validation (LOOCV).
+
+## K-Fold Cross-Validation
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 5}
+library(ggplot2)
+
+K <- 5
+fold_data <- data.frame(
+  fold = rep(1:K, each = K),
+  block = rep(1:K, times = K),
+  role = ifelse(rep(1:K, each = K) == rep(1:K, times = K), "Test", "Train")
+)
+
+ggplot(fold_data, aes(x = factor(block), y = factor(fold, levels = K:1), fill = role)) +
+  geom_tile(color = "white", linewidth = 1.5) +
+  geom_text(aes(label = role), size = 4, fontface = "bold") +
+  scale_fill_manual(values = c("Test" = "#d95f02", "Train" = "#2c7fb8")) +
+  labs(x = "Data Block", y = "Iteration", fill = "",
+       title = "5-Fold Cross-Validation") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom",
+        panel.grid = element_blank())
+```
+
+Each row is one iteration: the orange block is held out for testing, the blue blocks are used for training.
+
+## K-Fold Cross-Validation: Example
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+set.seed(42)
+cv_data <- wss20 |> filter(!is.na(electoral_contestation), !is.na(authoritarianism), !is.na(republican), !is.na(democrat))
+K <- 10
+folds <- sample(rep(1:K, length.out = nrow(cv_data)))
+mse_simple <- mse_full <- numeric(K)
+
+for (k in 1:K) {
+  train <- cv_data[folds != k, ]
+  test  <- cv_data[folds == k, ]
+  ## Simple model
+  fit_s <- lm(electoral_contestation ~ authoritarianism, data = train)
+  mse_simple[k] <- mean((test$electoral_contestation - predict(fit_s, test))^2)
+  ## Full model
+  fit_f <- lm(electoral_contestation ~ authoritarianism + republican + democrat, data = train)
+  mse_full[k] <- mean((test$electoral_contestation - predict(fit_f, test))^2)
+}
+data.frame(Model = c("Authoritarianism only", "+ Party ID dummies"),
+           CV_MSE = round(c(mean(mse_simple), mean(mse_full)), 4)) |>
+  knitr::kable()
+```
+
+If the fuller model has *lower* CV-MSE, it genuinely improves prediction — not just in-sample fit.
+
+## The Lewis-Beck vs. Achen Debate over $R^2$
+
+Scholars occasionally disgree about the role of $R^2$ in evaluating models. 
+
+. . .
+
+**Lewis-Beck & Skalaban (1990):** $R^2$ is a useful and informative measure of model fit.
+
+- A high $R^2$ indicates that the model accounts for a substantial share of variance in $Y$
+- Comparing $R^2$ across models helps assess whether new predictors contribute
+- In applied work, $R^2$ provides a meaningful summary of explanatory power
+
+. . .
+
+**Achen (1982, 1990):** $R^2$ is misleading and overemphasized.
+
+- $R^2$ depends on the variance of $X$ in the sample (Remember this calculation?) — the same causal effect can yield very different $R^2$ values in different datasets
+- Researchers can inflate $R^2$ by choosing samples with high variance in $X$, or by adding irrelevant predictors
+- $R^2$ does not measure *causal* impact; a coefficient's magnitude, sign, and uncertainty about that estimate matter more
+
+## The Debate: Implications
+
+**Achen's argument:** is that we should focus attention on *coefficient estimates* and their *standard errors*, not on $R^2$. A model with a small $R^2$ can still identify an important causal effect (e.g., genes and voting); a model with a large $R^2$ can be theoretically vacuous (predictions in small samples).
+
+. . .
+
+**Middle Ground:**
+
+- $R^2$ is useful for **prediction** — how well does the model forecast $Y$?
+- $R^2$ is less useful for testing substantive theories about variables and their relationships, particularly causal relationships.
+- Adjusted $R^2$ and cross-validation are better tools for model comparison than raw $R^2$
+- Report $R^2$ but don't overemphasize it; substantive interpretation of coefficients comes first
+
+. . .
+
+## Summary
+
+1. Multiple regression extends OLS to multiple predictors: $\hat{Y} = a + b_1 X_1 + b_2 X_2 + \ldots$
+2. Dummy variables encode categorical data as 0/1; omit one category to avoid perfect collinearity
+3. The omitted group is the **reference category**; coefficients are differences from it
+4. $R^2$ always increases with more predictors; **adjusted $R^2$** penalizes for complexity
+5. **Overfitting**: high in-sample $R^2$ does not guarantee good out-of-sample prediction
+6. **K-fold cross-validation** estimates true predictive performance by repeatedly holding out data
+7. The Lewis-Beck/Achen debate: $R^2$ is useful for prediction, but coefficients matter more for causal inference
+
+. . .
+
+[Google Colab Notebook](https://colab.research.google.com/drive/1aqCtyXcZs8Am5fiei5D2XdAmUV0AUYaf?usp=sharing)
+
+## References
+
+- Achen, Christopher H. 1982. *Interpreting and Using Regression*. Sage.
+- Achen, Christopher H. 1990. "What Does 'Explained Variance' Explain?" *Political Analysis* 2: 173–184.
+- Gill, Jeff. 2006. *Essential Mathematics for Political and Social Research*. Cambridge.
+- Hastie, Trevor, Robert Tibshirani, and Jerome Friedman. 2009. *The Elements of Statistical Learning*. 2nd ed. Springer.
+- Lewis-Beck, Michael S. and Andrew Skalaban. 1990. "The R-Squared: Some Straight Talk." *Political Analysis* 2: 153–171.
+- Moore, Will and David Siegel. 2013. *A Mathematics Course for Political and Social Research*. Princeton.
