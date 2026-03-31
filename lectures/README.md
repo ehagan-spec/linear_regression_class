@@ -10,15 +10,17 @@ This directory contains lecture materials for POL 682. All lectures are written 
 
 ## Quick Links
 
-| Lecture | File | RPubs |
-|---------|------|-------|
-| Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](Introduction_to_Linear_Regression.qmd) | [RPubs](https://rpubs.com/crweber9874/linereg1) |
-| Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) | [RPubs](https://rpubs.com/crweber9874/1390443) |
-| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | [RPubs](https://rpubs.com/crweber9874/1390453) |
-| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | [RPubs](https://rpubs.com/crweber9874/gm_assumptions) |
-| Linear Regression and Matrix Algebra | [linear_regression_matrix_algebra.qmd](linear_regression_matrix_algebra.qmd) | [RPubs](https://rpubs.com/crweber9874/intro_matrices) |
-| Multiple Regression | [multiple_regression.qmd](multiple_regression.qmd) | [RPubs](https://rpubs.com/crweber9874/Matrices_and_Fit)|
-| Dummy Variables and Model Fit | [dummy_variables_model_fit.qmd](dummy_variables_model_fit.qmd) | |
+| Lecture | File | Slides |
+|---------|------|--------|
+| Introduction to Linear Regression | [Introduction_to_Linear_Regression.qmd](Introduction_to_Linear_Regression.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/Introduction_to_Linear_Regression.html) |
+| Derivation of OLS Estimator | [ols_estimator.qmd](ols_estimator.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/ols_estimator.html) |
+| OLS Derivation (Detailed Notes) | [OLS_Derivation.qmd](OLS_Derivation.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/OLS_Derivation.html) |
+| Gauss-Markov Assumptions | [gauss_markov_slides.qmd](gauss_markov_slides.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/gauss_markov_slides.html) |
+| Linear Regression and Matrix Algebra | [linear_regression_matrix_algebra.qmd](linear_regression_matrix_algebra.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/linear_regression_matrix_algebra.html) |
+| Multiple Regression | [multiple_regression.qmd](multiple_regression.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multiple_regression.html) |
+| Dummy Variables and Model Fit | [dummy_variables_model_fit.qmd](dummy_variables_model_fit.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dummy_variables_model_fit.html) |
+| Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
+| Multicollinearity | [multicollinearity.qmd](multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
 
 
 
@@ -47,4 +49,10 @@ This directory contains lecture materials for POL 682. All lectures are written 
 - **Topics**: Dummy Variables, R-squared, Cross-Validation, and the Achen Debate
 - **Files**: [dummy_variables_model_fit.qmd](dummy_variables_model_fit.qmd)
 
+### Week 8: Interactions and Heteroskedasticity
+- **Topics**: Categorical and Continuous Interactions, Non-Additivity, Heteroskedasticity Detection and Correction, WLS, Robust Standard Errors
+- **Files**: [interactions_heteroskedasticity.qmd](interactions_heteroskedasticity.qmd)
 
+### Week 9: Multicollinearity
+- **Topics**: Perfect and Imperfect Collinearity, VIF, Bias-Variance Tradeoff, Ridge and Lasso Regression
+- **Files**: [multicollinearity.qmd](multicollinearity.qmd)
