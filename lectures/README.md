@@ -21,6 +21,7 @@ This directory contains lecture materials for POL 682. All lectures are written 
 | Dummy Variables and Model Fit | [dummy_variables_model_fit.qmd](dummy_variables_model_fit.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dummy_variables_model_fit.html) |
 | Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
 | Multicollinearity | [multicollinearity.qmd](multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
+| Autocorrelation, Panel Data, and Multilevel Models | [autocorrelation_panel.qmd](autocorrelation_panel.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html) |
 
 
 
@@ -56,3 +57,7 @@ This directory contains lecture materials for POL 682. All lectures are written 
 ### Week 9: Multicollinearity
 - **Topics**: Perfect and Imperfect Collinearity, VIF, Bias-Variance Tradeoff, Ridge and Lasso Regression
 - **Files**: [multicollinearity.qmd](multicollinearity.qmd)
+
+### Weeks 11-12: Autocorrelation and Panel Data
+- **Topics**: AR(1) Errors, Durbin-Watson, GLS, Newey-West, Panel Data, Fixed Effects, Random Effects, Multilevel Models
+- **Files**: [autocorrelation_panel.qmd](autocorrelation_panel.qmd)

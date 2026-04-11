@@ -100,6 +100,7 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 | Dummy Variables and Model Fit | [dummy_variables_model_fit.qmd](lectures/dummy_variables_model_fit.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dummy_variables_model_fit.html) |
 | Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](lectures/interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
 | Multicollinearity | [multicollinearity.qmd](lectures/multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
+| Autocorrelation, Panel Data, and Multilevel Models | [autocorrelation_panel.qmd](lectures/autocorrelation_panel.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html) |
 
 **Course Schedule:**
 
@@ -110,6 +111,7 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 - **Week 6**: Dummy Variables, Model Fit, and Cross-Validation
 - **Week 8**: Interactions and Heteroskedasticity
 - **Week 9**: Multicollinearity
+- **Weeks 11-12**: Autocorrelation and Panel Data
 
 Topics follow the progression in Fox's Applied Regression Analysis:
 1. Simple linear regression

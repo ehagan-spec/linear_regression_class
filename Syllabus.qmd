@@ -236,12 +236,14 @@ Complete all assigned modules by the deadline.
 ### Week 11 (4/7): Panel Data
 
 - **Topics**: Fixed effects, random effects, panel and time series data: Autocorrelation
-- **Reading**: Fox, Chapter 16 (First Half)
+- **Reading**: Fox, Chapter 16 (First Half); Course Notes, Chapters 9–10
+- **Slides**: [autocorrelation_panel.qmd](lectures/autocorrelation_panel.qmd) | [View Online](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html)
 
 ### Week 12 (4/14): Panel Data, Continued
 
 - **Topics**: Fixed effects, random effects, panel and time series data: Autocorrelation
-- **Reading**: Fox, Chapter 16 (Second Half)
+- **Reading**: Fox, Chapter 16 (Second Half); Course Notes, Chapters 9–10
+- **Slides**: [autocorrelation_panel.qmd](lectures/autocorrelation_panel.qmd) | [View Online](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html)
 
 ### Week 13 (4/21): Generalized Linear Models
 
