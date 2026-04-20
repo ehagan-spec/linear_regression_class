@@ -26,6 +26,9 @@ This page provides links to all lecture materials for POL 682. Schedule follows 
 | Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
 | Multicollinearity | [multicollinearity.qmd](multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
 | Autocorrelation, Panel Data, and Multilevel Models | [autocorrelation_panel.qmd](autocorrelation_panel.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html) |
+| Measurement Error | [measurement_error.qmd](measurement_error.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/measurement_error.html) |
+| Directed Acyclic Graphs (DAGs) | [dags.qmd](dags.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dags.html) |
+| Exogeneity, Endogeneity, and Instrumental Variables | [exogeneity.qmd](exogeneity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/exogeneity.html) |
 
 
 ## Course Schedule

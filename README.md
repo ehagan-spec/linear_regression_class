@@ -101,6 +101,9 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 | Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](lectures/interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
 | Multicollinearity | [multicollinearity.qmd](lectures/multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
 | Autocorrelation, Panel Data, and Multilevel Models | [autocorrelation_panel.qmd](lectures/autocorrelation_panel.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html) |
+| Measurement Error | [measurement_error.qmd](lectures/measurement_error.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/measurement_error.html) |
+| Directed Acyclic Graphs (DAGs) | [dags.qmd](lectures/dags.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dags.html) |
+| Exogeneity, Endogeneity, and Instrumental Variables | [exogeneity.qmd](lectures/exogeneity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/exogeneity.html) |
 
 **Course Schedule:**
 
@@ -112,6 +115,7 @@ The `lectures/` folder contains Quarto (`.qmd`) files for each lecture topic. Se
 - **Week 8**: Interactions and Heteroskedasticity
 - **Week 9**: Multicollinearity
 - **Weeks 10-11**: Autocorrelation and Panel Data
+- **Week 12**: Measurement Error, DAGs, and Exogeneity (IV / 2SLS)
 
 Topics follow the progression in Fox's Applied Regression Analysis:
 1. Simple linear regression

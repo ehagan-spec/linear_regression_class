@@ -1,0 +1,543 @@
+---
+title: "Exogeneity, Endogeneity, and Instrumental Variables"
+subtitle: "2SLS, Weak Instruments, and a Worked WSS 2020 Example"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    smaller: true
+    scrollable: true
+    math: katex
+    transition: fade
+    width: 1200
+    height: 750
+    footer: "POL 682 | Exogeneity & IV"
+    code-fold: true
+    code-summary: "Show code"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(ggdag)
+library(dagitty)
+library(patchwork)
+
+az_blue <- "#2166AC"
+az_red  <- "#B2182B"
+```
+
+# Part I: Exogeneity {background-color="white" style="color: black;"}
+
+The assumption that pulls the rest together.
+
+## Definition
+
+**Exogeneity** of $X$: $X$ is determined outside the model; it is uncorrelated with the error term.
+
+. . .
+
+In the DAG: no arrow points into $X$ from anything in the model.
+
+. . .
+
+In algebra: $\text{cov}(X, \epsilon) = 0$.
+
+. . .
+
+**Endogenous** is the opposite — $X$ is determined inside the model, and the covariance with $\epsilon$ is non-zero.
+
+## Why Exogeneity is the Umbrella Assumption
+
+Several Gauss-Markov conditions collapse into exogeneity:
+
+- **Proper specification**: omitted confounders get absorbed into $\epsilon$ and correlate with $X$.
+- **Measurement error in X**: the noise becomes part of the composite error.
+- **Simultaneity**: $Y$ feeds back into $X$, so $X$ reflects $\epsilon$.
+
+. . .
+
+All three violations say the same thing: **there is an open backdoor from $X$ to the error.**
+
+## Three Routes to Endogeneity
+
+```{r}
+#| label: fig-endog-types
+#| fig-cap: "Three ways exogeneity breaks: an omitted confounder, simultaneity, and measurement error in X."
+#| echo: false
+#| fig-width: 11
+#| fig-height: 3.8
+
+d1 <- dagify(
+  y ~ x + u, x ~ u,
+  labels = c("x" = "X", "y" = "Y", "u" = "U (unobs)"),
+  coords = list(x = c(x = 0, y = 2, u = 1), y = c(x = 0, y = 0, u = 1))
+)
+d2 <- dagify(
+  y ~ x, x ~ y,
+  labels = c("x" = "X", "y" = "Y"),
+  coords = list(x = c(x = 0, y = 2), y = c(x = 0, y = 0))
+)
+d3 <- dagify(
+  y ~ xstar, xobs ~ xstar + gamma,
+  labels = c("xstar" = "X*", "xobs" = "X (obs)",
+             "y" = "Y", "gamma" = "γ"),
+  coords = list(x = c(xstar = 0, xobs = 1, gamma = 1, y = 2),
+                y = c(xstar = 0, xobs = 1, gamma = 2, y = 0))
+)
+
+(ggdag(d1, text = FALSE, use_labels = "label") + theme_dag() + ggtitle("Omitted confounder")) |
+(ggdag(d2, text = FALSE, use_labels = "label") + theme_dag() + ggtitle("Simultaneity")) |
+(ggdag(d3, text = FALSE, use_labels = "label") + theme_dag() + ggtitle("Measurement error"))
+```
+
+. . .
+
+In each case OLS sees only the muddled association. The coefficient is biased.
+
+# Part II: Instrumental Variables {background-color="white" style="color: black;"}
+
+When adjustment sets run out.
+
+## The Problem
+
+If the confounder $U$ is **unobserved**, no adjustment set blocks the backdoor.
+
+. . .
+
+`adjustmentSets()` returns empty. OLS is stuck.
+
+. . .
+
+Enter the **instrumental variable**: an exogenous nudge on $X$ that cannot reach $Y$ except through $X$.
+
+## A Valid Instrument
+
+```{r}
+#| label: fig-instrument
+#| fig-cap: "A valid instrument Z: relevance (Z → X) and exclusion (no direct Z → Y and no Z ↔ U)."
+#| echo: false
+#| fig-width: 8
+#| fig-height: 4
+
+dagify(
+  y ~ x + u,
+  x ~ z + u,
+  labels = c("z" = "Z (instrument)", "x" = "X", "y" = "Y",
+             "u" = "U (unobserved)"),
+  coords = list(x = c(z = -1, x = 0, y = 2, u = 1),
+                y = c(z = 0, x = 0, y = 0, u = 1))
+) |>
+  ggdag(text = FALSE, use_labels = "label") +
+  theme_dag()
+```
+
+## Two Conditions
+
+1. **Relevance.** $Z \to X$. The instrument actually moves $X$.
+2. **Exclusion.** $Z$ does not reach $Y$ except through $X$. No direct $Z \to Y$. No link to the confounder $U$.
+
+. . .
+
+Relevance is **testable** (first-stage F). Exclusion is **not** — you argue it on theory.
+
+. . .
+
+If both hold, the variation in $X$ induced by $Z$ is **exogenous**. That variation is clean.
+
+## Two-Stage Least Squares
+
+$$
+y_i = b_0 + b_1 x_i + e_{1i}, \qquad x_i = a_0 + a_1 z_i + e_{2i}.
+$$
+
+. . .
+
+**Stage 1.** Regress $X$ on $Z$ (and other exogenous controls). Keep $\hat{x}$.
+
+**Stage 2.** Regress $Y$ on $\hat{x}$.
+
+. . .
+
+$\hat{x}$ is the part of $X$ driven by the instrument — the clean variation. Using it in stage 2 purges the correlation with $U$.
+
+. . .
+
+Do not actually run two separate `lm()` calls — the standard errors will be wrong. Use `AER::ivreg()`.
+
+# Part III: Identification {background-color="white" style="color: black;"}
+
+When can 2SLS even be estimated?
+
+## The Order Condition
+
+Outcome equation with endogenous $x_2$ and exogenous controls $z_1, z_2$:
+
+$$y = \beta_1 x_2 + \gamma_1 z_1 + \gamma_2 z_2 + \epsilon_1.$$
+
+. . .
+
+If the first stage uses only $z_1, z_2$, then
+
+$$\hat{x}_2 = \hat\pi_1 z_1 + \hat\pi_2 z_2$$
+
+is a linear combination of variables **already in the outcome equation**. $X^T X$ is singular. **Not identified.**
+
+## The Fix
+
+Add an **excluded instrument** $z_3$ that appears in the first stage but **not** the outcome equation:
+
+$$x_2 = \pi_1 z_1 + \pi_2 z_2 + \pi_3 z_3 + \epsilon_2.$$
+
+. . .
+
+Now $\hat{x}_2$ contains a piece ($\hat\pi_3 z_3$) that is not spanned by the second-stage regressors.
+
+. . .
+
+**Order condition:** at least one instrument must appear in the first stage but not the second. One per endogenous regressor.
+
+## 2SLS in Matrix Form
+
+Stack the regressors into $\hat{W} = [\,\hat{X}\ \ Z\,]$, where
+
+- $\hat{X}$ = fitted values of endogenous regressors from the first stage
+- $Z$ = included exogenous regressors (intercept, controls, dummies)
+
+. . .
+
+$$\hat{\boldsymbol{\beta}}_{2SLS} = (\hat{W}^T \hat{W})^{-1} \hat{W}^T \mathbf{y}.$$
+
+. . .
+
+Variance is $\sigma^2 (\hat{W}^T \hat{W})^{-1}$, where $\sigma^2$ is computed from residuals using the **original** $X$, not $\hat{X}$. Manual two-step regressions miss this correction; `ivreg()` does it automatically.
+
+# Part IV: Testing for Endogeneity {background-color="white" style="color: black;"}
+
+Is 2SLS even needed?
+
+## The Tradeoff
+
+Under exogeneity:
+
+- **OLS**: unbiased, consistent, efficient (minimum-variance among linear unbiased estimators)
+- **2SLS**: consistent but **biased in finite samples**, and always less efficient (larger SEs)
+
+. . .
+
+So if $X$ really is exogenous, 2SLS costs precision for no gain. If $X$ is endogenous, OLS is wrong and 2SLS is necessary.
+
+. . .
+
+We want a test.
+
+## Unbiasedness vs. Consistency
+
+A distinction that matters here:
+
+- **Unbiased**: $E[\hat\beta] = \beta$ at every sample size.
+- **Consistent**: $\hat\beta \xrightarrow{p} \beta$ as $n \to \infty$.
+
+. . .
+
+OLS (under Gauss-Markov) is **both**.
+
+**2SLS** is **consistent but biased in finite samples**. First-stage noise correlates with second-stage error; bias shrinks as $n$ grows but is non-trivial in small samples.
+
+## The Residual Test
+
+Save first-stage residuals $\hat{\delta}$ and include them in the outcome equation:
+
+$$y = \beta_1 x_1 + \beta_2 \hat{\delta} + \gamma_1 z_1 + \gamma_2 z_2 + \epsilon.$$
+
+. . .
+
+If $\hat\beta_2 \neq 0$, the part of $x_1$ not explained by the instruments is correlated with the outcome's error — i.e., $x_1$ is endogenous.
+
+## The Hausman Test
+
+Compare the two coefficient vectors directly:
+
+$$H = (\hat\beta_c - \hat\beta_e)^T (V_c - V_e)^{-1} (\hat\beta_c - \hat\beta_e),$$
+
+distributed $\chi^2$ with df equal to the number of compared coefficients.
+
+. . .
+
+- **Small $H$**: OLS and 2SLS agree. Prefer the efficient OLS.
+- **Large $H$**: They disagree. Prefer 2SLS.
+
+. . .
+
+`ivreg(..., diagnostics = TRUE)` reports the Wu-Hausman version by default.
+
+## Weak Instruments
+
+A valid instrument may still be **weak** — $Z$ explains very little variation in $X$.
+
+. . .
+
+Rough diagnostic: first-stage $F$ on the excluded instruments. A rule of thumb is $F > 10$; more recent work pushes that threshold higher.
+
+. . .
+
+**Weak instruments are bad even when valid**: 2SLS estimates become noisy, finite-sample bias grows, and $\hat{x}$ collapses back into the other regressors (collinearity in the second stage).
+
+# Part V: Worked Example — WSS 2020 {background-color="white" style="color: black;"}
+
+A randomized instrument in the wild.
+
+## The Question
+
+**Does endorsing political protest affect trust in government?**
+
+. . .
+
+People who endorse protest differ on many unobservables — prior distrust, political engagement, ideology. `attend_march` is almost surely **endogenous**.
+
+## The Randomized Instrument
+
+The WSS 2020 randomized respondents to one of two versions of the protest question:
+
+- **Control**: standard "would you attend a march or rally"
+- **Treatment**: the same plus "even if it turns violent"
+
+. . .
+
+Treated respondents endorse attending a march at **lower rates** — relevance.
+
+. . .
+
+Assignment is random — exogeneity of $Z$ is by **design**, not by argument.
+
+## The Assumed DAG
+
+```{r}
+#| label: fig-wss-dag
+#| fig-cap: "Randomized Z → X → Y. U confounds X–Y; randomization ensures no arrow into Z."
+#| echo: false
+#| fig-width: 8
+#| fig-height: 4
+
+dagify(
+  y ~ x + u,
+  x ~ z + u,
+  labels = c(
+    "z" = "Violent prompt (Z)",
+    "x" = "Attend-march (X)",
+    "y" = "Trust gov't (Y)",
+    "u" = "U (unobserved)"
+  ),
+  coords = list(x = c(z = -1, x = 0, y = 2, u = 1),
+                y = c(z = 0, x = 0, y = 0, u = 1))
+) |>
+  ggdag(text = FALSE, use_labels = "label") +
+  theme_dag()
+```
+
+. . .
+
+**Exclusion restriction**: the wording manipulation affects trust *only* through its effect on stated march endorsement.
+
+## Step 1: Naive OLS
+
+```r
+ols_fit <- lm(trustGovernment ~ attend_march, data = d)
+summary(ols_fit)$coefficients
+```
+
+. . .
+
+This is what we'd report if we ignored the endogeneity problem. It mixes the causal effect with whatever is in $U$.
+
+## Step 2: The First Stage
+
+```r
+first_stage <- lm(attend_march ~ violent_treat, data = d)
+summary(first_stage)$coefficients
+first_stage_F <- summary(first_stage)$fstatistic[1]
+first_stage_F
+```
+
+. . .
+
+Checks **relevance**: does the randomized prompt move `attend_march`? The coefficient and the F-statistic both speak to this.
+
+## Step 3: 2SLS via `ivreg`
+
+```r
+library(AER)
+iv_fit <- ivreg(trustGovernment ~ attend_march | violent_treat, data = d)
+summary(iv_fit, diagnostics = TRUE)$coefficients
+summary(iv_fit, diagnostics = TRUE)$diagnostics
+```
+
+. . .
+
+The `diagnostics` block reports three tests:
+
+1. **Weak instruments F** — formal first-stage test
+2. **Wu-Hausman** — is 2SLS telling you something OLS missed?
+3. **Sargan** — only computed with *over*-identification (more instruments than endogenous regressors)
+
+## Step 4: Compare
+
+```r
+data.frame(
+  estimator = c("OLS", "2SLS"),
+  estimate  = c(coef(ols_fit)["attend_march"],
+                coef(iv_fit) ["attend_march"]),
+  se        = c(summary(ols_fit)$coefficients["attend_march", "Std. Error"],
+                summary(iv_fit )$coefficients["attend_march", "Std. Error"])
+)
+```
+
+. . .
+
+Three things almost always happen:
+
+- **The 2SLS point estimate differs from OLS** (sometimes dramatically)
+- **The 2SLS standard error is larger** (IV discards information)
+- **Weak instruments punish you twice** — noisy *and* biased in finite samples
+
+# Part VI: Systems of Equations {background-color="white" style="color: black;"}
+
+When endogeneity becomes structural.
+
+## Simultaneity
+
+Two variables that move together:
+
+$$
+x_2 = b_{00} + b_{01} x_1 + e_1
+$$
+
+$$
+x_1 = b_{10} + b_{11} x_2 + e_2
+$$
+
+. . .
+
+Both endogenous. $\text{cov}(x_1, e_1) \neq 0$ and $\text{cov}(x_2, e_2) \neq 0$. OLS biased on both.
+
+. . .
+
+The system is **not identified** without more information.
+
+## Identification via Exclusion
+
+Add an exogenous variable **unique to each equation**:
+
+$$
+x_2 = b_{00} + b_{01} x_1 + \gamma_1 z_1 + e_1, \qquad
+x_1 = b_{10} + b_{11} x_2 + \gamma_2 z_2 + e_2.
+$$
+
+. . .
+
+- $z_1$ predicts $x_1$ but is excluded from the $x_2$ equation — identifies the $x_2$ equation.
+- $z_2$ does the same, symmetrically.
+
+. . .
+
+**Rule**: each equation in a simultaneous system needs at least one instrument excluded from it but present in the equation that generates the endogenous RHS variable.
+
+## Recursive vs. Non-Recursive
+
+```{r}
+#| label: fig-rec-nonrec
+#| fig-cap: "Recursive (left): ordered, no feedback. Non-recursive (right): X₁ ↔ X₂ — OLS biased; instruments required."
+#| echo: false
+#| fig-width: 10
+#| fig-height: 3.5
+
+rec <- dagify(
+  x2 ~ x1,
+  x3 ~ x2 + x1,
+  labels = c(x1 = "X\u2081", x2 = "X\u2082", x3 = "X\u2083"),
+  coords = list(x = c(x1 = 0, x2 = 1, x3 = 2),
+                y = c(x1 = 0, x2 = 0, x3 = 0))
+)
+nonrec <- dagify(
+  x1 ~ x2,
+  x2 ~ x1,
+  labels = c(x1 = "X\u2081", x2 = "X\u2082"),
+  coords = list(x = c(x1 = 0, x2 = 1),
+                y = c(x1 = 0, x2 = 0))
+)
+
+(ggdag(rec,    text = FALSE, use_labels = "label") + theme_dag() + ggtitle("Recursive")) |
+(ggdag(nonrec, text = FALSE, use_labels = "label") + theme_dag() + ggtitle("Non-recursive"))
+```
+
+. . .
+
+- **Recursive, uncorrelated errors**: OLS equation-by-equation is consistent.
+- **Non-recursive**: cycle in the DAG. OLS biased on every equation in the cycle. Needs instruments.
+
+## Direct vs. Indirect Effects
+
+Substituting the $x_1$ equation into the $x_2$ equation:
+
+$$
+x_2 = \omega^{*} z_1 + \omega_3 z_2 + e^{*}_1,
+\qquad
+\omega^{*} = \omega_2 + b_{11}\omega_1.
+$$
+
+. . .
+
+$\omega^{*}$ is the **total effect** of $z_1$ on $x_2$: direct ($\omega_2$) plus indirect through $x_1$ ($b_{11}\omega_1$).
+
+. . .
+
+This is specification bias from POL 682, now turned into a tool: a correctly-specified recursive system lets us **decompose** total effects.
+
+# Part VII: Practical Considerations {background-color="white" style="color: black;"}
+
+Why IV is harder than it looks.
+
+## Finding a Valid Instrument Is Hard
+
+- Must move $X$ (relevance)
+- Must *not* reach $Y$ except through $X$ (exclusion)
+- Must not relate to the unobserved confounder
+
+. . .
+
+Most candidate instruments fail at least one check. Randomization, natural experiments, and institutional quirks are the usual suspects.
+
+## When Instruments Fail
+
+- **Invalid exclusion** → 2SLS biased, sometimes worse than OLS
+- **Weak first stage** → noisy 2SLS and finite-sample bias toward OLS
+- **Over-identified with conflicting instruments** → Sargan test should catch disagreement among instruments, but only if at least one is actually valid
+
+## `ivreg` Syntax Recap
+
+```r
+library(AER)
+fit <- ivreg(y ~ x1 + x2 | z1 + x2, data = df)
+```
+
+. . .
+
+- **Before `|`**: the outcome equation (endogenous + exogenous controls).
+- **After `|`**: the *full* set of exogenous regressors (instruments **and** included controls that are exogenous).
+
+. . .
+
+Exogenous controls appear on **both** sides of the `|`.
+
+## Key Takeaways
+
+- **Exogeneity** is the umbrella: specification, measurement, and simultaneity all collapse into it.
+- With no valid adjustment set, **instrumental variables** are the tool.
+- A valid IV needs **relevance** (testable) and **exclusion** (argued).
+- **2SLS** isolates the instrument-driven variation in $X$ and uses that to estimate the effect.
+- **2SLS is biased in finite samples** (consistent only) and less efficient than OLS — use it when you must, not by default.
+- **Weak instruments** make things worse on both fronts.
+- In systems of equations, each equation needs at least one **excluded** instrument for identification.

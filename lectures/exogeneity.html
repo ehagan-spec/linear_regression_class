@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="exogeneity_files/libs/clipboard/clipboard.min.js"></script>
+<script src="exogeneity_files/libs/quarto-html/tabby.min.js"></script>
+<script src="exogeneity_files/libs/quarto-html/popper.min.js"></script>
+<script src="exogeneity_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="exogeneity_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="exogeneity_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="exogeneity_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.27">
+
+  <title>Exogeneity, Endogeneity, and Instrumental Variables</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="exogeneity_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="exogeneity_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="exogeneity_files/libs/revealjs/dist/theme/quarto-adc107f4cf33756dcbb74299581ece58.css">
+  <link href="exogeneity_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="exogeneity_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="exogeneity_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="exogeneity_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="exogeneity_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="exogeneity_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Exogeneity, Endogeneity, and Instrumental Variables</h1>
+  <p class="subtitle">2SLS, Weak Instruments, and a Worked WSS 2020 Example</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section>
+<section id="part-i-exogeneity" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part I: Exogeneity</h1>
+<p>The assumption that pulls the rest together.</p>
+</section>
+<section id="definition" class="slide level2">
+<h2>Definition</h2>
+<p><strong>Exogeneity</strong> of <span class="math inline">\(X\)</span>: <span class="math inline">\(X\)</span> is determined outside the model; it is uncorrelated with the error term.</p>
+<div class="fragment">
+<p>In the DAG: no arrow points into <span class="math inline">\(X\)</span> from anything in the model.</p>
+</div>
+<div class="fragment">
+<p>In algebra: <span class="math inline">\(\text{cov}(X, \epsilon) = 0\)</span>.</p>
+</div>
+<div class="fragment">
+<p><strong>Endogenous</strong> is the opposite — <span class="math inline">\(X\)</span> is determined inside the model, and the covariance with <span class="math inline">\(\epsilon\)</span> is non-zero.</p>
+</div>
+</section>
+<section id="why-exogeneity-is-the-umbrella-assumption" class="slide level2">
+<h2>Why Exogeneity is the Umbrella Assumption</h2>
+<p>Several Gauss-Markov conditions collapse into exogeneity:</p>
+<ul>
+<li><strong>Proper specification</strong>: omitted confounders get absorbed into <span class="math inline">\(\epsilon\)</span> and correlate with <span class="math inline">\(X\)</span>.</li>
+<li><strong>Measurement error in X</strong>: the noise becomes part of the composite error.</li>
+<li><strong>Simultaneity</strong>: <span class="math inline">\(Y\)</span> feeds back into <span class="math inline">\(X\)</span>, so <span class="math inline">\(X\)</span> reflects <span class="math inline">\(\epsilon\)</span>.</li>
+</ul>
+<div class="fragment">
+<p>All three violations say the same thing: <strong>there is an open backdoor from <span class="math inline">\(X\)</span> to the error.</strong></p>
+</div>
+</section>
+<section id="three-routes-to-endogeneity" class="slide level2">
+<h2>Three Routes to Endogeneity</h2>
+
+<img data-src="exogeneity_files/figure-revealjs/fig-endog-types-1.png" width="1056" class="r-stretch quarto-figure-center" id="fig-endog-types"><p class="caption">
+Figure&nbsp;1: Three ways exogeneity breaks: an omitted confounder, simultaneity, and measurement error in X.
+</p><div class="fragment">
+<p>In each case OLS sees only the muddled association. The coefficient is biased.</p>
+</div>
+</section></section>
+<section>
+<section id="part-ii-instrumental-variables" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part II: Instrumental Variables</h1>
+<p>When adjustment sets run out.</p>
+</section>
+<section id="the-problem" class="slide level2">
+<h2>The Problem</h2>
+<p>If the confounder <span class="math inline">\(U\)</span> is <strong>unobserved</strong>, no adjustment set blocks the backdoor.</p>
+<div class="fragment">
+<p><code>adjustmentSets()</code> returns empty. OLS is stuck.</p>
+</div>
+<div class="fragment">
+<p>Enter the <strong>instrumental variable</strong>: an exogenous nudge on <span class="math inline">\(X\)</span> that cannot reach <span class="math inline">\(Y\)</span> except through <span class="math inline">\(X\)</span>.</p>
+</div>
+</section>
+<section id="a-valid-instrument" class="slide level2">
+<h2>A Valid Instrument</h2>
+
+<img data-src="exogeneity_files/figure-revealjs/fig-instrument-1.png" width="768" class="r-stretch quarto-figure-center" id="fig-instrument"><p class="caption">
+Figure&nbsp;2: A valid instrument Z: relevance (Z → X) and exclusion (no direct Z → Y and no Z ↔︎ U).
+</p></section>
+<section id="two-conditions" class="slide level2 scrollable">
+<h2>Two Conditions</h2>
+<ol type="1">
+<li><strong>Relevance.</strong> <span class="math inline">\(Z \to X\)</span>. The instrument actually moves <span class="math inline">\(X\)</span>.</li>
+<li><strong>Exclusion.</strong> <span class="math inline">\(Z\)</span> does not reach <span class="math inline">\(Y\)</span> except through <span class="math inline">\(X\)</span>. No direct <span class="math inline">\(Z \to Y\)</span>. No link to the confounder <span class="math inline">\(U\)</span>.</li>
+</ol>
+<div class="fragment">
+<p>Relevance is <strong>testable</strong> (first-stage F). Exclusion is <strong>not</strong> — you argue it on theory.</p>
+</div>
+<div class="fragment">
+<p>If both hold, the variation in <span class="math inline">\(X\)</span> induced by <span class="math inline">\(Z\)</span> is <strong>exogenous</strong>. That variation is clean.</p>
+</div>
+</section>
+<section id="two-stage-least-squares" class="slide level2">
+<h2>Two-Stage Least Squares</h2>
+<p><span class="math display">\[
+y_i = b_0 + b_1 x_i + e_{1i}, \qquad x_i = a_0 + a_1 z_i + e_{2i}.
+\]</span></p>
+<div class="fragment">
+<p><strong>Stage 1.</strong> Regress <span class="math inline">\(X\)</span> on <span class="math inline">\(Z\)</span> (and other exogenous controls). Keep <span class="math inline">\(\hat{x}\)</span>.</p>
+<p><strong>Stage 2.</strong> Regress <span class="math inline">\(Y\)</span> on <span class="math inline">\(\hat{x}\)</span>.</p>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(\hat{x}\)</span> is the part of <span class="math inline">\(X\)</span> driven by the instrument — the clean variation. Using it in stage 2 purges the correlation with <span class="math inline">\(U\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Do not actually run two separate <code>lm()</code> calls — the standard errors will be wrong. Use <code>AER::ivreg()</code>.</p>
+</div>
+</section></section>
+<section>
+<section id="part-iii-identification" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part III: Identification</h1>
+<p>When can 2SLS even be estimated?</p>
+</section>
+<section id="the-order-condition" class="slide level2">
+<h2>The Order Condition</h2>
+<p>Outcome equation with endogenous <span class="math inline">\(x_2\)</span> and exogenous controls <span class="math inline">\(z_1, z_2\)</span>:</p>
+<p><span class="math display">\[y = \beta_1 x_2 + \gamma_1 z_1 + \gamma_2 z_2 + \epsilon_1.\]</span></p>
+<div class="fragment">
+<p>If the first stage uses only <span class="math inline">\(z_1, z_2\)</span>, then</p>
+<p><span class="math display">\[\hat{x}_2 = \hat\pi_1 z_1 + \hat\pi_2 z_2\]</span></p>
+<p>is a linear combination of variables <strong>already in the outcome equation</strong>. <span class="math inline">\(X^T X\)</span> is singular. <strong>Not identified.</strong></p>
+</div>
+</section>
+<section id="the-fix" class="slide level2">
+<h2>The Fix</h2>
+<p>Add an <strong>excluded instrument</strong> <span class="math inline">\(z_3\)</span> that appears in the first stage but <strong>not</strong> the outcome equation:</p>
+<p><span class="math display">\[x_2 = \pi_1 z_1 + \pi_2 z_2 + \pi_3 z_3 + \epsilon_2.\]</span></p>
+<div class="fragment">
+<p>Now <span class="math inline">\(\hat{x}_2\)</span> contains a piece (<span class="math inline">\(\hat\pi_3 z_3\)</span>) that is not spanned by the second-stage regressors.</p>
+</div>
+<div class="fragment">
+<p><strong>Order condition:</strong> at least one instrument must appear in the first stage but not the second. One per endogenous regressor.</p>
+</div>
+</section>
+<section id="sls-in-matrix-form" class="slide level2">
+<h2>2SLS in Matrix Form</h2>
+<p>Stack the regressors into <span class="math inline">\(\hat{W} = [\,\hat{X}\ \ Z\,]\)</span>, where</p>
+<ul>
+<li><span class="math inline">\(\hat{X}\)</span> = fitted values of endogenous regressors from the first stage</li>
+<li><span class="math inline">\(Z\)</span> = included exogenous regressors (intercept, controls, dummies)</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[\hat{\boldsymbol{\beta}}_{2SLS} = (\hat{W}^T \hat{W})^{-1} \hat{W}^T \mathbf{y}.\]</span></p>
+</div>
+<div class="fragment">
+<p>Variance is <span class="math inline">\(\sigma^2 (\hat{W}^T \hat{W})^{-1}\)</span>, where <span class="math inline">\(\sigma^2\)</span> is computed from residuals using the <strong>original</strong> <span class="math inline">\(X\)</span>, not <span class="math inline">\(\hat{X}\)</span>. Manual two-step regressions miss this correction; <code>ivreg()</code> does it automatically.</p>
+</div>
+</section></section>
+<section>
+<section id="part-iv-testing-for-endogeneity" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part IV: Testing for Endogeneity</h1>
+<p>Is 2SLS even needed?</p>
+</section>
+<section id="the-tradeoff" class="slide level2">
+<h2>The Tradeoff</h2>
+<p>Under exogeneity:</p>
+<ul>
+<li><strong>OLS</strong>: unbiased, consistent, efficient (minimum-variance among linear unbiased estimators)</li>
+<li><strong>2SLS</strong>: consistent but <strong>biased in finite samples</strong>, and always less efficient (larger SEs)</li>
+</ul>
+<div class="fragment">
+<p>So if <span class="math inline">\(X\)</span> really is exogenous, 2SLS costs precision for no gain. If <span class="math inline">\(X\)</span> is endogenous, OLS is wrong and 2SLS is necessary.</p>
+</div>
+<div class="fragment">
+<p>We want a test.</p>
+</div>
+</section>
+<section id="unbiasedness-vs.-consistency" class="slide level2">
+<h2>Unbiasedness vs.&nbsp;Consistency</h2>
+<p>A distinction that matters here:</p>
+<ul>
+<li><strong>Unbiased</strong>: <span class="math inline">\(E[\hat\beta] = \beta\)</span> at every sample size.</li>
+<li><strong>Consistent</strong>: <span class="math inline">\(\hat\beta \xrightarrow{p} \beta\)</span> as <span class="math inline">\(n \to \infty\)</span>.</li>
+</ul>
+<div class="fragment">
+<p>OLS (under Gauss-Markov) is <strong>both</strong>.</p>
+<p><strong>2SLS</strong> is <strong>consistent but biased in finite samples</strong>. First-stage noise correlates with second-stage error; bias shrinks as <span class="math inline">\(n\)</span> grows but is non-trivial in small samples.</p>
+</div>
+</section>
+<section id="the-residual-test" class="slide level2">
+<h2>The Residual Test</h2>
+<p>Save first-stage residuals <span class="math inline">\(\hat{\delta}\)</span> and include them in the outcome equation:</p>
+<p><span class="math display">\[y = \beta_1 x_1 + \beta_2 \hat{\delta} + \gamma_1 z_1 + \gamma_2 z_2 + \epsilon.\]</span></p>
+<div class="fragment">
+<p>If <span class="math inline">\(\hat\beta_2 \neq 0\)</span>, the part of <span class="math inline">\(x_1\)</span> not explained by the instruments is correlated with the outcome’s error — i.e., <span class="math inline">\(x_1\)</span> is endogenous.</p>
+</div>
+</section>
+<section id="the-hausman-test" class="slide level2">
+<h2>The Hausman Test</h2>
+<p>Compare the two coefficient vectors directly:</p>
+<p><span class="math display">\[H = (\hat\beta_c - \hat\beta_e)^T (V_c - V_e)^{-1} (\hat\beta_c - \hat\beta_e),\]</span></p>
+<p>distributed <span class="math inline">\(\chi^2\)</span> with df equal to the number of compared coefficients.</p>
+<div class="fragment">
+<ul>
+<li><strong>Small <span class="math inline">\(H\)</span></strong>: OLS and 2SLS agree. Prefer the efficient OLS.</li>
+<li><strong>Large <span class="math inline">\(H\)</span></strong>: They disagree. Prefer 2SLS.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><code>ivreg(..., diagnostics = TRUE)</code> reports the Wu-Hausman version by default.</p>
+</div>
+</section>
+<section id="weak-instruments" class="slide level2">
+<h2>Weak Instruments</h2>
+<p>A valid instrument may still be <strong>weak</strong> — <span class="math inline">\(Z\)</span> explains very little variation in <span class="math inline">\(X\)</span>.</p>
+<div class="fragment">
+<p>Rough diagnostic: first-stage <span class="math inline">\(F\)</span> on the excluded instruments. A rule of thumb is <span class="math inline">\(F &gt; 10\)</span>; more recent work pushes that threshold higher.</p>
+</div>
+<div class="fragment">
+<p><strong>Weak instruments are bad even when valid</strong>: 2SLS estimates become noisy, finite-sample bias grows, and <span class="math inline">\(\hat{x}\)</span> collapses back into the other regressors (collinearity in the second stage).</p>
+</div>
+</section></section>
+<section>
+<section id="part-v-worked-example-wss-2020" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part V: Worked Example — WSS 2020</h1>
+<p>A randomized instrument in the wild.</p>
+</section>
+<section id="the-question" class="slide level2">
+<h2>The Question</h2>
+<p><strong>Does endorsing political protest affect trust in government?</strong></p>
+<div class="fragment">
+<p>People who endorse protest differ on many unobservables — prior distrust, political engagement, ideology. <code>attend_march</code> is almost surely <strong>endogenous</strong>.</p>
+</div>
+</section>
+<section id="the-randomized-instrument" class="slide level2">
+<h2>The Randomized Instrument</h2>
+<p>The WSS 2020 randomized respondents to one of two versions of the protest question:</p>
+<ul>
+<li><strong>Control</strong>: standard “would you attend a march or rally”</li>
+<li><strong>Treatment</strong>: the same plus “even if it turns violent”</li>
+</ul>
+<div class="fragment">
+<p>Treated respondents endorse attending a march at <strong>lower rates</strong> — relevance.</p>
+</div>
+<div class="fragment">
+<p>Assignment is random — exogeneity of <span class="math inline">\(Z\)</span> is by <strong>design</strong>, not by argument.</p>
+</div>
+</section>
+<section id="the-assumed-dag" class="slide level2">
+<h2>The Assumed DAG</h2>
+
+<img data-src="exogeneity_files/figure-revealjs/fig-wss-dag-1.png" width="768" class="r-stretch quarto-figure-center" id="fig-wss-dag"><p class="caption">
+Figure&nbsp;3: Randomized Z → X → Y. U confounds X–Y; randomization ensures no arrow into Z.
+</p><div class="fragment">
+<p><strong>Exclusion restriction</strong>: the wording manipulation affects trust <em>only</em> through its effect on stated march endorsement.</p>
+</div>
+</section>
+<section id="step-1-naive-ols" class="slide level2">
+<h2>Step 1: Naive OLS</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>ols_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(trustGovernment <span class="sc">~</span> attend_march, <span class="at">data =</span> d)</span>
+<span id="cb1-2"><a href=""></a><span class="fu">summary</span>(ols_fit)<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>This is what we’d report if we ignored the endogeneity problem. It mixes the causal effect with whatever is in <span class="math inline">\(U\)</span>.</p>
+</div>
+</section>
+<section id="step-2-the-first-stage" class="slide level2">
+<h2>Step 2: The First Stage</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>first_stage <span class="ot">&lt;-</span> <span class="fu">lm</span>(attend_march <span class="sc">~</span> violent_treat, <span class="at">data =</span> d)</span>
+<span id="cb2-2"><a href=""></a><span class="fu">summary</span>(first_stage)<span class="sc">$</span>coefficients</span>
+<span id="cb2-3"><a href=""></a>first_stage_F <span class="ot">&lt;-</span> <span class="fu">summary</span>(first_stage)<span class="sc">$</span>fstatistic[<span class="dv">1</span>]</span>
+<span id="cb2-4"><a href=""></a>first_stage_F</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>Checks <strong>relevance</strong>: does the randomized prompt move <code>attend_march</code>? The coefficient and the F-statistic both speak to this.</p>
+</div>
+</section>
+<section id="step-3-2sls-via-ivreg" class="slide level2 scrollable">
+<h2>Step 3: 2SLS via <code>ivreg</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">library</span>(AER)</span>
+<span id="cb3-2"><a href=""></a>iv_fit <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(trustGovernment <span class="sc">~</span> attend_march <span class="sc">|</span> violent_treat, <span class="at">data =</span> d)</span>
+<span id="cb3-3"><a href=""></a><span class="fu">summary</span>(iv_fit, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>coefficients</span>
+<span id="cb3-4"><a href=""></a><span class="fu">summary</span>(iv_fit, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>diagnostics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>The <code>diagnostics</code> block reports three tests:</p>
+<ol type="1">
+<li><strong>Weak instruments F</strong> — formal first-stage test</li>
+<li><strong>Wu-Hausman</strong> — is 2SLS telling you something OLS missed?</li>
+<li><strong>Sargan</strong> — only computed with <em>over</em>-identification (more instruments than endogenous regressors)</li>
+</ol>
+</div>
+</section>
+<section id="step-4-compare" class="slide level2">
+<h2>Step 4: Compare</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">data.frame</span>(</span>
+<span id="cb4-2"><a href=""></a>  <span class="at">estimator =</span> <span class="fu">c</span>(<span class="st">"OLS"</span>, <span class="st">"2SLS"</span>),</span>
+<span id="cb4-3"><a href=""></a>  <span class="at">estimate  =</span> <span class="fu">c</span>(<span class="fu">coef</span>(ols_fit)[<span class="st">"attend_march"</span>],</span>
+<span id="cb4-4"><a href=""></a>                <span class="fu">coef</span>(iv_fit) [<span class="st">"attend_march"</span>]),</span>
+<span id="cb4-5"><a href=""></a>  <span class="at">se        =</span> <span class="fu">c</span>(<span class="fu">summary</span>(ols_fit)<span class="sc">$</span>coefficients[<span class="st">"attend_march"</span>, <span class="st">"Std. Error"</span>],</span>
+<span id="cb4-6"><a href=""></a>                <span class="fu">summary</span>(iv_fit )<span class="sc">$</span>coefficients[<span class="st">"attend_march"</span>, <span class="st">"Std. Error"</span>])</span>
+<span id="cb4-7"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>Three things almost always happen:</p>
+<ul>
+<li><strong>The 2SLS point estimate differs from OLS</strong> (sometimes dramatically)</li>
+<li><strong>The 2SLS standard error is larger</strong> (IV discards information)</li>
+<li><strong>Weak instruments punish you twice</strong> — noisy <em>and</em> biased in finite samples</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="part-vi-systems-of-equations" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part VI: Systems of Equations</h1>
+<p>When endogeneity becomes structural.</p>
+</section>
+<section id="simultaneity" class="slide level2">
+<h2>Simultaneity</h2>
+<p>Two variables that move together:</p>
+<p><span class="math display">\[
+x_2 = b_{00} + b_{01} x_1 + e_1
+\]</span></p>
+<p><span class="math display">\[
+x_1 = b_{10} + b_{11} x_2 + e_2
+\]</span></p>
+<div class="fragment">
+<p>Both endogenous. <span class="math inline">\(\text{cov}(x_1, e_1) \neq 0\)</span> and <span class="math inline">\(\text{cov}(x_2, e_2) \neq 0\)</span>. OLS biased on both.</p>
+</div>
+<div class="fragment">
+<p>The system is <strong>not identified</strong> without more information.</p>
+</div>
+</section>
+<section id="identification-via-exclusion" class="slide level2">
+<h2>Identification via Exclusion</h2>
+<p>Add an exogenous variable <strong>unique to each equation</strong>:</p>
+<p><span class="math display">\[
+x_2 = b_{00} + b_{01} x_1 + \gamma_1 z_1 + e_1, \qquad
+x_1 = b_{10} + b_{11} x_2 + \gamma_2 z_2 + e_2.
+\]</span></p>
+<div class="fragment">
+<ul>
+<li><span class="math inline">\(z_1\)</span> predicts <span class="math inline">\(x_1\)</span> but is excluded from the <span class="math inline">\(x_2\)</span> equation — identifies the <span class="math inline">\(x_2\)</span> equation.</li>
+<li><span class="math inline">\(z_2\)</span> does the same, symmetrically.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Rule</strong>: each equation in a simultaneous system needs at least one instrument excluded from it but present in the equation that generates the endogenous RHS variable.</p>
+</div>
+</section>
+<section id="recursive-vs.-non-recursive" class="slide level2">
+<h2>Recursive vs.&nbsp;Non-Recursive</h2>
+
+<img data-src="exogeneity_files/figure-revealjs/fig-rec-nonrec-1.png" width="960" class="r-stretch quarto-figure-center" id="fig-rec-nonrec"><p class="caption">
+Figure&nbsp;4: Recursive (left): ordered, no feedback. Non-recursive (right): X₁ ↔︎ X₂ — OLS biased; instruments required.
+</p><div class="fragment">
+<ul>
+<li><strong>Recursive, uncorrelated errors</strong>: OLS equation-by-equation is consistent.</li>
+<li><strong>Non-recursive</strong>: cycle in the DAG. OLS biased on every equation in the cycle. Needs instruments.</li>
+</ul>
+</div>
+</section>
+<section id="direct-vs.-indirect-effects" class="slide level2">
+<h2>Direct vs.&nbsp;Indirect Effects</h2>
+<p>Substituting the <span class="math inline">\(x_1\)</span> equation into the <span class="math inline">\(x_2\)</span> equation:</p>
+<p><span class="math display">\[
+x_2 = \omega^{*} z_1 + \omega_3 z_2 + e^{*}_1,
+\qquad
+\omega^{*} = \omega_2 + b_{11}\omega_1.
+\]</span></p>
+<div class="fragment">
+<p><span class="math inline">\(\omega^{*}\)</span> is the <strong>total effect</strong> of <span class="math inline">\(z_1\)</span> on <span class="math inline">\(x_2\)</span>: direct (<span class="math inline">\(\omega_2\)</span>) plus indirect through <span class="math inline">\(x_1\)</span> (<span class="math inline">\(b_{11}\omega_1\)</span>).</p>
+</div>
+<div class="fragment">
+<p>This is specification bias from POL 682, now turned into a tool: a correctly-specified recursive system lets us <strong>decompose</strong> total effects.</p>
+</div>
+</section></section>
+<section>
+<section id="part-vii-practical-considerations" class="title-slide slide level1 center" data-background-color="white" style="color: black;">
+<h1>Part VII: Practical Considerations</h1>
+<p>Why IV is harder than it looks.</p>
+</section>
+<section id="finding-a-valid-instrument-is-hard" class="slide level2">
+<h2>Finding a Valid Instrument Is Hard</h2>
+<ul>
+<li>Must move <span class="math inline">\(X\)</span> (relevance)</li>
+<li>Must <em>not</em> reach <span class="math inline">\(Y\)</span> except through <span class="math inline">\(X\)</span> (exclusion)</li>
+<li>Must not relate to the unobserved confounder</li>
+</ul>
+<div class="fragment">
+<p>Most candidate instruments fail at least one check. Randomization, natural experiments, and institutional quirks are the usual suspects.</p>
+</div>
+</section>
+<section id="when-instruments-fail" class="slide level2">
+<h2>When Instruments Fail</h2>
+<ul>
+<li><strong>Invalid exclusion</strong> → 2SLS biased, sometimes worse than OLS</li>
+<li><strong>Weak first stage</strong> → noisy 2SLS and finite-sample bias toward OLS</li>
+<li><strong>Over-identified with conflicting instruments</strong> → Sargan test should catch disagreement among instruments, but only if at least one is actually valid</li>
+</ul>
+</section>
+<section id="ivreg-syntax-recap" class="slide level2">
+<h2><code>ivreg</code> Syntax Recap</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a><span class="fu">library</span>(AER)</span>
+<span id="cb5-2"><a href=""></a>fit <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2 <span class="sc">|</span> z1 <span class="sc">+</span> x2, <span class="at">data =</span> df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<ul>
+<li><strong>Before <code>|</code></strong>: the outcome equation (endogenous + exogenous controls).</li>
+<li><strong>After <code>|</code></strong>: the <em>full</em> set of exogenous regressors (instruments <strong>and</strong> included controls that are exogenous).</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Exogenous controls appear on <strong>both</strong> sides of the <code>|</code>.</p>
+</div>
+</section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key Takeaways</h2>
+<ul>
+<li><strong>Exogeneity</strong> is the umbrella: specification, measurement, and simultaneity all collapse into it.</li>
+<li>With no valid adjustment set, <strong>instrumental variables</strong> are the tool.</li>
+<li>A valid IV needs <strong>relevance</strong> (testable) and <strong>exclusion</strong> (argued).</li>
+<li><strong>2SLS</strong> isolates the instrument-driven variation in <span class="math inline">\(X\)</span> and uses that to estimate the effect.</li>
+<li><strong>2SLS is biased in finite samples</strong> (consistent only) and less efficient than OLS — use it when you must, not by default.</li>
+<li><strong>Weak instruments</strong> make things worse on both fronts.</li>
+<li>In systems of equations, each equation needs at least one <strong>excluded</strong> instrument for identification.</li>
+</ul>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>POL 682 | Exogeneity &amp; IV</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="exogeneity_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="exogeneity_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="exogeneity_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="exogeneity_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1200,
+
+        height: 750,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

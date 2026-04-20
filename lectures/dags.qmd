@@ -1,0 +1,361 @@
+---
+title: "Directed Acyclic Graphs (DAGs)"
+subtitle: "Causal Paths, d-Separation, and the Backdoor Criterion"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    smaller: true
+    scrollable: true
+    math: katex
+    transition: fade
+    width: 1200
+    height: 750
+    footer: "POL 682 | DAGs"
+    code-fold: true
+    code-summary: "Show code"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(ggdag)
+library(dagitty)
+library(patchwork)
+
+az_blue <- "#2166AC"
+az_red  <- "#B2182B"
+```
+
+# Part I: Why DAGs? {background-color="white" style="color: black;"}
+
+Pictures are helpful
+
+## Motivation
+
+Gauss-Markov asked for a single thing of our covariates: they must be uncorrelated with $\epsilon$.
+
+. . .
+
+But *why* might $\text{cov}(X, \epsilon) \neq 0$?
+
+- An omitted confounder is also in the error term
+- $Y$ feeds back into $X$ (simultaneity)
+- $X$ is measured with error
+
+. . .
+
+DAGs let us see these failures as **paths** on a diagram rather than derivations on a page.
+
+## What is a DAG?
+
+A **Directed Acyclic Graph** is a sketch of causal relationships.
+
+- **Nodes** are variables
+- **Arrows** are causal effects (X causes Y)
+- **"Acyclic"**: no variable causes itself, even indirectly
+- Everything you assume is on the diagram; everything you *don't* draw is assumed absent
+
+. . .
+
+DAGs don't tell you the causal structure. You provide these. This is a useful tool for ensuring **correct specification**.
+
+## Exogeneity, Vizualized
+
+An **exogenous** variable has no arrow pointing *into* it from anything in the model.
+
+```{r}
+#| label: fig-exogenous
+#| fig-cap: "Exogeneity: X has no incoming arrows from Y or ε."
+#| echo: false
+#| fig-width: 7
+#| fig-height: 3.5
+
+dagify(
+  y ~ x + e,
+  labels = c("x" = "X", "y" = "Y", "e" = "ε (error)"),
+  coords = list(x = c(x = 0, y = 2, e = 1), y = c(x = 0, y = 0, e = 1))
+) |>
+  ggdag(text = FALSE, use_labels = "label") +
+  theme_dag()
+```
+
+. . .
+
+$X$ is predetermined; nothing in the equation causes it. That is what OLS needs.
+
+# Part II: Reading a DAG {background-color="white" style="color: black;"}
+
+How do they "work"?
+
+## Paths
+
+A **path** is any sequence of arrows connecting two variables, in either direction.
+
+. . .
+
+- **Causal (directed) path.** All arrows point one way: $X \to M \to Y$.
+- **Non-causal (backdoor) path.** At least one arrow points "wrong": $X \leftarrow U \to Y$.
+
+. . .
+
+Both kinds of paths transmit **statistical association**. Only the first is a **causal effect**.
+
+. . .
+
+The whole game of DAG analysis is separating the two.
+
+## Three Junctions
+
+Every path is built from three intersection types:
+
+```{r}
+#| label: fig-junctions
+#| fig-cap: "Chains and forks transmit association and can be blocked by conditioning. Colliders block association but are opened by conditioning."
+#| echo: false
+#| fig-width: 11
+#| fig-height: 3.5
+
+chain <- dagify(m ~ x, y ~ m,
+  coords = list(x = c(x = 0, m = 1, y = 2), y = c(x = 0, m = 0, y = 0)))
+fork  <- dagify(x ~ u, y ~ u,
+  coords = list(x = c(x = 0, u = 1, y = 2), y = c(x = 0, u = 1, y = 0)))
+coll  <- dagify(c ~ x + y,
+  coords = list(x = c(x = 0, c = 1, y = 2), y = c(x = 1, c = 0, y = 1)))
+
+(ggdag(chain) + theme_dag() + ggtitle("Chain: X → M → Y")) |
+(ggdag(fork)  + theme_dag() + ggtitle("Fork: X ← U → Y"))  |
+(ggdag(coll)  + theme_dag() + ggtitle("Collider: X → C ← Y"))
+```
+
+## How Conditioning Behaves
+
+| Intersection | Shape | Open by default? | Conditioning on middle |
+|----------|-------|------------------|------------------------|
+| **Chain** | $X \to M \to Y$ | Yes | **Blocks** |
+| **Fork** | $X \leftarrow U \to Y$ | Yes | **Blocks** |
+| **Collider** | $X \to C \leftarrow Y$ | **No** | **Opens** |
+
+. . .
+
+**The surprise is the collider.** Controlling for a common effect *creates* an association between its parents. Things that *should be* independent become *conditionally* dependent.
+
+## d-Separation
+
+Two variables are **d-separated** by a set $\mathbf{Z}$ when *every* path between them is blocked.
+
+. . .
+
+A path is **blocked** by $\mathbf{Z}$ if:
+
+- $\mathbf{Z}$ contains a non-collider on the path (a chain or fork middle), **or**
+- The path contains a collider, and neither it nor its descendants are in $\mathbf{Z}$
+
+. . .
+
+d-separation $\Rightarrow$ conditional independence. This is the engine.
+
+## The Backdoor Criterion
+
+> Pick a set $\mathbf{Z}$ such that:
+> **(a)** $\mathbf{Z}$ blocks every backdoor path from $X$ to $Y$,
+> **(b)** $\mathbf{Z}$ contains no descendants of $X$.
+
+. . .
+
+If such a $\mathbf{Z}$ exists, regressing $Y$ on $X$ and $\mathbf{Z}$ recovers the **causal effect** of $X$ on $Y$.
+
+. . .
+
+This is the formal rule behind "controlling for" something. Not everything deserves to be a control.
+
+# Part III: A Running Example {background-color="white" style="color: black;"}
+
+College, knowledge, SES.
+
+## The Question
+
+Does **college** ($X$) cause **voter engagement** ($Y$)?
+
+. . .
+
+Two other variables are in play:
+
+- **Parental SES** ($U$): affects both whether you go to college and whether you vote.
+- **Political knowledge** ($M$): college raises knowledge; knowledge raises engagement.
+
+## The DAG
+
+```{r}
+#| label: fig-backdoor
+#| fig-cap: "College (X) → Engagement (Y), both directly and through political knowledge (M). Parental SES (U) is a confounder."
+#| echo: false
+#| fig-width: 8
+#| fig-height: 4
+
+dagify(
+  y ~ x + m + u,
+  m ~ x,
+  x ~ u,
+  labels = c("x" = "College (X)",
+             "m" = "Knowledge (M)",
+             "y" = "Engagement (Y)",
+             "u" = "Parental SES (U)"),
+  coords = list(x = c(x = 0, m = 1, y = 2, u = 0.5),
+                y = c(x = 0, m = 0.6, y = 0, u = 1))
+) |>
+  ggdag(text = FALSE, use_labels = "label") +
+  theme_dag()
+```
+
+## Listing the Paths
+
+From $X$ to $Y$:
+
+1. $X \to Y$ — **causal** (direct).
+2. $X \to M \to Y$ — **causal** (indirect, through the mediator).
+3. $X \leftarrow U \to Y$ — **backdoor** (non-causal; the source of bias).
+
+. . .
+
+We want the **total effect** of $X$ on $Y$: close path 3, leave paths 1 and 2 alone.
+
+## Applying the Criterion
+
+- **Condition on $U$?** Yes — $U$ is the fork middle on path 3; adjusting blocks it. $U$ is not a descendant of $X$. Allowed.
+- **Condition on $M$?** No — $M$ is a chain middle on path 2, which is **causal**. Closing it throws away the indirect effect.
+
+. . .
+
+**Valid adjustment set:** $\mathbf{Z} = \{U\}$.
+
+. . .
+
+- `lm(Y ~ X + U)` → **total** causal effect.
+- `lm(Y ~ X + U + M)` → **direct** effect only.
+- `lm(Y ~ X)` → biased by the $X \leftarrow U \to Y$ backdoor.
+
+## Verify with `dagitty`
+
+```{r}
+#| label: adj-sets-example
+#| echo: true
+
+g_ex <- dagitty::dagitty("dag {
+  U -> X
+  U -> Y
+  X -> M
+  M -> Y
+  X -> Y
+}")
+dagitty::adjustmentSets(g_ex, exposure = "X", outcome = "Y")
+```
+
+. . .
+
+`dagitty` returns every minimal adjustment set that blocks all backdoors.
+
+# Part IV: Colliders and "Bad Controls" {background-color="white" style="color: black;"}
+
+Why more controls is not always better.
+
+## The Collider 
+
+A collider has two arrows pointing *in*: $X \to C \leftarrow Y$.
+
+. . .
+
+- **Unadjusted:** no association flows through $C$.
+- **Adjusted:** an association appears between $X$ and $Y$ that is not causal.
+
+. . .
+
+This is how "controlling for everything" creates bias that wasn't there.
+
+## A Classic Example
+
+Suppose $X$ = athletic talent, $Y$ = academic talent, and $C$ = admission to an elite college (which demands either).
+
+. . .
+
+In the general population, $X$ and $Y$ may be independent. Among **admitted students only** (conditioning on $C$), they appear **negatively correlated** — if you got in without academic talent, you likely had athletic talent.
+
+. . .
+
+The negative association is an artifact of conditioning on the collider.
+
+## Three Rules for Specification
+
+From the backdoor criterion, three operational rules:
+
+1. **Block every backdoor.** Control for confounders (forks).
+2. **Do not condition on a collider.** Including one creates spurious association between its parents.
+3. **Do not condition on a post-treatment mediator** if you want the total effect. Chains carry part of the causal signal; closing them throws it away.
+
+. . .
+
+`adjustmentSets()` enforces all three automatically.
+
+## When No Valid Set Exists
+
+```{r}
+#| label: adj-sets-unobs
+#| echo: true
+
+g <- dagitty::dagitty("dag {
+  U [unobserved]
+  Z -> X
+  X -> Y
+  U -> X
+  U -> Y
+}")
+dagitty::adjustmentSets(g, exposure = "X", outcome = "Y")
+```
+
+. . .
+
+Empty. $U$ is unobserved, so no observable set blocks the backdoor through it.
+
+. . .
+
+**This is exactly where instrumental variables enter** — see the exogeneity lecture.
+
+# Part V: Why This Matters for OLS {background-color="white" style="color: black;"}
+
+The DAG as a diagnosis.
+
+## DAGs and Gauss-Markov
+
+Gauss-Markov demanded $\text{cov}(X, \epsilon) = 0$.
+
+. . .
+
+A DAG makes this vivid: the error term represents **everything we haven't drawn**. If an unobserved $U$ is a fork between $X$ and $Y$, then $U$ lives in $\epsilon$ and is correlated with $X$.
+
+. . .
+
+**OLS is unbiased iff there is no open backdoor path from $X$ to $Y$.**
+
+## What Can Go Wrong
+
+Three routes to a correlated error term:
+
+- **Omitted confounder** (fork): $X \leftarrow U \to Y$.
+- **Simultaneity**: $Y \to X$ alongside $X \to Y$.
+- **Measurement error in X**: observed $X$ depends on true $X^*$ and a noise $\gamma$; $\gamma$ is in the error.
+
+. . .
+
+All three reduce to the same statement: **there is an open backdoor from $X$ to the outcome's error.**
+
+## Key Takeaways
+
+- A DAG encodes your causal claims so they can be audited.
+- Chains and forks transmit association; conditioning **blocks** them.
+- Colliders block by default; conditioning **opens** them.
+- **Backdoor criterion**: block every non-causal path without touching any causal path.
+- "Control for everything" is wrong — some variables are colliders or mediators.
+- When no adjustment set exists, instrumental variables are the natural next step.

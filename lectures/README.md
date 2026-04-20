@@ -22,6 +22,9 @@ This directory contains lecture materials for POL 682. All lectures are written 
 | Interactions and Heteroskedasticity | [interactions_heteroskedasticity.qmd](interactions_heteroskedasticity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/interactions_heteroskedasticity.html) |
 | Multicollinearity | [multicollinearity.qmd](multicollinearity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/multicollinearity.html) |
 | Autocorrelation, Panel Data, and Multilevel Models | [autocorrelation_panel.qmd](autocorrelation_panel.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/autocorrelation_panel.html) |
+| Measurement Error | [measurement_error.qmd](measurement_error.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/measurement_error.html) |
+| Directed Acyclic Graphs (DAGs) | [dags.qmd](dags.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/dags.html) |
+| Exogeneity, Endogeneity, and Instrumental Variables | [exogeneity.qmd](exogeneity.qmd) | [View](https://crweber9874.github.io/linear_regression_class/lectures/exogeneity.html) |
 
 
 
@@ -58,6 +61,14 @@ This directory contains lecture materials for POL 682. All lectures are written 
 - **Topics**: Perfect and Imperfect Collinearity, VIF, Bias-Variance Tradeoff, Ridge and Lasso Regression
 - **Files**: [multicollinearity.qmd](multicollinearity.qmd)
 
-### Weeks 11-12: Autocorrelation and Panel Data
+### Weeks 10-11: Autocorrelation and Panel Data
 - **Topics**: AR(1) Errors, Durbin-Watson, GLS, Newey-West, Panel Data, Fixed Effects, Random Effects, Multilevel Models
 - **Files**: [autocorrelation_panel.qmd](autocorrelation_panel.qmd)
+
+### Week 12: Measurement Error, DAGs, and Exogeneity
+- **Topics**: Classical Measurement Error, Attenuation Bias, Reliability; DAGs, Paths, Colliders, Backdoor Criterion; Exogeneity, Endogeneity, Instrumental Variables, 2SLS, Weak Instruments, Hausman Test
+- **Files**:
+  - [measurement_error.qmd](measurement_error.qmd) — Attenuation bias and corrections
+  - [dags.qmd](dags.qmd) — Causal paths, d-separation, backdoor criterion
+  - [exogeneity.qmd](exogeneity.qmd) — IV, 2SLS, and the WSS 2020 example
+- **Companion chapters**: [11-measurement-error](../../linear_regression/quarto-book/11-measurement-error.qmd), [12-endogenous-regression](../../linear_regression/quarto-book/12-endogenous-regression.qmd) in the Linear Regression Analysis book

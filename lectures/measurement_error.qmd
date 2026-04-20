@@ -1,0 +1,248 @@
+---
+title: "Measurement Error"
+subtitle: "Attenuation Bias, Reliability, and Corrections"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    smaller: true
+    scrollable: true
+    math: katex
+    transition: fade
+    width: 1200
+    height: 750
+    footer: "POL 682 | Measurement Error"
+    code-fold: true
+    code-summary: "Show code"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+
+az_blue <- "#2166AC"
+az_red  <- "#B2182B"
+```
+
+# Part I: Measurement Error {background-color="white" style="color: black;"}
+
+What happens when we can't observe the variables we care about?
+
+## Roadmap
+
+Every variable we measure has error. The question is whether that error biases our estimates.
+
+. . .
+
+- Measurement error in the **dependent variable**: OLS is still BLUE, but standard errors inflate
+- Measurement error in the **independent variable**: OLS is biased — **attenuation bias**
+- **Reliability** gives a formal handle on how bad it is
+- Corrections
+
+. . .
+
+**The asymmetry matters.** Noisy X and noisy Y are not the same problem.
+
+## Two Kinds of Error
+
+Let the true data-generating process be
+
+$$Y^{*}_i = \alpha + \beta X^{*}_i + \epsilon_i.$$
+
+. . .
+
+We may only observe **noisy versions**:
+
+$$Y_i = Y^{*}_i + u_i \qquad \text{(error in DV)}$$
+
+$$X_i = X^{*}_i + \gamma_i \qquad \text{(error in IV)}$$
+
+. . .
+
+Classical measurement error assumes $u_i$ and $\gamma_i$ are mean-zero, uncorrelated with the true values and with $\epsilon_i$.
+
+# Part II: Error in the Dependent Variable {background-color="white" style="color: black;"}
+
+The easy case.
+
+## Substituting Noisy Y
+
+Starting with the true model and substituting the observed $Y_i$,
+
+$$Y_i - u_i = \alpha + \beta X_i + \epsilon_i$$
+
+$$Y_i = \alpha + \beta X_i + (\epsilon_i + u_i).$$
+
+. . .
+
+Two error components now, but both are uncorrelated with $X_i$.
+
+. . .
+
+**OLS is still BLUE.** Unbiased. Consistent. Just noisier.
+
+## What Happens to the Variance
+
+The variance of the slope estimator becomes
+
+$$\text{var}(b) = \frac{\sigma^2_u + \sigma^2_{\epsilon}}{\sum (X_i - \bar{X})^2}.$$
+
+. . .
+
+- Numerator grows with $\sigma^2_u$ — more noise in Y, bigger standard errors
+- Expected value of $b$ is unchanged: $E[b] = \beta$
+- Inference is conservative, not biased
+
+## Simulation: Error in Y
+
+```{r}
+#| label: me-dv-sim
+#| echo: true
+
+set.seed(2026)
+n <- 500
+x <- rnorm(n, 0, 1)
+y_star <- 0 + 1 * x + rnorm(n, 0, 1)
+
+sigma_u_grid <- c(0, 0.5, 1, 2, 4)
+
+me_dv <- lapply(sigma_u_grid, function(su) {
+  y_obs <- y_star + rnorm(n, 0, su)
+  fit   <- lm(y_obs ~ x)
+  data.frame(
+    sigma_u  = su,
+    beta_hat = coef(fit)[2],
+    se_beta  = sqrt(diag(vcov(fit)))[2]
+  )
+}) |> do.call(rbind, args = _)
+
+me_dv
+```
+
+. . .
+
+Coefficients hover around 1; standard errors grow roughly with $\sigma_u$.
+
+# Part III: Error in the Independent Variable {background-color="white" style="color: black;"}
+
+The hard case.
+
+## Substituting Noisy X
+
+Start with $Y_i = \alpha + \beta X^{*}_i + \epsilon_i$ and substitute $X^{*}_i = X_i - \gamma_i$:
+
+$$Y_i = \alpha + \beta X_i + \epsilon_i - \beta \gamma_i.$$
+
+. . .
+
+Combined error: $z_i = \epsilon_i - \beta \gamma_i$.
+
+. . .
+
+And now:
+
+$$\text{cov}(X, z) = \text{cov}(X^{*} + \gamma,\ \epsilon - \beta\gamma) = -\beta \, \sigma^2_{\gamma}.$$
+
+. . .
+
+The regressor and the error are **correlated**. Gauss-Markov broken. OLS biased.
+
+## Attenuation Bias
+
+$$\text{plim} \, \hat{\beta} = \beta \cdot \underbrace{\frac{\sigma^2_{X^{*}}}{\sigma^2_{X^{*}} + \sigma^2_{\gamma}}}_{\text{reliability}}.$$
+
+. . .
+
+- The ratio is the **reliability** of $X$, always in $[0,1]$
+- $\sigma^2_\gamma \to 0$: reliability $\to 1$, $\hat\beta \to \beta$
+- $\sigma^2_\gamma$ grows: reliability shrinks, $\hat\beta$ **shrinks toward zero**
+
+. . .
+
+**Attenuation bias.** Noisy predictors always look "flatter" than they really are.
+
+## Simulation
+
+```{r}
+#| label: fig-attenuation
+#| fig-cap: "As measurement error in X grows, the OLS slope shrinks toward zero. Dashed line is the true β = 1."
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 4.5
+
+set.seed(2026)
+n <- 1000
+beta_true <- 1.0
+
+x_star  <- rnorm(n, 0, 1)
+epsilon <- rnorm(n, 0, 1)
+y       <- 0 + beta_true * x_star + epsilon
+
+sigma_gamma_grid <- seq(0, 2, by = 0.1)
+results <- data.frame(sigma_gamma = sigma_gamma_grid, beta_hat = NA_real_)
+
+for (i in seq_along(sigma_gamma_grid)) {
+  sg <- sigma_gamma_grid[i]
+  x_obs <- x_star + rnorm(n, 0, sg)
+  results$beta_hat[i] <- coef(lm(y ~ x_obs))[2]
+}
+
+ggplot(results, aes(x = sigma_gamma, y = beta_hat)) +
+  geom_hline(yintercept = beta_true, linetype = "dashed", color = az_red) +
+  geom_line(color = az_blue, linewidth = 1) +
+  geom_point(color = az_blue, size = 2) +
+  labs(
+    x = expression(sigma[gamma] ~ "(measurement error in X)"),
+    y = expression(hat(beta))
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+## Summary: DV vs. IV
+
+| Error in | Bias? | Variance? | Fix? |
+|----------|-------|-----------|------|
+| Y (DV)   | No    | Inflated  | Accept the wider CIs |
+| X (IV)   | **Yes** — toward 0 | Distorted | Correct or instrument |
+
+. . .
+
+The practical rule: **worry more about noisy predictors than noisy outcomes.**
+
+# Part IV: Corrections {background-color="white" style="color: black;"}
+
+If measurement is noisy, what can we do?
+
+## Options
+
+- **Factor analysis / SEM.** Model a latent construct separate from its noisy indicators.
+- **Multi-item scales.** Averaging $k$ noisy indicators of the same construct reduces measurement-error variance roughly by $1/k$ (classical test theory).
+- **Item Response Theory.** Model the mapping from latent trait to discrete responses.
+- **Two-stage least squares (IV).** An instrument correlated with $X^{*}$ but not with $\gamma$ or $\epsilon$ recovers a consistent $\hat\beta$.
+
+. . .
+
+We'll see 2SLS in the exogeneity lecture — measurement error in X is a form of endogeneity.
+
+## Practical Advice
+
+- Measure constructs as accurately as possible before you worry about estimators
+- Multi-item measures are cheap; they often dominate post-hoc corrections
+- Check for coding errors. Always.
+- If attenuation is plausible, report that $\hat\beta$ is a **lower bound** on $|\beta|$
+
+. . .
+
+
+## Key Takeaways
+
+- Classical measurement error in **Y**: OLS still BLUE; standard errors inflate.
+- Classical measurement error in **X**: OLS biased toward zero (attenuation).
+- The attenuation factor is the **reliability** of $X$.
+- Corrections: multi-item scales, SEM/factor models, IRT, 2SLS.
+- The fix starts with better measurement, not better estimators.
